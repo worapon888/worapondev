@@ -210,7 +210,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       <div
         ref={menuRef}
-        className="md:hidden origin-top overflow-hidden bg-black/90 backdrop-blur-sm transform"
+        className="md:hidden origin-top overflow-hidden bg-black/90 backdrop-blur-sm transform scale-y-0 opacity-0 pointer-events-none"
       >
         <div className="px-4 pt-4 pb-6 space-y-2 sm:px-6">
           {navLinks.map((link) => (
