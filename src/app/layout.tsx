@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Worapon Portfolio", // ← แก้ชื่อเว็บที่แสดงบนแท็บ
   description: "Immersive UI & Frontend Developer Portfolio", // ← คำอธิบาย SEO
   icons: {
-    icon: "/logo_favico.png", // ← ใส่ favicon (วางไว้ใน public/favicon.ico)
+    icon: "/logo_favico.png?v=2", // ← ใส่ favicon (วางไว้ใน public/favicon.ico)
   },
 };
 
