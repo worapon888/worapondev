@@ -4,6 +4,7 @@ import { Code2, Palette, Rocket, Globe, Bot, BrainCog } from "lucide-react";
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { CardSpotlight } from "@/components/ui/card-spotlight";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,23 +53,30 @@ export default function Services() {
   useEffect(() => {
     const items = containerRef.current?.querySelectorAll(".service-card");
     if (items) {
-      gsap.fromTo(
-        items,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 80%",
-            toggleActions: "play reverse play reverse", // ✅ เล่นซ้ำตอน scroll ย้อนกลับ
-            markers: false, // เปิดเป็น true ได้ถ้าอยาก debug
-          },
-        }
-      );
+      gsap.set(items, {
+        opacity: 0,
+        y: 60, // เพิ่มระยะ drop-in เล็กน้อย
+        scale: 0.95,
+      });
+
+      gsap.to(items, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+        ease: "expo.out", // ✅ ลื่นขึ้นกว่าของเดิม
+        duration: 0.9,
+        delay: 0.1,
+        stagger: {
+          each: 0.18,
+          from: "start",
+        },
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 85%",
+          toggleActions: "play reverse play reverse",
+        },
+      });
     }
   }, []);
 
@@ -89,16 +97,20 @@ export default function Services() {
         className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
       >
         {services.map((service) => (
-          <div
+          <CardSpotlight
             key={service.title}
-            className="service-card relative rounded-2xl border border-white/10 bg-white/5 p-8 hover:border-cyan-400/50 backdrop-blur-sm transition-all hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] group opacity-0 translate-y-10"
+            className="service-card h-full w-full p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm transition-all hover:shadow-[0_0_20px_rgba(0,255,255,0.2)]"
           >
-            <div className="mb-4">{service.icon}</div>
-            <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-cyan-400 transition-colors">
-              {service.title}
-            </h3>
-            <p className="mt-4 text-gray-300">{service.description}</p>
-          </div>
+            <div className="relative z-10">
+              {" "}
+              {/* ✅ ป้องกันข้อความถูกบัง */}
+              <div className="mb-4">{service.icon}</div>
+              <h3 className="text-xl font-bold text-white tracking-tight transition-colors">
+                {service.title}
+              </h3>
+              <p className="mt-4 text-gray-300">{service.description}</p>
+            </div>
+          </CardSpotlight>
         ))}
       </div>
     </section>

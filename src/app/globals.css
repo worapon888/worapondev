@@ -55,3 +55,31 @@ body {
     }
   }
 }
+@keyframes pulse-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(165, 243, 252, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(165, 243, 252, 0.9));
+  }
+}
+
+.glow-text {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}

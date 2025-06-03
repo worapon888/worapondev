@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState<string>("");
   const menuRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef<HTMLAnchorElement[]>([]);
   linkRefs.current = [];
@@ -18,13 +20,36 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
-    gsap.set(menuRef.current, {
-      scaleY: 0,
-      autoAlpha: 0,
-      transformOrigin: "top",
-    });
-    linkRefs.current.forEach((el) => gsap.set(el, { y: 20, opacity: 0 }));
-  }, []);
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      let found: { name: string; href: string } | undefined;
+
+      for (const link of navLinks) {
+        if (link.href === "#") continue; // ✅ ข้าม '#'
+
+        const section = document.querySelector(link.href);
+        if (section) {
+          const top = (section as HTMLElement).offsetTop - 100;
+          const bottom = top + (section as HTMLElement).offsetHeight;
+
+          if (scrollY >= top && scrollY < bottom) {
+            found = link;
+            break;
+          }
+        }
+      }
+
+      if (scrollY < 200) {
+        setActiveLink("#"); // ✅ ให้ Home active เมื่ออยู่ด้านบน
+      } else if (found && found.href !== activeLink) {
+        setActiveLink(found.href);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeLink]);
 
   const toggleMenu = () => {
     if (!menuRef.current) return;
@@ -74,33 +99,68 @@ export default function Navbar() {
     }
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      const current = navLinks.find((link) => {
+        if (link.href === "#") return false; // ✅ ข้ามลิงก์ Home
+
+        const section = document.querySelector(link.href);
+        if (section) {
+          const top = (section as HTMLElement).offsetTop - 100;
+          const bottom = top + (section as HTMLElement).offsetHeight;
+          return scrollY >= top && scrollY < bottom;
+        }
+        return false;
+      });
+
+      if (current && current.href !== activeLink) {
+        setActiveLink(current.href);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeLink]);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-black/80 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#" className="text-xl font-bold text-white">
+            <Link href="#" className="text-xl font-bold text-white">
               <Image
                 src="/Logo_worapon.png"
                 alt="Logo"
                 width={150}
                 height={150}
+                priority
               />
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-8">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className={`relative text-sm font-medium transition-colors duration-300 ${
+                    activeLink === link.href
+                      ? "text-white"
+                      : "text-gray-300 hover:text-white"
+                  }`}
                 >
                   {link.name}
-                </a>
+                  <span
+                    className={`absolute left-0 -bottom-1 h-[2px] w-full bg-white transform transition-transform duration-300 ${
+                      activeLink === link.href ? "scale-x-100" : "scale-x-0"
+                    } origin-left`}
+                  />
+                </Link>
               ))}
             </div>
           </div>
@@ -154,15 +214,24 @@ export default function Navbar() {
       >
         <div className="px-4 pt-4 pb-6 space-y-2 sm:px-6">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.name}
               href={link.href}
               ref={addToRefs}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition"
+              className={`relative block px-3 py-2 rounded-md text-base font-medium transition ${
+                activeLink === link.href
+                  ? "text-white"
+                  : "text-gray-300 hover:text-white hover:bg-gray-800"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               {link.name}
-            </a>
+              <span
+                className={`absolute left-0 -bottom-1 h-[2px] w-full bg-white transform transition-transform duration-300 ${
+                  activeLink === link.href ? "scale-x-100" : "scale-x-0"
+                } origin-left`}
+              />
+            </Link>
           ))}
         </div>
       </div>

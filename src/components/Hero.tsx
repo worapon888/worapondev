@@ -68,6 +68,33 @@ export default function Hero() {
       repeat: -1,
       ease: "none",
     });
+    tl.fromTo(
+      btn1Ref.current,
+      { y: 20, opacity: 0, scale: 0.95, skewY: 3 },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        skewY: 0,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      },
+      "-=0.6"
+    );
+
+    tl.fromTo(
+      btn2Ref.current,
+      { y: 20, opacity: 0, scale: 0.95, skewY: 3 },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        skewY: 0,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      },
+      "-=0.5"
+    );
   }, []);
 
   // Animate beams เมื่อถูกสร้างแล้ว
@@ -154,8 +181,9 @@ export default function Hero() {
         <h1
           ref={headingRef}
           className="text-4xl font-bold tracking-tight sm:text-6xl text-transparent bg-clip-text leading-[1.2] pb-1
-          bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 
-          bg-[length:200%_200%] bg-left"
+  bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 
+  bg-[length:200%_200%] bg-left
+  drop-shadow-[0_0_15px_rgba(165,243,252,0.5)]"
           style={{ WebkitBackgroundClip: "text" }}
         >
           Build Something Amazing
@@ -173,16 +201,24 @@ export default function Hero() {
           <a
             ref={btn1Ref}
             href="#contact"
-            className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-black shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-black shadow-md hover:shadow-[0_0_15px_rgba(255, 255, 255, 0.767)] transition-all duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Get Started
           </a>
+
           <a
             ref={btn2Ref}
             href="#services"
-            className="text-sm font-semibold leading-6 text-white"
+            className="text-sm font-semibold leading-6 text-white relative group"
           >
-            Learn more <span aria-hidden="true">→</span>
+            Learn more{" "}
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-300 group-hover:translate-x-1 inline-block"
+            >
+              →
+            </span>
+            <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full"></span>
           </a>
         </div>
       </div>
