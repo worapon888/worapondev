@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PinContainer } from "@/components/ui/3d-pin";
+import { Canvas } from "@react-three/fiber";
+import dynamic from "next/dynamic";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,28 +13,33 @@ const projects = [
   {
     title: "MinimalMart",
     description: "Immersive e-commerce concept with animation-first UI.",
-    image: "/projects/minimalmart.png",
+    image: "/projects/Minimalmart3.mp4",
     link: "https://minimart-three.vercel.app/",
   },
   {
     title: "TaskSync",
     description: "A calm, gamified task system with real-time drag & drop.",
-    image: "/projects/Tasksycn.png",
+    image: "/projects/tasksync.mp4",
     link: "https://tasksync-chi.vercel.app/",
   },
   {
     title: "Insightify",
     description: "Futuristic analytics dashboard with real data hooks.",
-    image: "/projects/insightify.png",
+    image: "/projects/insightify.mp4",
     link: "https://insighttify-dashboard.vercel.app/",
   },
   {
     title: "Code404",
     description: "Your portal to clean code, immersive UI, and dev identity.",
-    image: "/projects/code404.png",
+    image: "/projects/code404.mp4",
     link: "https://code404-five.vercel.app/",
   },
 ];
+
+const CircuitShaderBG = dynamic(
+  () => import("@/components/effect/CircuitShaderBG"),
+  { ssr: false }
+);
 
 export default function Showcase() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,6 +77,14 @@ export default function Showcase() {
 
   return (
     <section id="showcase" className="relative z-10 py-24 sm:py-32">
+      {/* ✅ Background shader canvas */}
+      <div className="absolute inset-0 -z-10">
+        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+          <CircuitShaderBG />
+        </Canvas>
+      </div>
+
+      {/* ✅ Content ด้านหน้า */}
       <div className="text-center" ref={containerRef}>
         <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
           Featured Projects
@@ -90,18 +104,22 @@ export default function Showcase() {
           >
             <PinContainer title={project.title} href={project.link}>
               <div className="flex flex-col w-[18rem] h-[20rem] bg-white/5 border border-white/10 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:border-cyan-400/50 transition-all">
-                <div className="relative w-full aspect-[4/3]">
-                  <Image
+                {/* ✅ เฟรม mockup มีจอ + คีย์บอร์ด */}
+                <div className=" flex-1 bg-black ">
+                  <video
                     src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-48 object-cover"
                   />
+                  {/* ✅ ลายแถบเทาเลียนแบบ keyboard/base */}
                 </div>
-                <div className="p-4">
-                  <h3 className="text-white font-semibold text-lg">
-                    {project.title}
-                  </h3>
+
+                {/* ✅ Title + Description */}
+                <div className="p-4 text-white">
+                  <h3 className="text-lg font-semibold">{project.title}</h3>
                   <p className="text-sm text-white/70 mt-2">
                     {project.description}
                   </p>
