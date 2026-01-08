@@ -37,7 +37,7 @@ const projects = [
 ];
 
 const CircuitShaderBG = dynamic(
-  () => import("@/components/effect/CircuitShaderBG"),
+  () => import("@/components/hook/CircuitShaderBG"),
   { ssr: false }
 );
 

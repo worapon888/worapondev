@@ -1,22 +1,20 @@
-import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Showcase from "@/components/Showcase";
 import Contact from "@/components/Contact";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Hero from "@/components/hero/Hero";
 
 export default function Home() {
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-black text-white pt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Hero />
-          <Services />
-          <Showcase />
-          <Contact />
-          <Footer />
-        </div>
+        <Hero />
+        <Services />
+        <Showcase />
+        <Contact />
+        <Footer />
       </main>
     </>
   );

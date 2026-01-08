@@ -8,8 +8,21 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* ✅ Fonts from next/font variables */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* ✅ Display / Hero */
+  --font-display: var(--font-clash-display);
+
+  /* ✅ Neon / Accent */
+  --font-neon: var(--font-beon);
+}
+
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,67 +32,9 @@
   }
 }
 
+/* ✅ สำคัญ: เอา Arial ออก แล้วใช้ฟอนต์จาก next/font */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@keyframes pulse-slow {
-  0%,
-  100% {
-    opacity: 0.1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(1.02);
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 6s ease-in-out infinite;
-}
-
-@layer utilities {
-  .animate-spin-slow {
-    animation: spin-slow 30s linear infinite;
-  }
-
-  @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
-@keyframes pulse-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 8px rgba(165, 243, 252, 0.4));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(165, 243, 252, 0.9));
-  }
-}
-
-.glow-text {
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
+  font-family: var(--font-sans);
 }

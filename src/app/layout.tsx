@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import SmoothScroll from "@/components/hook/SmoothScroll";
 
-// ✅ โหลดฟอนต์ Google
+// ===== BODY FONT =====
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,26 +15,72 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// ✅ ตั้งค่า metadata + favicon
+// ===== HERO FONT =====
+const clashDisplay = localFont({
+  src: [
+    {
+      path: "../../public/fonts/ClashDisplay-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/ClashDisplay-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/ClashDisplay-Semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-clash-display",
+});
+
+// ===== NEON / DISPLAY FONT =====
+const beon = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Beon-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Beon-Regular.woff",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-beon",
+});
+
+// ===== METADATA =====
 export const metadata: Metadata = {
-  title: "Worapon Portfolio", // ← แก้ชื่อเว็บที่แสดงบนแท็บ
-  description: "Immersive UI & Frontend Developer Portfolio", // ← คำอธิบาย SEO
+  title: "Worapon.Dev | Creative Developer & Frontend Specialist",
+  description:
+    "Specializing in high-end interactions and cinematic web experiences. Merging technical precision with creative vision.",
   icons: {
-    icon: "/logo_favico.png?v=2", // ← ใส่ favicon (วางไว้ใน public/favicon.ico)
+    icon: "/logo_favico.png?v=2",
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`
+          ${geistSans.variable}
+          ${geistMono.variable}
+          ${clashDisplay.variable}
+          ${beon.variable}
+          antialiased
+        `}
       >
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );
