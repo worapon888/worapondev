@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+
 import SmoothScroll from "@/components/hook/SmoothScroll";
+import SiteBackground from "@/components/SiteBackground"; // ✅ เพิ่ม
 
 // ===== BODY FONT =====
 const geistSans = Geist({
@@ -53,6 +55,22 @@ const beon = localFont({
   ],
   variable: "--font-beon",
 });
+const schabo = localFont({
+  src: [
+    {
+      path: "../../public/fonts/SCHABO-Condensed.woff2",
+
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SCHABO-Condensed.woff",
+
+      style: "normal",
+    },
+  ],
+  variable: "--font-schabo",
+  display: "swap",
+});
 
 // ===== METADATA =====
 export const metadata: Metadata = {
@@ -77,10 +95,19 @@ export default function RootLayout({
           ${geistMono.variable}
           ${clashDisplay.variable}
           ${beon.variable}
+            ${schabo.variable}
           antialiased
+          bg-black
+          text-white
         `}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        {/* 🌌 Global Background (อยู่นอก SmoothScroll) */}
+        <SiteBackground />
+
+        {/* 🔼 Content Layer */}
+        <SmoothScroll>
+          <div className="relative z-10">{children}</div>
+        </SmoothScroll>
       </body>
     </html>
   );

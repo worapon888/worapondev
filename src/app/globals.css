@@ -1,40 +1,101 @@
 @import "tailwindcss";
 
+/* ✅ External fonts (CDN) — must stay at top */
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=WDXL+Lubrifont+SC&display=swap");
+
+/* ===============================
+   Root tokens
+================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* color */
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* optional base palette */
+
+  --base-400: rgba(220, 255, 255, 0.78);
+  --white-60: rgba(255, 255, 255, 0.6);
+  /* fonts (base) */
+  --font-sans:
+    "Host Grotesk", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", sans-serif;
+
+  --font-mono:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* ✅ Display (Schabo from next/font/local first) */
+  --font-display-fallback:
+    var(--font-schabo), "WDXL Lubrifont SC", var(--font-sans);
+  --font-display: var(--font-display-fallback);
+
+  /* ✅ Neon/Accent (ถ้ายังอยากมี) */
+  --font-neon-fallback: "WDXL Lubrifont SC", var(--font-sans);
+  --font-neon: var(--font-neon-fallback);
 }
 
+/* ===============================
+   Tailwind theme tokens (v4)
+   - if next/font vars exist, they override fallbacks
+================================ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* ✅ Fonts from next/font variables */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ✅ If you use next/font, these will exist and win.
+     Otherwise, they fall back to :root defaults via var(..., fallback) */
+  --font-sans: var(--font-geist-sans, var(--font-sans));
+  --font-mono: var(--font-geist-mono, var(--font-mono));
 
-  /* ✅ Display / Hero */
-  --font-display: var(--font-clash-display);
+  /* Display / Hero */
+  --font-display: var(--font-clash-display, var(--font-display-fallback));
 
-  /* ✅ Neon / Accent */
-  --font-neon: var(--font-beon);
+  /* Neon / Accent */
+  --font-neon: var(--font-beon, var(--font-neon-fallback));
 }
 
+/* ===============================
+   Base global styles
+================================ */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* hide scrollbar (chrome/safari) */
 body::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
 
+/* hide scrollbar (firefox/edge) */
+body {
+  scrollbar-width: none;
+}
+
+/* optional: selection style */
+::selection {
+  background: rgba(120, 255, 255, 0.18);
+}
+
+/* ===============================
+   Dark scheme (if you still want it)
+   NOTE: currently :root already uses dark values,
+   but keep this for future toggles.
+================================ */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
-
-/* ✅ สำคัญ: เอา Arial ออก แล้วใช้ฟอนต์จาก next/font */
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
 }

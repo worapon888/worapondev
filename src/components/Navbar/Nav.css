@@ -1,0 +1,373 @@
+/* ===============================
+   NAV (fixed + tech glass + border sweep)
+================================ */
+nav {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2rem);
+
+  /* ✅ wider panel */
+  max-width: 36rem;
+
+  /* ✅ premium height */
+  height: 2.75rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 20;
+  isolation: isolate;
+}
+
+/* ✅ background holder (goo) */
+nav .nav-container {
+  position: absolute;
+  inset: 0;
+  filter: url("#goo");
+  z-index: -1;
+  pointer-events: none;
+}
+/* กัน flash ตอนเฟรมแรกก่อน JS */
+nav.nav--preload {
+  opacity: 0;
+}
+
+nav.nav--preload .nav-bg,
+nav.nav--preload .nav-mobile-header,
+nav.nav--preload .nav-item {
+  opacity: 0;
+}
+
+/* ===============================
+   Background panel
+================================ */
+nav .nav-bg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+
+  /* glass */
+  background: linear-gradient(
+    180deg,
+    rgba(14, 26, 30, 0.55),
+    rgba(8, 14, 18, 0.9)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* border + glow */
+  border: 2px solid rgba(120, 255, 255, 0.137);
+  box-shadow:
+    0 0 18px rgba(120, 255, 255, 0.356),
+    inset 0 0 12px rgba(120, 255, 255, 0.151);
+
+  /* shape */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1rem) 100%, 1rem 100%);
+}
+
+/* ✅ border sweep light (only on hover = premium) */
+nav .nav-bg::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  pointer-events: none;
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  /* neon shard */
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(120, 255, 255, 0) 18deg,
+    rgba(120, 255, 255, 0.85) 40deg,
+    rgba(180, 120, 255, 0.55) 55deg,
+    rgba(120, 255, 255, 0) 78deg,
+    transparent 120deg,
+    transparent 360deg
+  );
+
+  filter: blur(6px);
+
+  /* keep only border */
+  padding: 2px; /* border thickness */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  /* same shape */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1rem) 100%, 1rem 100%);
+}
+
+nav:hover .nav-bg::after {
+  opacity: 0.55;
+  animation: nav-border-sweep 2.6s linear infinite;
+}
+
+@keyframes nav-border-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===============================
+   Items
+================================ */
+nav .nav-overlay {
+  position: relative;
+  display: flex;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+nav .nav-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* link style */
+nav .nav-item a {
+  display: block;
+  padding: 0.6rem 0.85rem;
+
+  text-align: center;
+  font-family: "Host Grotesk", sans-serif;
+  font-weight: 450;
+  line-height: 1.1;
+  text-transform: uppercase;
+
+  font-size: 0.78rem;
+  color: rgba(220, 255, 255, 0.78);
+
+  position: relative;
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+/* underline HUD */
+nav .nav-item a::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 6px;
+  height: 1px;
+
+  background: rgba(120, 255, 255, 0.6);
+  opacity: 0;
+  transform: scaleX(0.6);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+nav .nav-item a:hover {
+  color: rgba(220, 255, 255, 1);
+  text-shadow: 0 0 10px rgba(120, 255, 255, 0.35);
+}
+
+nav .nav-item a:hover::after {
+  opacity: 0.75;
+  transform: scaleX(1);
+}
+
+/* ===============================
+   Mobile header (hidden on desktop)
+================================ */
+nav .nav-mobile-header {
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.9rem;
+  cursor: pointer;
+  display: none;
+  position: relative;
+  z-index: 2;
+}
+
+nav .nav-mobile-header p {
+  color: rgba(220, 255, 255, 0.78);
+  font-family: "Host Grotesk", sans-serif;
+  font-weight: 450;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+/* ===============================
+   Responsive
+================================ */
+@media (max-width: 1000px) {
+  nav {
+    top: 2rem;
+    width: calc(100% - 4rem);
+    height: 2.75rem;
+    max-width: 36rem;
+  }
+  nav .nav-items {
+    align-items: center; /* จากเดิมไม่มี/ชิดซ้าย */
+  }
+
+  /* ✅ แต่ละแถวให้จัดกลาง */
+  nav .nav-item {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  /* ✅ override เฉพาะ mobile: เส้นให้พอดีกับคำ */
+  nav .nav-item a {
+    display: inline-flex; /* จาก block -> inline-flex */
+    justify-content: center;
+    text-align: center;
+  }
+
+  nav .nav-item a::after {
+    left: 50%;
+    right: auto;
+    width: calc(100% - 1.2rem); /* ปรับได้ */
+    transform: translateX(-50%) scaleX(0.6);
+  }
+
+  nav .nav-item a:hover::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  /* panel becomes rounded on mobile */
+  nav .nav-bg {
+    clip-path: none;
+    border-radius: 0.75rem;
+  }
+  nav .nav-bg::after {
+    clip-path: none;
+    border-radius: 0.75rem;
+  }
+
+  /* header visible */
+  nav .nav-mobile-header {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+
+  /* dropdown */
+  nav .nav-overlay {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    filter: url("#goo");
+    margin-top: -0.75rem;
+    z-index: 1;
+    height: auto;
+
+    /* ✅ ปิดเป็นค่าเริ่มต้น (รวม text) */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0s linear 0.25s;
+  }
+
+  /* ✅ เปิด dropdown เมื่อ nav-open */
+  nav.nav-open .nav-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0s;
+  }
+
+  nav .nav-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+      180deg,
+      rgba(14, 26, 30, 0.55),
+      rgba(8, 14, 18, 0.92)
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(120, 255, 255, 0.18);
+    border-radius: 0.75rem;
+
+    /* ✅ แค่เอฟเฟกต์พื้นหลังหุบ/ขยาย (optional) */
+    clip-path: polygon(0 0, 100% 0, 100% 0rem, 0 0rem);
+    transition: clip-path 0.3s ease;
+    z-index: -1;
+  }
+
+  /* ✅ เปิดพื้นหลังเมื่อ nav-open */
+  nav.nav-open .nav-overlay::before {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  nav .nav-items {
+    position: relative;
+    width: 100%;
+    padding: 2rem 0 1rem 0;
+    flex-direction: column;
+    z-index: 2;
+
+    /* ✅ ทำให้ text ค่อย ๆ โผล่ตาม toggle */
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s ease;
+  }
+
+  /* ✅ เปิด text เมื่อ nav-open */
+  nav.nav-open .nav-items {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ✅ ไม่ต้องใช้ pointer-events แยกที่ item แล้ว (overlay จัดการให้) */
+  nav .nav-item {
+    width: 100%;
+  }
+
+  /* desktop goo bg not needed in mobile */
+  nav .nav-container {
+    display: none;
+  }
+}
+
+/* ultra wide */
+@media (min-width: 3000px) {
+  nav {
+    max-width: 56rem;
+    height: 3rem;
+  }
+  nav .nav-item a {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  nav .nav-bg::after {
+    animation: none !important;
+    opacity: 0.2 !important;
+  }
+}

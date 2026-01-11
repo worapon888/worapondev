@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useEffect } from "react";
 import { useHeroAnimations } from "./useHeroAnimations";
 import { buildHeroChars } from "./hero.utils";
 import "./hero.css";
@@ -12,11 +12,15 @@ export default function Hero() {
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const btn1Ref = useRef<HTMLAnchorElement>(null);
   const btn2Ref = useRef<HTMLAnchorElement>(null);
+  const brandHudRef = useRef<HTMLDivElement>(null);
+  const systemLogRef = useRef<HTMLDivElement>(null);
+  const systemStatusRef = useRef<HTMLDivElement>(null);
 
-  const gridRef = useRef<HTMLDivElement>(null);
-  const dotsRef = useRef<HTMLDivElement>(null);
   const availabilityRef = useRef<HTMLParagraphElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
+
+  // ✅ Timer element (inside Brand HUD)
+  const timerRef = useRef<HTMLParagraphElement>(null);
 
   const headingPattern = useMemo(
     () => ["A", "R", "E", "Y", "T", " ", "!", "Q"],
@@ -29,41 +33,80 @@ export default function Hero() {
     paragraphRef,
     btn1Ref,
     btn2Ref,
-    gridRef,
-    dotsRef,
     availabilityRef,
     lineRef,
+    brandHudRef,
+    timerRef,
+    systemLogRef,
+    systemStatusRef,
   });
+
+  // ✅ Toronto time + Zone (updates every minute)
+  useEffect(() => {
+    const el = timerRef.current;
+    if (!el) return;
+
+    const updateTime = () => {
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: "America/Toronto",
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit", // ✅ เพิ่มวินาที
+      };
+
+      const torontoTime = new Date().toLocaleTimeString("en-US", options);
+      const hour = parseInt(torontoTime.split(":")[0], 10);
+
+      // 4-hour sectors (01–06)
+      const sector = Math.floor(hour / 4) + 1;
+      const sectorFormatted = String(sector).padStart(2, "0");
+
+      el.textContent = `ZONE ${sectorFormatted}  —  ${torontoTime}`;
+    };
+
+    updateTime();
+    const id = window.setInterval(updateTime, 1000); // ✅ ทุกวินาที
+    return () => window.clearInterval(id);
+  }, []);
 
   return (
     <section
       ref={rootRef}
-      className="relative hero hero--preload min-h-screen overflow-hidden bg-black text-white flex items-center"
+      className="relative hero hero--preload h-[100vh] overflow-hidden flex items-center"
     >
-      {/* 🔷 Grid Background */}
+      {/* 🧩 Brand HUD (Logo + Tagline + Timer) */}
       <div
-        ref={gridRef}
-        className="absolute inset-0 z-0
-          bg-[linear-gradient(90deg,#00f2ff22_1px,transparent_1px),linear-gradient(0deg,#00f2ff22_1px,transparent_1px)]
-          bg-[size:3rem_3rem] bg-[position:0_0]"
-      />
+        ref={brandHudRef}
+        className="
+    brand-hud
+    absolute top-25 left-45
+    px-4 py-3
+    font-mono uppercase
+    text-[13px]
+    tracking-[0.32em]
+    text-cyan-300/60
+    pointer-events-none
+    select-none
 
-      {/* ✨ Neon Dots Flow */}
-      <div ref={dotsRef} className="absolute inset-0 z-0 pointer-events-none" />
-
-      {/* ✅ Vignette overlay */}
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.65)_70%,rgba(0,0,0,0.95)_100%)]" />
-
-      {/* ✨ Spinning Glow */}
-      <div className="absolute inset-0 z-[2] overflow-hidden pointer-events-none">
-        <div
-          className="absolute -inset-1 animate-spin-slow rounded-full
-          bg-[conic-gradient(from_0deg_at_50%_50%,#00f2ff11,#00f2ff33,#00f2ff11)]
-          blur-3xl opacity-20"
+    border border-cyan-300/20
+    rounded-sm
+    bg-black/20 backdrop-blur-sm
+    shadow-[0_0_20px_rgba(34,211,238,0.08)]
+  "
+      >
+        WORAPON.DEV
+        <p className="mt-1 text-[9px] tracking-[0.28em] text-cyan-100/40">
+          IMMERSIVE WEB SYSTEMS
+        </p>
+        {/* Live time */}
+        <p
+          ref={timerRef}
+          className="mt-2 text-[9px] tracking-[0.28em] text-cyan-200/35"
         />
       </div>
 
-      {/* 🔺 Content */}
+      {/* 🔺 Main Content */}
       <div className="relative z-10 w-full text-center px-6 translate-y-[-1vh]">
         <h1
           ref={headingRef}
@@ -158,6 +201,57 @@ export default function Hero() {
         >
           Available for select projects
         </p>
+      </div>
+
+      {/* 🧭 System Observation Log */}
+      <div
+        ref={systemLogRef}
+        className="
+    system-log
+    absolute bottom-20 left-40
+    max-w-sm text-left
+    font-mono
+    text-[11px] leading-relaxed
+    tracking-[0.22em]
+    text-cyan-100/50
+    pointer-events-none
+  "
+      >
+        <div className="mb-3 flex items-center gap-x-4 text-cyan-300/60 uppercase">
+          <span>Zone / 01</span>
+          <span className="opacity-60">—</span>
+          <span>Observation ID: 00.239</span>
+        </div>
+
+        <p className="mb-2 uppercase text-cyan-300/70">
+          System Observation Log
+        </p>
+
+        <p>
+          Interactive interfaces and motion systems are monitored, refined, and
+          deployed to explore how humans perceive depth, time, and interaction
+          within digital environments.
+        </p>
+      </div>
+
+      {/* 📡 System Status */}
+      <div
+        ref={systemStatusRef}
+        className="
+    system-status
+    absolute bottom-20 right-40
+    font-mono
+    text-[11px] leading-relaxed
+    tracking-[0.22em]
+    text-cyan-100/45
+    pointer-events-none
+    text-right
+  "
+      >
+        <p className="mb-3 uppercase text-cyan-300/60">System Status</p>
+        <p>SIGNAL: STABLE</p>
+        <p>RENDER MODE: IMMERSIVE</p>
+        <p>FRAME SYNC: ACTIVE</p>
       </div>
     </section>
   );

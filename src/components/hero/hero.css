@@ -66,8 +66,21 @@
 .hero--preload .hero-heading,
 .hero--preload p,
 .hero--preload a,
-.hero--preload .neon-line {
+.hero--preload .neon-line,
+.hero--preload .brand-hud,
+.hero--preload .system-log,
+.hero--preload .system-status {
   opacity: 0;
+  visibility: hidden;
+}
+
+.hero--preload .brand-hud {
+  transform: translateY(4px);
+}
+
+.hero--preload .system-log,
+.hero--preload .system-status {
+  transform: translateY(6px);
 }
 
 /* ✅ purple chars (pure purple gradient) */

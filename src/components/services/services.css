@@ -1,0 +1,289 @@
+/* ===============================
+   SERVICES (Intro-style header)
+================================ */
+.services {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ถ้าคุณมี .container กลางอยู่แล้ว ข้ามได้ */
+.services .container {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+  margin: 0 auto;
+}
+
+/* kicker เล็ก ๆ */
+.services-kicker {
+  opacity: 0.8;
+  letter-spacing: 0.14em;
+  color: var(--white-60);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  margin-top: 1.25rem;
+  font-size: 11px;
+}
+
+/* header */
+.services-intro-header {
+  width: 50%;
+  margin-bottom: 2.5rem;
+}
+
+/* title */
+.services-title {
+  color: rgba(103, 232, 249, 0.8);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.82;
+  text-transform: uppercase;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(3.5rem, 10vw, 8.5rem);
+}
+
+.services-title span {
+  display: block;
+}
+
+/* copy wrapper */
+.services-intro-copy {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2.5rem;
+
+  /* ✅ แก้ typo */
+  font-family: var(--font-display), sans-serif;
+}
+
+.services-intro-copy-wrapper {
+  width: 70%;
+}
+
+.services-subtitle {
+  margin-top: 3rem;
+  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
+  font-weight: 400;
+  letter-spacing: -0.07em;
+  line-height: 1.05;
+  text-transform: uppercase;
+
+  /* ✅ ให้มันตัดบรรทัดได้แน่นอน */
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* char */
+.services-char {
+  display: inline-block;
+  will-change: color;
+}
+
+/* space: ตัดบรรทัดได้ + spacing ไม่พัง */
+.services-space {
+  display: inline-block;
+  width: 0.35em;
+}
+
+/* ===============================
+   Optional: define base colors
+   (ถ้าคุณยังไม่มีใน global)
+================================ */
+:root {
+  --base-100: rgba(255, 255, 255, 0.95);
+  --base-300: rgba(164, 231, 255, 0.45);
+}
+
+/* ===============================
+   Responsive
+================================ */
+@media (max-width: 1000px) {
+  .services .container {
+    padding: 0 1rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .services-intro-header {
+    width: 75%;
+  }
+
+  .services-intro-copy {
+    justify-content: center;
+  }
+
+  .services-intro-copy-wrapper {
+    width: 100%;
+  }
+}
+
+/* grid layout เหมือนรูป */
+.services-cards-wrap {
+  width: min(1500px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+/* grid layout เหมือนรูป แต่ไม่ชนขอบ */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* card style: metric panel */
+.metric-card {
+  position: relative;
+  padding: 1.4rem 1.6rem;
+  border-radius: 0.6rem; /* ไม่กลมมาก */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(20, 20, 20, 0.85); /* ทึบกว่าเดิม */
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+  overflow: hidden;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
+}
+
+/* top row */
+.metric-top {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.metric-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #ff3d7e; /* dot ส้มเหมือนรูป */
+  flex: 0 0 auto;
+  box-shadow: 0 0 10px rgba(255, 106, 61, 0.35);
+}
+
+/* label */
+.metric-label {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  font-weight: 600;
+}
+
+/* big number/value */
+.metric-value {
+  margin-top: 1.05rem;
+  font-size: clamp(3rem, 4.2vw, 4.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.62);
+  font-weight: 800;
+
+  /* ถ้าอยากให้เหมือนรูปมากขึ้น ใช้ font-display ของคุณ */
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+/* ===============================
+   NEON BORDER (power sweep)
+================================ */
+.metric-card {
+  /* ต้องมีเพื่อให้ pseudo-element ยึดขอบได้ */
+  isolation: isolate;
+}
+
+/* glow โอบรอบนอก (นุ่ม ๆ) */
+.metric-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+
+  /* เริ่มต้นไม่โชว์ */
+  opacity: 0;
+  filter: blur(10px);
+
+  /* glow color (ตาม dot) */
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 61, 126, 0.35),
+    transparent 60%
+  );
+
+  transition: opacity 220ms ease;
+}
+
+/* เส้นพลังวิ่งรอบขอบ (ring) */
+.metric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+
+  /* เทคนิคทำ border glow แบบ ring ด้วย mask */
+  padding: 1px; /* ความหนาเส้น */
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    rgba(255, 61, 126, 0) 40deg,
+    rgba(255, 61, 126, 0.95) 95deg,
+    rgba(34, 211, 238, 0.75) 130deg,
+    rgba(255, 61, 126, 0) 180deg,
+    transparent 360deg
+  );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+
+  opacity: 0;
+  filter: blur(0.2px);
+
+  transition:
+    opacity 220ms ease,
+    transform 500ms ease;
+}
+
+/* ✅ hover state */
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+.metric-card:hover::after {
+  opacity: 1;
+  transform: rotate(18deg); /* ให้รู้สึกเหมือนมีพลังเคลื่อน */
+}
+
+/* ให้เนื้อหาอยู่เหนือเอฟเฟกต์ */
+.metric-card > * {
+  position: relative;
+  z-index: 1;
+}
