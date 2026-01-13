@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import "./Preloader.css";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import styles from "./Preloader.module.css";
 
 type PreloaderProps = {
-  isActive?: boolean;
-  autoFinishMs?: number;
-  onDone?: () => void;
+  enabled?: boolean;
+  durationMs?: number; // รวมเวลาทั้งหมดก่อนเริ่ม out
   label?: string;
+  onDone?: () => void;
+  blockSize?: number;
 };
 
 type Block = {
@@ -16,169 +18,151 @@ type Block = {
   top: number;
   w: number;
   h: number;
-  delay: number; // seconds
 };
-
-type CSSVars = React.CSSProperties & {
-  [key: `--${string}`]: string | number;
-};
-
-function generateBlocks(cols = 14, rows = 10): Block[] {
-  const total = cols * rows;
-  const bw = 100 / cols;
-  const bh = 100 / rows;
-
-  const arr: Block[] = [];
-  for (let i = 0; i < total; i++) {
-    const c = i % cols;
-    const r = Math.floor(i / cols);
-
-    const jitterX = (Math.random() - 0.5) * 0.35;
-    const jitterY = (Math.random() - 0.5) * 0.35;
-
-    // ✅ แตกพร้อมขึ้น: ลด max delay
-    const delay = Math.random() * 0.25;
-
-    arr.push({
-      id: i,
-      left: c * bw + jitterX,
-      top: r * bh + jitterY,
-      w: bw + (Math.random() - 0.5) * 0.2,
-      h: bh + (Math.random() - 0.5) * 0.2,
-      delay,
-    });
-  }
-
-  return arr.sort(() => Math.random() - 0.5);
-}
 
 export default function Preloader({
-  isActive = true,
-  autoFinishMs,
-  onDone,
+  enabled = true,
+  durationMs = 2800,
   label = "Stabilizing Feed",
+  onDone,
+  blockSize = 60,
 }: PreloaderProps) {
-  const [bgFading, setBgFading] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-  const [isDone, setIsDone] = useState(false);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const timersRef = useRef<number[]>([]);
-  const blocksRef = useRef<Block[] | null>(null);
-  if (!blocksRef.current) blocksRef.current = generateBlocks(14, 10);
-  const blocks = blocksRef.current;
+  // ✅ เก็บ element ของ block แบบไม่ต้อง querySelectorAll (กันพังกับ module)
+  const blockElsRef = useRef<HTMLSpanElement[]>([]);
+  blockElsRef.current = [];
 
-  const clearTimers = () => {
-    timersRef.current.forEach((id) => window.clearTimeout(id));
-    timersRef.current = [];
-  };
-
-  // =========================
-  // ✅ MUST MATCH CSS
-  // =========================
-  const BG_FADE_MS = 550; // --bg-fade: 0.55s
-  const GRID_OUT_DUR_MS = 1250; // --grid-out: 1.25s
-  const GRID_OUT_MAX_DELAY_MS = 250; // max --d: 0.25s
-  const POST_GRID_HOLD_MS = 0; // ✅ ตัดช่วงค้างหลังแตก (ไม่ให้วินาที 4-6 ค้าง)
-  const OVERLAY_FADE_MS = 800; // --overlay-fade: 0.8s
-
-  const GRID_PHASE_MS = GRID_OUT_DUR_MS + GRID_OUT_MAX_DELAY_MS;
-
-  const startExitSequence = () => {
-    clearTimers();
-
-    // 1) BG ดำจางก่อน
-    setBgFading(true);
-
-    // 2) แล้วค่อยเริ่ม grid-out + svg/text fade
-    timersRef.current.push(
-      window.setTimeout(() => setIsExiting(true), BG_FADE_MS)
-    );
-
-    // 3) รอให้ grid “จบจริง” แล้วค่อย fade overlay ทั้งก้อน
-    timersRef.current.push(
-      window.setTimeout(
-        () => setIsDone(true),
-        BG_FADE_MS + GRID_PHASE_MS + POST_GRID_HOLD_MS
-      )
-    );
-
-    // 4) onDone หลัง overlay fade จบ
-    timersRef.current.push(
-      window.setTimeout(
-        () => onDone?.(),
-        BG_FADE_MS + GRID_PHASE_MS + POST_GRID_HOLD_MS + OVERLAY_FADE_MS
-      )
-    );
-  };
+  const [ready, setReady] = useState(false);
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
-    clearTimers();
+    const onResize = () =>
+      setViewport({ w: window.innerWidth, h: window.innerHeight });
+    onResize();
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-    if (isActive) {
-      setBgFading(false);
-      setIsExiting(false);
-      setIsDone(false);
-      return;
+  const blocks: Block[] = useMemo(() => {
+    const W = viewport.w;
+    const H = viewport.h;
+    if (!W || !H) return [];
+
+    const cols = Math.ceil(W / blockSize);
+    const rows = Math.ceil(H / blockSize) + 1;
+    const offsetX = (W - cols * blockSize) / 2;
+    const offsetY = (H - rows * blockSize) / 2;
+
+    const arr: Block[] = [];
+    let id = 0;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        arr.push({
+          id: id++,
+          left: c * blockSize + offsetX,
+          top: r * blockSize + offsetY,
+          w: blockSize,
+          h: blockSize,
+        });
+      }
+    }
+    return arr;
+  }, [viewport.w, viewport.h, blockSize]);
+
+  // ✅ บังคับให้ render เมื่อ enabled และมี blocks แล้ว
+  useEffect(() => {
+    if (!enabled) return;
+    if (!blocks.length) return;
+    setReady(true);
+  }, [enabled, blocks.length]);
+
+  useEffect(() => {
+    if (!enabled || !ready) return;
+
+    const overlay = overlayRef.current;
+    const wrapper = wrapperRef.current;
+    const blockEls = blockElsRef.current;
+
+    if (!overlay || !blockEls.length) return;
+
+    // initial
+    gsap.killTweensOf([overlay, wrapper, blockEls]);
+    gsap.set(blockEls, { opacity: 1 });
+    if (wrapper) gsap.set(wrapper, { opacity: 1 });
+
+    const uiOutMs = 600; // เหมือนต้นแบบ
+    const blockDur = 0.18;
+    const staggerAmount = 0.8;
+
+    // ให้ถือว่า durationMs คือ “เวลารอก่อนเริ่มออก”
+    const delaySec = Math.max(0, (durationMs - uiOutMs * 2) / 1000);
+
+    const tl = gsap.timeline({
+      delay: delaySec,
+      onComplete: () => {
+        onDone?.();
+      },
+    });
+
+    // UI fade out
+    if (wrapper) {
+      tl.to(
+        wrapper,
+        { opacity: 0, duration: uiOutMs / 1000, ease: "power2.out" },
+        0
+      );
     }
 
-    startExitSequence();
-    return clearTimers;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive]);
+    // blocks out random
+    tl.to(
+      blockEls,
+      {
+        opacity: 0,
+        duration: blockDur,
+        ease: "power2.inOut",
+        stagger: { amount: staggerAmount, each: 0.01, from: "random" },
+      },
+      0.05
+    );
 
-  useEffect(() => {
-    if (!autoFinishMs || !isActive) return;
+    return () => {
+      tl.kill();
+      gsap.killTweensOf([overlay, wrapper, blockEls]);
+    };
+  }, [enabled, ready, durationMs, onDone]);
 
-    clearTimers();
-    timersRef.current.push(window.setTimeout(startExitSequence, autoFinishMs));
-    return clearTimers;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoFinishMs, isActive]);
-
-  const shouldRender = isActive || bgFading || isExiting || !isDone;
-  if (!shouldRender) return null;
+  // ✅ ถ้าไม่ enabled ไม่ต้องโชว์ (เวลาปิดจะ unmount)
+  if (!enabled || !ready) return null;
 
   return (
-    <div
-      className={[
-        "preloader-overlay",
-        bgFading ? "preloader--bgfade" : "",
-        isExiting ? "preloader--exiting" : "",
-        isDone ? "preloader-overlay--done" : "",
-      ].join(" ")}
-      aria-hidden="true"
-    >
-      <div className="preloader-solid" aria-hidden="true" />
-
-      <div className="preloader-grid" aria-hidden="true">
+    <div ref={overlayRef} className={styles.overlay} aria-hidden="true">
+      <div className={styles.grid} aria-hidden="true">
         {blocks.map((b) => (
           <span
             key={b.id}
-            className="preloader-block"
-            style={
-              {
-                left: `${b.left}%`,
-                top: `${b.top}%`,
-                width: `${b.w}%`,
-                height: `${b.h}%`,
-                "--d": `${b.delay}s`,
-              } as CSSVars
-            }
+            className={styles.block}
+            style={{ left: b.left, top: b.top, width: b.w, height: b.h }}
+            ref={(el) => {
+              if (el) blockElsRef.current.push(el);
+            }}
           />
         ))}
       </div>
 
-      <div className="preloader-animation-wrapper">
-        <p className="preloader-text">{label}</p>
+      <div ref={wrapperRef} className={styles.ui}>
+        <p className={styles.text}>{label}</p>
 
-        <div className="preloader-ring-frame">
-          <span className="preloader-ring preloader-ring--sm" />
-          <span className="preloader-ring preloader-ring--md" />
-          <span className="preloader-ring preloader-ring--lg" />
+        <div className={styles.ringFrame}>
+          <span className={`${styles.ring} ${styles.ringSm}`} />
+          <span className={`${styles.ring} ${styles.ringMd}`} />
+          <span className={`${styles.ring} ${styles.ringLg}`} />
         </div>
 
-        <div className="preloader-disc-frame">
-          <span className="preloader-disc" />
+        <div className={styles.discFrame}>
+          <span className={styles.disc} />
         </div>
       </div>
     </div>

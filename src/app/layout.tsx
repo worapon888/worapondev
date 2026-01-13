@@ -91,6 +91,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`
+         
           ${geistSans.variable}
           ${geistMono.variable}
           ${clashDisplay.variable}
@@ -106,7 +107,7 @@ export default function RootLayout({
 
         {/* 🔼 Content Layer */}
         <SmoothScroll>
-          <div className="relative z-10">{children}</div>
+          <div className="app-shell relative z-10">{children}</div>
         </SmoothScroll>
       </body>
     </html>

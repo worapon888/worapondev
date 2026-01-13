@@ -12,43 +12,38 @@ import Footer from "@/components/footer/Footer";
 
 const Preloader = dynamic(() => import("@/components/preloader/Preloader"), {
   ssr: false,
+  loading: () => null,
 });
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 2800);
-    return () => clearTimeout(t);
+    // ✅ คุมเวลาว่าจะโชว์นานเท่าไหร่
+    const t = window.setTimeout(() => setIsLoading(false), 2800);
+    return () => window.clearTimeout(t);
   }, []);
 
   return (
     <>
+      {/* ✅ ให้ Preloader ตัดสินใจ render ตาม enabled */}
       <Preloader
-        isActive={isLoading}
+        enabled={isLoading}
         label="Stabilizing Feed"
         onDone={() => {
-          // เผื่ออยากทำอะไรหลังจบจริง ๆ
+          // ✅ กันกรณี timeline จบก่อน timer
+          setIsLoading(false);
         }}
       />
 
-      {/* ✅ หน้าเว็บ mount ตลอด แต่ซ่อนตอนกำลังโหลด */}
-      <div
-        style={{
-          opacity: isLoading ? 0 : 1,
-          pointerEvents: isLoading ? "none" : "auto",
-          transition: "opacity 0.6s ease",
-        }}
-      >
-        <Navbar />
-        <main className="min-h-screen pt-16 bg-transparent">
-          <Hero />
-          <Services />
-          <Showcase />
-          <Contact />
-          <Footer />
-        </main>
-      </div>
+      <Navbar />
+      <main className="min-h-screen pt-16 bg-transparent">
+        <Hero />
+        <Services />
+        <Showcase />
+        <Contact />
+        <Footer />
+      </main>
     </>
   );
 }

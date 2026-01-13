@@ -1,0 +1,142 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100svh;
+  z-index: 999999;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.block {
+  position: absolute;
+  background: #000000;
+  opacity: 1;
+  will-change: opacity, transform, filter;
+  transform: scale(1);
+  filter: blur(0);
+}
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 1;
+  z-index: 0;
+  transition: opacity 0.55s ease;
+}
+
+.backdropFade {
+  opacity: 0;
+}
+.grid {
+  z-index: 1;
+}
+.ui {
+  z-index: 2;
+}
+
+.ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.text {
+  position: absolute;
+  bottom: 6rem;
+  color: rgba(231, 247, 255, 0.9);
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: blink 1s ease-in-out infinite;
+  animation-delay: 100ms;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ringFrame,
+.discFrame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  border: 2px solid rgba(0, 0, 0, 0);
+  border-left: 2px solid rgba(120, 220, 255, 0.9);
+  border-right: 2px solid rgba(120, 220, 255, 0.9);
+  border-radius: 50%;
+  position: absolute;
+}
+
+.ringSm {
+  width: 108px;
+  height: 108px;
+  animation: spin 1s linear infinite;
+}
+.ringMd {
+  width: 138px;
+  height: 138px;
+  animation: spinR 1.5s linear infinite;
+}
+.ringLg {
+  width: 172px;
+  height: 172px;
+  animation: spin 2s linear infinite;
+}
+
+.disc {
+  width: 150px;
+  height: 150px;
+  border: 2px solid rgba(120, 220, 255, 0.9);
+  border-radius: 50%;
+  animation: rotate3d 3s linear infinite;
+  position: absolute;
+}
+
+@keyframes rotate3d {
+  100% {
+    transform: rotate3d(1, 0.25, 0.75, 360deg);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+@keyframes spinR {
+  to {
+    transform: rotateZ(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text,
+  .ringSm,
+  .ringMd,
+  .ringLg,
+  .disc {
+    animation: none !important;
+  }
+}
