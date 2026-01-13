@@ -1,3 +1,291 @@
+.cta {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 1.25rem;
+}
+
+.cta .cta-content {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.cta .cta-content .cta-logo {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  transform: scale(0);
+  will-change: transform;
+}
+
+.cta .cta-content .cta-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ✅ CTA copy: center จริงแบบล็อกกรอบ */
+.cta .cta-content .cta-copy {
+  width: 30%;
+  padding: 1.5rem;
+  margin: 1.5rem 0 3rem 0;
+
+  /* override ของเดิม */
+  display: block;
+  text-align: center;
+}
+
+/* ✅ ให้ย่อหน้ามีกรอบที่คุมได้ แล้ว center */
+.cta .cta-content .cta-copy .bodyCopy {
+  display: inline-block; /* สำคัญ: ทำให้ block นี้ถูก center ตาม text-align */
+  max-width: 72ch;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ✅ SplitText wrappers */
+.cta .cta-content .cta-copy .line-mask {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+.cta .cta-content .cta-copy .line {
+  display: block;
+  width: 100%;
+}
+
+.cta .cta-row {
+  position: relative;
+  width: 100%;
+  max-width: 2000px;
+  margin: 0.75rem 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  pointer-events: none;
+}
+
+.cta .cta-row .cta-card {
+  position: relative;
+  flex: 1;
+  height: 360px;
+  border-radius: 0.75em;
+  will-change: transform;
+  overflow: hidden;
+  filter: url("#goo");
+}
+
+.cta .cta-row .cta-card .cta-card-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--base-300);
+  filter: url("#goo");
+  clip-path: polygon(
+    2rem 0px,
+    calc(100% - 2rem) 0px,
+    100% 2rem,
+    100% calc(100% - 2rem),
+    calc(100% - 2rem) 100%,
+    2rem 100%,
+    0px calc(100% - 2rem),
+    0px 2rem
+  );
+}
+
+.cta .cta-row .cta-card .cta-card-frame .cta-card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cta .cta-row .cta-card .cta-card-frame .cta-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cta .cta-row .cta-card .cta-card-frame .cta-card-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 1;
+}
+
+/* basic button styling placeholder (keep your own if already exist) */
+.cta .btn a.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: rgba(103, 232, 249, 0.8);
+}
+
+/* index - media queries */
+@media (max-width: 1000px) {
+  .cta .cta-row .cta-card .cta-card-frame {
+    clip-path: none;
+  }
+
+  .cta .cta-row .cta-card {
+    height: 200px;
+    border-radius: 0.5rem;
+    opacity: 0;
+  }
+
+  .cta .cta-row .cta-card .cta-card-frame .cta-card-gradient {
+    display: none;
+  }
+
+  .cta .cta-content .cta-copy {
+    width: 100%;
+  }
+}
+.bodyCopy {
+  font-size: 11px; /* text-[11px] */
+  letter-spacing: 0.28em; /* tracking-[0.28em] */
+  text-transform: uppercase; /* uppercase */
+  color: rgba(255, 255, 255, 0.849); /* text-white/45 */
+  align-items: center;
+}
+.btn {
+  font-size: 12px; /* text-[11px] */
+  letter-spacing: 0.28em; /* tracking-[0.28em] */
+  text-transform: uppercase; /* uppercase */
+  color: rgba(255, 255, 255, 0.849); /* text-white/45 */
+  align-items: center;
+  /* ทึบกว่าเดิม */
+}
+/* ===============================
+   CTA BUTTON – BASE
+================================ */
+a.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(20, 20, 20, 0.85);
+
+  gap: 0.75rem;
+
+  padding: 0.85rem 1.6rem;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+
+  color: var(--base-200);
+  border: 1px solid var(--base-400);
+  text-decoration: none;
+
+  transition:
+    color 0.3s ease,
+    border 0.3s ease;
+}
+
+/* top / bottom accent lines */
+a.btn::before,
+a.btn::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: 0;
+  background: var(--base-100);
+  transition: all 0.3s ease;
+}
+
+a.btn::before {
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+a.btn::after {
+  bottom: -1px;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+/* ===============================
+   HOVER STATE
+================================ */
+a.btn:hover {
+  color: var(--base-100);
+  border: solid 1px var(--base-300);
+  text-shadow: 0 0 10px rgba(242, 238, 218, 0.2);
+}
+
+a.btn:hover::before {
+  width: 20px;
+  left: 0;
+  transform: none;
+}
+
+a.btn:hover::after {
+  width: 20px;
+  right: 0;
+  transform: none;
+}
+
+/* ===============================
+   INNER VERTICAL LINES
+================================ */
+.btn-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.btn-line::before,
+.btn-line::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 20px;
+  background: var(--base-100);
+  transition: all 0.3s ease;
+}
+
+.btn-line::before {
+  bottom: 30%;
+  right: -1px;
+}
+
+.btn-line::after {
+  top: 30%;
+  left: -1px;
+}
+
+/* hover micro-shift */
+a.btn:hover .btn-line::before {
+  bottom: -1px;
+}
+
+a.btn:hover .btn-line::after {
+  top: -1px;
+}
 /* ===============================
    SERVICES (Intro-style header)
 ================================ */
@@ -289,4 +577,46 @@
 .metric-card > * {
   position: relative;
   z-index: 1;
+}
+.btn-sweep {
+  opacity: 0.8;
+  animation: btnSweep 3.8s ease-in-out infinite;
+}
+.btn-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+
+  font-size: 11px;
+  letter-spacing: 0.42em; /* ⬅️ ยาวขึ้นกว่าปกติ */
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  color: var(--base-200);
+}
+
+/* เส้นยาวต่อท้ายข้อความ */
+.btn-cta .btn-text {
+  position: relative;
+}
+
+.btn-cta .btn-text::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 1rem);
+  width: 64px; /* ความยาวเส้น */
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+  transform: translateY(-50%);
+}
+
+/* hover – เส้นเรือง + ยืด */
+.btn-cta:hover .btn-text::after {
+  width: 96px;
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(103, 232, 249, 0.45);
+  transition: all 0.35s ease;
 }
