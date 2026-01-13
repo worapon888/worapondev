@@ -368,17 +368,115 @@ footer .footer-brand {
   font-weight: 900;
   letter-spacing: -0.05em;
 }
-/* scramble highlight style */
-.scramble-old {
-  color: rgba(220, 220, 220, 0.9);
-  padding: 0.1em 0.25em;
-
-  border-radius: 6px;
+/* ตอนกำลัง scramble: ให้ดูเป็น “yellow glitch” */
+footer .footer-content-col h3[data-scrambling="1"] {
+  color: rgba(195, 195, 21, 0.92); /* เหลือง */
+  text-shadow:
+    0 0 8px rgba(195, 195, 21, 0.28),
+    0 0 18px rgba(195, 195, 21, 0.18),
+    0 0 30px rgba(34, 211, 238, 0.1);
 }
 
-.scramble-new {
-  color: #c3c315;
-  padding: 0.1em 0.25em;
+/* พอกลับเป็นตัวจริง: กลับสีเดิม */
+footer .footer-content-col h3[data-scrambling="0"] {
+  color: rgba(250, 250, 250, 0.88);
+}
+/* =========================
+   Typing Headline
+========================= */
+footer .footer-content-col h3 {
+  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  white-space: normal;
+  min-height: calc(2 * 0.9em);
+  display: block;
+  overflow-wrap: anywhere;
+  color: rgba(195, 195, 21, 0.95);
 
-  border-radius: 6px;
+  text-shadow:
+    0 0 6px rgba(34, 211, 238, 0.25),
+    0 0 18px rgba(34, 211, 238, 0.15);
+}
+footer .footer-content-col h3,
+footer .footer-content-col p {
+  margin-bottom: 3rem;
+}
+
+/* =========================
+   Typing Cursor
+========================= */
+.typing-cursor {
+  display: inline-block;
+  margin-left: 0.08em;
+  transform: translateY(0.04em);
+  color: rgba(250, 250, 250, 0.88);
+  animation: cursorBlink 0.9s steps(1) infinite;
+}
+
+@keyframes cursorBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* =========================
+   Form
+========================= */
+footer .footer-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+footer .footer-form input {
+  flex: 1;
+  height: 3.4rem;
+  padding: 0 1.2rem;
+  background: #3a3a3a;
+  border: none;
+  outline: none;
+  color: rgba(231, 247, 255, 0.9);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+/* =========================
+   Social / Meta
+========================= */
+footer .footer-socials a {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-mono);
+}
+
+footer .footer-content-meta:last-child {
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+/* =========================
+   Mobile
+========================= */
+@media (max-width: 1000px) {
+  footer .footer-bg-container {
+    clip-path: none;
+  }
+
+  footer .footer-content {
+    padding: 5rem 1rem 2rem;
+  }
+
+  footer .footer-content-meta {
+    flex-direction: column;
+    gap: 3rem;
+  }
 }

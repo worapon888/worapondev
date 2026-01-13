@@ -19,23 +19,22 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // ✅ คุมเวลาว่าจะโชว์นานเท่าไหร่
     const t = window.setTimeout(() => setIsLoading(false), 2800);
     return () => window.clearTimeout(t);
   }, []);
 
+  if (isLoading) {
+    return (
+      <Preloader
+        enabled={true}
+        label="Stabilizing Feed"
+        onDone={() => setIsLoading(false)}
+      />
+    );
+  }
+
   return (
     <>
-      {/* ✅ ให้ Preloader ตัดสินใจ render ตาม enabled */}
-      <Preloader
-        enabled={isLoading}
-        label="Stabilizing Feed"
-        onDone={() => {
-          // ✅ กันกรณี timeline จบก่อน timer
-          setIsLoading(false);
-        }}
-      />
-
       <Navbar />
       <main className="min-h-screen pt-16 bg-transparent">
         <Hero />

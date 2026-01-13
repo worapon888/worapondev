@@ -1,70 +1,196 @@
 "use client";
 
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import "./Footer.css";
 import Image from "next/image";
 
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-// ✅ ต้องมี ScrambleTextPlugin (Club/Trial)
-import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
+gsap.registerPlugin(ScrollTrigger);
+
+type TypewriterOpts = {
+  typeSpeed?: number; // ms ต่อ 1 ตัว
+  endHoldMs?: number; // ค้างหลังพิมพ์จบก่อนวนรอบ
+  repeatDelayMs?: number; // เว้นก่อนเริ่มรอบใหม่
+  glitchChance?: number; // 0..1
+  glitchChars?: string;
+};
+
+function useTypewriterLoop(
+  enabled: boolean,
+  text: string,
+  opts: TypewriterOpts
+) {
+  const {
+    typeSpeed = 40,
+    endHoldMs = 1400,
+    repeatDelayMs = 2500,
+    glitchChance = 0.1,
+    glitchChars = "01<>/\\[]{}—_+*#@!?",
+  } = opts;
+
+  const [out, setOut] = useState(text); // default = ของจริง (กัน flash)
+  const runningRef = useRef(false);
+  const rafRef = useRef<number>(0);
+  const t1Ref = useRef<number>(0);
+  const t2Ref = useRef<number>(0);
+
+  const randChar = () =>
+    glitchChars[Math.floor(Math.random() * glitchChars.length)];
+
+  const clearTimers = () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = 0;
+
+    if (t1Ref.current) window.clearTimeout(t1Ref.current);
+    if (t2Ref.current) window.clearTimeout(t2Ref.current);
+    t1Ref.current = 0;
+    t2Ref.current = 0;
+  };
+
+  const stop = () => {
+    runningRef.current = false;
+    clearTimers();
+  };
+
+  const runOnce = () =>
+    new Promise<void>((resolve) => {
+      stop();
+      runningRef.current = true;
+
+      const final = text ?? "";
+      const len = final.length;
+
+      let i = 0;
+      let last = 0;
+
+      // เริ่มจากว่าง
+      setOut("");
+
+      const tick = (now: number) => {
+        if (!runningRef.current) return;
+
+        if (now - last < typeSpeed) {
+          rafRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        last = now;
+
+        i = Math.min(len, i + 1);
+
+        const next = i < len && Math.random() < glitchChance ? randChar() : "";
+
+        setOut(final.slice(0, i) + next);
+
+        if (i < len) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          // จบ: เซ็ตของจริงชัวร์
+          setOut(final);
+
+          // ค้างหลังพิมพ์จบ
+          t1Ref.current = window.setTimeout(() => {
+            resolve();
+          }, endHoldMs);
+
+          runningRef.current = false;
+        }
+      };
+
+      rafRef.current = requestAnimationFrame(tick);
+    });
+
+  const loop = async () => {
+    if (!enabled) return;
+
+    // loop แบบนุ่ม ๆ
+    while (enabled && !runningRef.current) {
+      await runOnce();
+
+      // เว้นก่อนเริ่มรอบใหม่
+      await new Promise<void>((r) => {
+        t2Ref.current = window.setTimeout(() => r(), repeatDelayMs);
+      });
+
+      // กันหลุด enabled ระหว่างรอ
+      if (!enabled) break;
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (!enabled) return;
+
+    // start loop
+    stop();
+    loop();
+
+    return () => {
+      stop();
+      // กลับเป็น text จริงกันค้าง
+      setOut(text);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    enabled,
+    text,
+    typeSpeed,
+    endHoldMs,
+    repeatDelayMs,
+    glitchChance,
+    glitchChars,
+  ]);
+
+  return out;
+}
 
 export default function FooterSection() {
-  // ✅ <footer> = HTMLElement (ไม่มี HTMLFooterElement)
   const rootRef = useRef<HTMLElement | null>(null);
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
+
+  // ✅ ใช้ state render text แทนการ set textContent
+  const originalText = "Send a signal if you want to connect";
+
+  const [isActive, setIsActive] = useState(false);
+
+  const prefersReduced =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+  const typedText = useTypewriterLoop(
+    isActive && !prefersReduced,
+    originalText,
+    {
+      typeSpeed: 42, // ✅ ช้าลง/เร็วขึ้นได้
+      endHoldMs: 1600, // ✅ ค้างตอนพิมพ์จบให้นานขึ้น
+      repeatDelayMs: 3200, // ✅ เว้นก่อนวนรอบให้นานขึ้น
+      glitchChance: 0.08, // ✅ ลด/เพิ่มความมั่ว (0 = ไม่มั่ว)
+      glitchChars: "01<>/\\[]{}—_+*#@!?",
+    }
+  );
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-    const title = titleRef.current;
-    if (!root || !title) return;
-
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const originalText = title.textContent ?? "";
-    title.textContent = ""; // ให้ scramble “พิมพ์” ขึ้นมาเหมือนเดโม
+    if (!root) return;
 
     const ctx = gsap.context(() => {
-      gsap.set(title, { opacity: 0 });
+      if (prefersReduced) return;
 
-      if (prefersReduced) {
-        title.textContent = originalText;
-        gsap.set(title, { opacity: 1 });
-        return;
-      }
+      ScrollTrigger.create({
+        trigger: root,
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          setIsActive(true);
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: root,
-          start: "top 80%",
-          once: true,
+          // กันกรณีเพิ่งหลุดจาก preloader/lenis
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+          setTimeout(() => ScrollTrigger.refresh(), 150);
         },
-      });
-
-      tl.set(title, { opacity: 1 }).to(title, {
-        duration: 1.8,
-        repeat: -1,
-        repeatDelay: 2,
-        scrambleText: {
-          text: originalText,
-          oldClass: "scramble-old",
-          newClass: "scramble-new",
-          // ✅ อยากให้ตัวที่มั่ว “น้อยลง” แนะนำ "01" หรือ "01_"
-          chars: "01<>/\\[]{}—_+*#@!?",
-          revealDelay: 0.15,
-          speed: 0.6,
-        },
-        ease: "none",
       });
     }, root);
 
     return () => ctx.revert();
-  }, []);
+  }, [prefersReduced]);
 
   return (
     <footer ref={rootRef}>
@@ -72,14 +198,17 @@ export default function FooterSection() {
         <div className="footer-bg-container" />
 
         <div className="footer-content">
-          {/* ===== TOP META ===== */}
           <div className="footer-content-meta">
             <div className="footer-content-col">
-              <h3 ref={titleRef}>Send a signal if you want to connect</h3>
+              <h3 data-typing={isActive ? "1" : "0"}>
+                {prefersReduced ? originalText : typedText}
+                <span className="typing-cursor" aria-hidden="true">
+                  |
+                </span>
+              </h3>
 
               <div className="footer-form">
                 <input type="text" placeholder="Unit Address" />
-
                 <div className="btn">
                   <a href="/contact" className="btn">
                     <span className="btn-line" />
@@ -116,7 +245,6 @@ export default function FooterSection() {
             </div>
           </div>
 
-          {/* ===== BOTTOM META ===== */}
           <div className="footer-content-meta">
             <div className="footer-content-col">
               <p>[ Constructed by Worapon.dev ]</p>
