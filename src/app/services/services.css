@@ -661,17 +661,17 @@
 /* ✅ card แบบปกติ ไม่ลอยด้วย left/top/transform */
 .services-card {
   position: relative;
-  top: -5vh;
-  width: min(1000px, calc(100% - 2rem)); /* ลดนิดให้ดูแพงขึ้น */
+  top: 0; /* ❌ เอา top:-5vh ออก */
+  width: min(1000px, calc(100% - 2rem));
   border-radius: 22px;
-
   display: grid;
   grid-template-columns: 420px 1fr;
   gap: 1rem;
 
   overflow: hidden;
 
-  /* ✅ คุมความสูงทั้งการ์ด */
+  /* ✅ ให้ความสูงคงที่ (จะนิ่งและดูแพง) */
+  height: 520px;
   max-height: min(680px, calc(100svh - 12rem));
 
   background: linear-gradient(
@@ -686,7 +686,9 @@
     0 0 0 1px rgba(0, 0, 0, 0.35) inset,
     0 12px 50px rgba(0, 0, 0, 0.55);
 
-  z-index: 10;
+  z-index: auto; /* ❌ ไม่ต้องล็อก z-index ที่ card */
+  transform: translateZ(0); /* ✅ ช่วยให้ 3D/blur นิ่งขึ้น */
+  will-change: transform, opacity, filter;
 }
 
 /* Glow layer */
@@ -1017,4 +1019,74 @@
     transparent 100%
   );
   filter: blur(0.2px);
+}
+/* ===== 3D Carousel Stage ===== */
+.services-stage {
+  position: relative;
+  width: min(1180px, calc(100% - 2rem));
+  height: min(680px, calc(100svh - 12rem));
+  margin-inline: auto;
+
+  /* ✅ 3D stage */
+  perspective: 1200px;
+  transform-style: preserve-3d;
+
+  /* ✅ สำคัญ: อย่าตัดการ์ด */
+  overflow: visible;
+
+  /* ✅ ไม่ต้องใช้ grid (slot เราจะ absolute center เอง) */
+  display: block;
+
+  /* ✅ กัน blur/glow โดน clip บาง browser */
+  isolation: isolate;
+}
+
+/* slot เป็นตัว “ลอย” ซ้อนกัน */
+.services-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  /* ✅ อย่า inset:0 / อย่า grid */
+  width: max-content;
+  height: max-content;
+
+  /* ✅ ให้จุดยึดอยู่กลาง */
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+
+  /* ✅ กันคลิกโดนใบหลัง */
+  pointer-events: none;
+
+  will-change: transform, opacity, filter;
+}
+
+/* ให้การ์ดจริงมีขนาดเท่ากันทุกใบ */
+.services-slot .services-card {
+  width: 100%;
+  height: 100%;
+  max-width: min(1100px, 100%);
+}
+
+/* side cards ไม่ต้องคลิก (กันแย่ง scroll/hover) */
+.services-slot--left,
+.services-slot--right {
+  pointer-events: none;
+}
+
+/* center card คลิกได้ตามปกติ */
+.services-slot--center {
+  pointer-events: auto;
+}
+
+/* ถ้าคุณใช้ controller ทับ ให้ดันขึ้นเล็กน้อย */
+@media (max-width: 900px) {
+  .services-stage {
+    height: auto;
+    min-height: 520px;
+  }
+  .services-slot {
+    position: relative;
+    inset: auto;
+  }
 }

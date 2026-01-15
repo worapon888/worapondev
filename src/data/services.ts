@@ -27,7 +27,7 @@ export const SERVICES: ServiceItem[] = [
       "Great for launches & campaigns",
       "Premium look with controlled scope",
     ],
-    tech: ["Next.js", "GSAP", "CSS/SCSS"],
+    tech: ["Next.js", "React", "GSAP", "CSS/SCSS"],
     accent: { rgb: [120, 255, 255] }, // ✅ CYAN
   },
   {
@@ -56,7 +56,7 @@ export const SERVICES: ServiceItem[] = [
       "Flagship page for premium brands",
       "High perceived value & clarity",
     ],
-    tech: ["Next.js", "GSAP + ScrollTrigger", "Lenis (optional)"],
+    tech: ["Next.js", "React", "GSAP + ScrollTrigger", "Lenis (optional)"],
     accent: { rgb: [110, 230, 255] }, // ✅ TEAL/BLUE
   },
   {
