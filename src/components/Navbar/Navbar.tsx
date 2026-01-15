@@ -1,16 +1,22 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import "./Nav.css";
 import Image from "next/image";
-import { useNavIntro } from "./useNavIntro"; // ✅ สำคัญ: ต้อง import แบบนี้
+import { usePathname } from "next/navigation";
+import "./Nav.css";
+import { useNavIntro } from "./useNavIntro";
+
+// ✅ เพิ่ม: ใช้ transition ก่อนเปลี่ยน route
+import { usePageTransition } from "@/components/transition/PageTransition";
+import Link from "next/link";
 
 export default function Navbar() {
   const navRef = useRef<HTMLElement | null>(null);
   const closeTimerRef = useRef<number | null>(null);
-
   const [isOpen, setIsOpen] = useState(false);
+
+  const pathname = usePathname();
+  const { go, isTransitioning } = usePageTransition();
 
   // ✅ intro motion
   useNavIntro({ navRef });
@@ -45,7 +51,7 @@ export default function Navbar() {
     }
   };
 
-  const onLinkClick = (e: React.MouseEvent) => {
+  const closeMobileMenuSoon = (e: React.MouseEvent) => {
     if (window.innerWidth <= 1000) {
       e.stopPropagation();
       if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
@@ -53,6 +59,29 @@ export default function Navbar() {
         setIsOpen(false);
       }, 300);
     }
+  };
+
+  // ✅ helper: match route (รองรับ sub-route เช่น /case-studies/xyz)
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
+  // ✅ handler สำหรับการนำทางแบบมี transition
+  const onNav = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    // กันกดซ้ำระหว่างกำลังเล่น
+    if (isTransitioning) return;
+
+    // กันกด route เดิม (ไม่ต้องเล่นแตกตัว)
+    if (href === pathname) {
+      closeMobileMenuSoon(e);
+      return;
+    }
+
+    closeMobileMenuSoon(e);
+    go(href); // ✅ เล่น preloader แล้วค่อย push ใน provider
   };
 
   return (
@@ -68,6 +97,7 @@ export default function Navbar() {
           width={120}
           height={24}
           className="nav-logo"
+          priority
         />
         <p className="nav-menu-toggle">Menu</p>
       </div>
@@ -75,33 +105,58 @@ export default function Navbar() {
       <div className="nav-overlay">
         <div className="nav-items">
           <div className="nav-item">
-            <Link href="/" onClick={onLinkClick}>
-              Work / Projects
+            <Link
+              href="/"
+              onClick={onNav("/")}
+              className={isActive("/") ? "is-active" : ""}
+              aria-current={isActive("/") ? "page" : undefined}
+            >
+              Home
             </Link>
           </div>
 
           <div className="nav-item">
-            <Link href="/observatory" onClick={onLinkClick}>
+            <a
+              href="/case-studies"
+              onClick={onNav("/case-studies")}
+              className={isActive("/case-studies") ? "is-active" : ""}
+              aria-current={isActive("/case-studies") ? "page" : undefined}
+            >
               Case Studies
-            </Link>
+            </a>
           </div>
 
           <div className="nav-item">
-            <Link href="/expedition" onClick={onLinkClick}>
+            <a
+              href="/about"
+              onClick={onNav("/about")}
+              className={isActive("/about") ? "is-active" : ""}
+              aria-current={isActive("/about") ? "page" : undefined}
+            >
               About
-            </Link>
+            </a>
           </div>
 
           <div className="nav-item">
-            <Link href="/traces" onClick={onLinkClick}>
+            <a
+              href="/services"
+              onClick={onNav("/services")}
+              className={isActive("/services") ? "is-active" : ""}
+              aria-current={isActive("/services") ? "page" : undefined}
+            >
               Services
-            </Link>
+            </a>
           </div>
 
           <div className="nav-item">
-            <Link href="/contact" onClick={onLinkClick}>
+            <a
+              href="/contact"
+              onClick={onNav("/contact")}
+              className={isActive("/contact") ? "is-active" : ""}
+              aria-current={isActive("/contact") ? "page" : undefined}
+            >
               Contact
-            </Link>
+            </a>
           </div>
         </div>
       </div>

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+
 import "./globals.css";
 
 import SmoothScroll from "@/components/hook/SmoothScroll";
-import SiteBackground from "@/components/SiteBackground"; // ✅ เพิ่ม
+import SiteBackground from "@/components/SiteBackground";
+
+// ✅ เพิ่ม
+import { PageTransitionProvider } from "@/components/transition/PageTransition";
 
 // ===== BODY FONT =====
 const geistSans = Geist({
@@ -55,16 +59,15 @@ const beon = localFont({
   ],
   variable: "--font-beon",
 });
+
 const schabo = localFont({
   src: [
     {
       path: "../../public/fonts/SCHABO-Condensed.woff2",
-
       style: "normal",
     },
     {
       path: "../../public/fonts/SCHABO-Condensed.woff",
-
       style: "normal",
     },
   ],
@@ -91,12 +94,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`
-         
           ${geistSans.variable}
           ${geistMono.variable}
           ${clashDisplay.variable}
           ${beon.variable}
-            ${schabo.variable}
+          ${schabo.variable}
           antialiased
           bg-black
           text-white
@@ -105,10 +107,13 @@ export default function RootLayout({
         {/* 🌌 Global Background (อยู่นอก SmoothScroll) */}
         <SiteBackground />
 
-        {/* 🔼 Content Layer */}
-        <SmoothScroll>
-          <div className="app-shell relative z-10">{children}</div>
-        </SmoothScroll>
+        {/* ✅ Provider ต้องอยู่ “ครอบ” ทั้งระบบ เพื่อให้ overlay โผล่ได้ทุกหน้า */}
+        <PageTransitionProvider>
+          {/* 🔼 Content Layer */}
+          <SmoothScroll>
+            <div className="app-shell relative z-10">{children}</div>
+          </SmoothScroll>
+        </PageTransitionProvider>
       </body>
     </html>
   );

@@ -371,3 +371,21 @@ nav .nav-mobile-header p {
     opacity: 0.2 !important;
   }
 }
+/* ✅ active link: underline ค้างไว้ */
+nav .nav-item a.is-active {
+  color: rgba(220, 255, 255, 1);
+  text-shadow: 0 0 10px rgba(120, 255, 255, 0.25);
+}
+
+nav .nav-item a.is-active::after {
+  opacity: 0.75;
+  transform: scaleX(1);
+}
+
+/* ✅ mobile override ให้ค้างแบบ translateX เหมือน hover */
+@media (max-width: 1000px) {
+  nav .nav-item a.is-active::after {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 0.75;
+  }
+}

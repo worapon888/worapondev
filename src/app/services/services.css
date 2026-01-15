@@ -1,0 +1,1020 @@
+/* ===============================
+   SERVICES PAGE
+   (Clean + Sci-fi Dial Controller)
+================================ */
+
+/* services - services container section */
+.services-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  max-width: 2000px;
+  margin: 0 auto;
+  overflow: hidden;
+  row-gap: 1.5rem;
+}
+
+/* ===============================
+   TOP NAV + FOOTER STATUS
+================================ */
+.services-container .services-nav,
+.services-container .services-footer {
+  position: absolute;
+  inset-inline: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  z-index: 20;
+  margin-bottom: 1rem;
+  pointer-events: none; /* ✅ กันบัง UI */
+}
+
+.services-container .services-nav {
+  top: 0;
+}
+
+.services-container .services-footer {
+  bottom: 0;
+}
+
+.services-container .services-nav p,
+.services-container .services-footer p {
+  pointer-events: auto;
+  padding: 0.6rem 1rem;
+  background-color: rgba(242, 238, 218, 0.05);
+  border: 1px solid rgba(242, 238, 218, 0.15);
+  border-radius: 0.25rem;
+  backdrop-filter: blur(0.2rem);
+  -webkit-backdrop-filter: blur(0.2rem);
+  color: var(--base-100);
+}
+
+.services-container .services-nav .service-name p {
+  background-color: var(--base-100);
+  color: var(--base-300);
+  font-weight: 600;
+}
+
+/* ===============================
+   SLIDER STAGE (ไว้ต่อ GSAP)
+================================ */
+.services-container .services-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+}
+
+/* ถ้าจะต่อ item carousel ทีหลัง คง class ไว้ */
+.services-container .services-slider .services {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  top: 42.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ===============================
+   PREVIEW PANEL
+================================ */
+.services-container .services-preview {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  width: 75%;
+  height: 72.5%;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--base-300);
+  border: 1px solid rgba(242, 238, 218, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.services-container .services-preview .services-preview-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.services-container .services-preview .services-preview-tag p {
+  text-transform: uppercase;
+}
+
+.services-container .services-preview .services-preview-img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 0.25rem;
+  background-color: var(--base-1000);
+  overflow: hidden;
+}
+
+.services-container .services-preview .services-preview-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===============================
+   CONTROLLER (Sci-fi Dial)
+================================ */
+.services-container .services-slider .controller {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.55));
+
+  /* ✅ จุดตามวงแดงของคุณ: ขยับลงจากกลาง */
+  transform: translate(-50%, 230px);
+
+  width: 11rem;
+  height: 11rem;
+  z-index: 50;
+  user-select: none;
+}
+
+/* วงแหวนด้านนอก */
+.services-container .services-slider .controller .controller-outer {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      rgba(80, 255, 255, 0.14),
+      rgba(0, 0, 0, 0) 55%
+    ),
+    radial-gradient(
+      circle at 70% 75%,
+      rgba(80, 200, 255, 0.1),
+      rgba(0, 0, 0, 0) 60%
+    ),
+    rgba(18, 22, 28, 0.85);
+
+  border: 1px solid rgba(120, 220, 255, 0.18);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 0 28px rgba(80, 255, 255, 0.1);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* glow ring */
+.services-container .services-slider .controller .controller-outer::before {
+  content: "";
+  position: absolute;
+  inset: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 220, 255, 0.22);
+  box-shadow: 0 0 22px rgba(120, 220, 255, 0.12);
+  pointer-events: none;
+}
+
+/* subtle scanline */
+.services-container .services-slider .controller .controller-outer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(120, 220, 255, 0.06),
+    rgba(120, 220, 255, 0.06) 1px,
+    rgba(0, 0, 0, 0) 6px,
+    rgba(0, 0, 0, 0) 10px
+  );
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Label */
+.services-container .services-slider .controller .controller-label p {
+  position: absolute;
+  top: 1.05rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.68rem;
+  color: rgba(200, 255, 255, 0.9);
+  text-shadow: 0 0 14px rgba(120, 220, 255, 0.35);
+  pointer-events: none;
+}
+
+/* prev/next buttons */
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+
+  appearance: none;
+  border: 1px solid rgba(120, 220, 255, 0.2);
+  background: rgba(10, 12, 16, 0.55);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 0 18px rgba(120, 220, 255, 0.1);
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+  color: rgba(215, 255, 255, 0.95);
+
+  transition:
+    transform 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    opacity 0.22s ease;
+
+  z-index: 2;
+}
+
+/* react-icons svg */
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn
+  svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(120, 220, 255, 0.45));
+}
+
+/* button positions */
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn.prev {
+  left: 0.85rem;
+}
+
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn.next {
+  right: 0.85rem;
+}
+
+/* hover */
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn:hover {
+  background: rgba(12, 18, 24, 0.75);
+  border-color: rgba(120, 220, 255, 0.35);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 0 26px rgba(120, 220, 255, 0.18);
+  transform: translateY(-50%) scale(1.06);
+}
+
+/* active */
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+/* disabled */
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn:disabled,
+.services-container
+  .services-slider
+  .controller
+  .controller-outer
+  .services-controller-nav-btn.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* inner center button */
+.services-container .services-slider .controller .controller-inner {
+  position: absolute;
+  inset: 3.15rem;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      rgba(120, 220, 255, 0.12),
+      rgba(0, 0, 0, 0) 55%
+    ),
+    rgba(34, 34, 36, 0.9);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+  z-index: 3;
+}
+
+/* X icon */
+.services-container .services-slider .controller .controller-close-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.services-container .services-slider .controller .controller-close-icon span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 2px;
+  background: rgba(200, 255, 255, 0.95);
+  transform-origin: center;
+  box-shadow: 0 0 10px rgba(120, 220, 255, 0.25);
+}
+
+.services-container
+  .services-slider
+  .controller
+  .controller-close-icon
+  span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.services-container
+  .services-slider
+  .controller
+  .controller-close-icon
+  span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 1000px) {
+  /* hide nav/footer like original */
+  .services-container .services-nav,
+  .services-container .services-footer {
+    display: none;
+  }
+
+  /* controller: ยังยึด top+transform (อย่าใช้ bottom) */
+  .services-container .services-slider .controller {
+    width: 9rem;
+    height: 9rem;
+    transform: translate(-50%, 200px); /* ปรับตามความชอบ */
+  }
+
+  .services-container .services-slider .controller .controller-inner {
+    inset: 2.55rem;
+  }
+
+  /* preview: ให้ยืดง่ายบนมือถือ */
+  .services-container .services-preview {
+    width: calc(100% - 2rem);
+    height: max-content;
+  }
+}
+/* ===============================
+   CONTROLLER (Sci-fi Dial)
+   (✅ selector ใหม่: ไม่พึ่ง .services-slider)
+================================ */
+.services-container .controller {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, 230px); /* ปรับได้ */
+  width: 11rem;
+  height: 11rem;
+  z-index: 10;
+  user-select: none;
+}
+
+/* วงแหวนด้านนอก */
+.services-container .controller .controller-outer {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      rgba(80, 255, 255, 0.14),
+      rgba(0, 0, 0, 0) 55%
+    ),
+    radial-gradient(
+      circle at 70% 75%,
+      rgba(80, 200, 255, 0.1),
+      rgba(0, 0, 0, 0) 60%
+    ),
+    rgba(18, 22, 28, 0.85);
+
+  border: 1px solid rgba(120, 220, 255, 0.18);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 0 28px rgba(80, 255, 255, 0.1);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  overflow: hidden;
+}
+
+/* glow ring */
+.services-container .controller .controller-outer::before {
+  content: "";
+  position: absolute;
+  inset: 0.55rem;
+  border-radius: 999px;
+
+  box-shadow: 0 0 22px rgba(120, 220, 255, 0.12);
+  pointer-events: none;
+}
+
+/* subtle scanline */
+.services-container .controller .controller-outer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(120, 220, 255, 0.06),
+    rgba(120, 220, 255, 0.06) 1px,
+    rgba(0, 0, 0, 0) 6px,
+    rgba(0, 0, 0, 0) 10px
+  );
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Label */
+.services-container .controller .controller-label p {
+  position: absolute;
+  top: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: rgba(200, 255, 255, 0.9);
+  text-shadow: 0 0 14px rgba(120, 220, 255, 0.35);
+  pointer-events: none;
+}
+
+/* prev/next buttons */
+.services-container .controller .controller-outer .services-controller-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: rgba(215, 255, 255, 0.95);
+  transition:
+    transform 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.22s ease;
+
+  z-index: 2;
+}
+
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn
+  svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(120, 220, 255, 0.45));
+}
+
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn.prev {
+  left: 0.85rem;
+}
+
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn.next {
+  right: 0.85rem;
+}
+
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn:active {
+  transform: translateY(-50%) scale(0.92);
+  color: rgba(62, 220, 245, 0.685);
+}
+
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn:disabled,
+.services-container
+  .controller
+  .controller-outer
+  .services-controller-nav-btn.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* inner center button */
+.services-container .controller .controller-inner {
+  position: absolute;
+  inset: 3.25rem;
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      rgba(120, 220, 255, 0.12),
+      rgba(0, 0, 0, 0) 55%
+    ),
+    rgba(34, 34, 36, 0.9);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+
+  display: grid;
+  place-items: center;
+
+  z-index: 3;
+}
+
+.services-container .controller .controller-close-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.services-container .controller .controller-close-icon span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 2px;
+  background: rgba(200, 255, 255, 0.95);
+  transform-origin: center;
+  box-shadow: 0 0 10px rgba(120, 220, 255, 0.25);
+}
+
+.services-container .controller .controller-close-icon span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.services-container .controller .controller-close-icon span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 1000px) {
+  .services-container .services-nav,
+  .services-container .services-footer {
+    display: none;
+  }
+
+  .services-container .controller {
+    width: 9rem;
+    height: 9rem;
+    transform: translate(-50%, 200px);
+  }
+
+  .services-container .controller .controller-inner {
+    inset: 2.55rem;
+  }
+
+  .services-container .services-preview {
+    width: calc(100% - 2rem);
+    height: max-content;
+  }
+}
+/* ===============================
+   SERVICECARD
+================================ */
+
+/* ✅ ให้ container เป็นคนจัดกลาง (แนะนำเพิ่มใน .services-container)
+   ถ้าคุณมีอยู่แล้ว ข้ามบล็อกนี้ได้ */
+.services-container {
+  min-height: 100svh;
+  padding: 7rem 1rem 6.5rem; /* กันชน nav + footer */
+  display: grid;
+  place-items: center;
+}
+
+/* ✅ card แบบปกติ ไม่ลอยด้วย left/top/transform */
+.services-card {
+  position: relative;
+  top: -5vh;
+  width: min(1000px, calc(100% - 2rem)); /* ลดนิดให้ดูแพงขึ้น */
+  border-radius: 22px;
+
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 1rem;
+
+  overflow: hidden;
+
+  /* ✅ คุมความสูงทั้งการ์ด */
+  max-height: min(680px, calc(100svh - 12rem));
+
+  background: linear-gradient(
+    180deg,
+    rgba(10, 18, 22, 0.62),
+    rgba(6, 10, 12, 0.88)
+  );
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 12px 50px rgba(0, 0, 0, 0.55);
+
+  z-index: 10;
+}
+
+/* Glow layer */
+.services-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      900px 260px at 25% 0%,
+      rgba(120, 255, 255, 0.12),
+      transparent 60%
+    ),
+    linear-gradient(90deg, transparent, rgba(120, 255, 255, 0.06), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===============================
+   MEDIA
+================================ */
+.services-card__media {
+  position: relative;
+  overflow: hidden;
+  min-height: 100%;
+  z-index: 1;
+}
+
+/* ✅ ถ้าใช้ next/image fill จะไม่มี img tag ตรง ๆ
+   ให้ใช้ selector นี้ช่วย */
+.services-card__media :is(img, picture, span) {
+  width: 100%;
+  height: 100%;
+}
+
+/* overlay ในรูปให้อ่าน text ง่ายขึ้น */
+.services-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      700px 260px at 20% 10%,
+      rgba(120, 255, 255, 0.12),
+      transparent 60%
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}
+
+/* badge */
+.services-card__badge {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  z-index: 2;
+}
+
+.services-card__badge .code {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(120, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+}
+
+.services-card__badge .tag {
+  font-size: 0.72rem;
+  padding: 0.35rem 0.55rem;
+  background: rgba(120, 255, 255, 0.08);
+  border: 1px solid rgba(120, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+/* ===============================
+   BODY (เลื่อนเฉพาะฝั่งข้อความ)
+================================ */
+.services-card__body {
+  position: relative;
+  z-index: 1;
+
+  padding: 1.25rem 1.25rem 1.1rem;
+
+  /* ✅ เลื่อนเฉพาะ body ไม่ให้กรอบโดนตัด */
+  overflow: auto;
+  max-height: min(680px, calc(100svh - 12rem));
+}
+
+.services-card__header h3 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.services-card__header .headline {
+  margin: 0.35rem 0 0;
+  opacity: 0.8;
+}
+
+.services-card__body .desc {
+  margin: 0.9rem 0 0;
+  opacity: 0.78;
+  line-height: 1.6;
+}
+
+.services-card__meta {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(120, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 16px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+.meta-row .k {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  opacity: 0.65;
+}
+
+.meta-row .v {
+  font-weight: 600;
+}
+
+.meta-row .note {
+  opacity: 0.7;
+  font-style: normal;
+  font-weight: 400;
+  margin-left: 0.35rem;
+}
+
+/* columns */
+.services-card__cols {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr; /* ✅ Deliverables เด่นกว่า Scope นิด */
+  gap: 1rem;
+}
+
+.col-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0 0 0.5rem;
+}
+
+.services-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  opacity: 0.85;
+}
+
+.services-card li {
+  margin: 0.25rem 0;
+}
+
+/* chips */
+.services-card__chips {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  font-size: 0.72rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 255, 255, 0.14);
+  background: rgba(120, 255, 255, 0.06);
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .services-container {
+    padding: 6rem 1rem 6rem;
+  }
+
+  .services-card {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+
+  .services-card__media {
+    height: 260px;
+  }
+
+  .services-card__body {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .services-card__cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   TECH CHIPS
+========================================================= */
+
+.services-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.services-card__chips .chip {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+
+  border-radius: 999px;
+
+  background: rgba(18, 34, 38, 0.75);
+  border: 1px solid rgba(120, 255, 255, 0.15);
+  color: rgba(220, 250, 255, 0.75);
+}
+
+/* =========================================================
+   SLIDE / GSAP FRIENDLY
+========================================================= */
+
+.services-card {
+  will-change: transform, opacity;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .services-card {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .services-card__media {
+    height: 220px;
+  }
+
+  .services-card__body {
+    padding: 2rem;
+  }
+}
+
+/* ===== Accent Variables (default) ===== */
+.services-card {
+  --accent-r: 120;
+  --accent-g: 255;
+  --accent-b: 255;
+  --accent: rgb(var(--accent-r), var(--accent-g), var(--accent-b));
+}
+
+/* ✅ ขอบ/กลow แบบ soft ไม่รก */
+.services-card {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 12px 50px rgba(0, 0, 0, 0.55),
+    0 0 26px rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.1); /* glow เบา */
+}
+
+/* ✅ highlight มุมบนให้เปลี่ยนตาม service */
+.services-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    radial-gradient(
+      900px 260px at 25% 0%,
+      rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14),
+      transparent 60%
+    ),
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.06),
+      transparent
+    );
+}
+
+/* badge/chip ให้ follow accent */
+.services-card__badge .code {
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.18);
+}
+
+.services-card__badge .tag {
+  background: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.08);
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14);
+}
+
+.chip {
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14);
+  background: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.06);
+}
+
+/* ✅ sweep / scan overlay (ตอนเปลี่ยน service) */
+.services-card__sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.06) 35%,
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.18) 50%,
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.06) 65%,
+    transparent 100%
+  );
+  filter: blur(0.2px);
+}
