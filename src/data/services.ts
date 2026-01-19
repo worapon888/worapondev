@@ -6,7 +6,13 @@ export const SERVICES: ServiceItem[] = [
     code: "UNIT-LITE-01",
     name: "Lite Motion Landing",
     tag: "Entry / Motion",
-    image: "/Services/service_lite.jpg",
+
+    // ✅ IMAGE
+    media: {
+      type: "image",
+      src: "/services_card/Lite-Motion-Landing.jpg",
+    },
+
     headline: "Clean presence. Fast deployment.",
     description:
       "A focused landing experience with subtle motion — built to look premium without heavy complexity.",
@@ -30,12 +36,19 @@ export const SERVICES: ServiceItem[] = [
     tech: ["Next.js", "React", "GSAP", "CSS/SCSS"],
     accent: { rgb: [120, 255, 255] }, // ✅ CYAN
   },
+
   {
     id: "svc-02",
     code: "UNIT-CINE-02",
     name: "Cinematic Brand Landing",
     tag: "Core / Cinematic",
-    image: "/Services/service_cinematic.jpg",
+
+    // ✅ VIDEO
+    media: {
+      type: "video",
+      src: "/services_card/Cinematic-Brand-Landing.mp4",
+    },
+
     headline: "Story-driven motion designed to convert.",
     description:
       "Cinematic pacing, scroll-linked transitions, and a brand-first interaction system for flagship pages.",
@@ -59,12 +72,19 @@ export const SERVICES: ServiceItem[] = [
     tech: ["Next.js", "React", "GSAP + ScrollTrigger", "Lenis (optional)"],
     accent: { rgb: [110, 230, 255] }, // ✅ TEAL/BLUE
   },
+
   {
     id: "svc-03",
     code: "UNIT-IMM-03",
     name: "Immersive Interactive Experience",
     tag: "Immersive / Experimental",
-    image: "/Services/service_immersive.jpg",
+
+    // ✅ VIDEO
+    media: {
+      type: "video",
+      src: "/services_card/Immersive-Interactive-Experience.mp4",
+    },
+
     headline: "Built for impact. Designed to be remembered.",
     description:
       "An immersive web experience with advanced choreography and optional pseudo-3D / shader elements.",

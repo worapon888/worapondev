@@ -1,0 +1,70 @@
+/* ===============================
+   TOP NAV + FOOTER STATUS
+================================ */
+.services-container .services-nav,
+.services-container .services-footer {
+  position: absolute;
+  inset-inline: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  z-index: 20;
+  margin-bottom: 1rem;
+  pointer-events: none; /* ✅ กันบัง UI */
+}
+
+.services-container .services-nav {
+  top: 0;
+}
+
+.services-container .services-footer {
+  bottom: 0;
+}
+
+.services-container .services-nav p,
+.services-container .services-footer p {
+  pointer-events: auto;
+  padding: 0.6rem 1rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 2px;
+  backdrop-filter: blur(0.2rem);
+  -webkit-backdrop-filter: blur(0.2rem);
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+  /* spacing */
+
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: rgba(103, 232, 249, 0.6);
+  pointer-events: none;
+  user-select: none;
+  /* frame */
+
+  /* glass */
+  background: rgba(0, 0, 0, 0.2); /* bg-black/20 */
+  backdrop-filter: blur(4px); /* backdrop-blur-sm */
+  -webkit-backdrop-filter: blur(4px);
+
+  /* glow */
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
+}
+
+.services-container .services-nav .service-name p {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(103, 232, 249, 0.6);
+  font-weight: 600;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 1000px) {
+  /* preview: ให้ยืดง่ายบนมือถือ */
+  .services-container .services-preview {
+    width: calc(100% - 2rem);
+    height: max-content;
+  }
+}

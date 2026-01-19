@@ -1,0 +1,549 @@
+/* ===============================
+   SERVICECARD
+================================ */
+
+.services-card {
+  position: relative;
+  width: min(1000px, calc(100% - 2rem));
+  border-radius: 22px;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 1rem;
+  will-change: transform, opacity;
+  overflow: hidden;
+
+  /* ✅ ให้ความสูงคงที่ (จะนิ่งและดูแพง) */
+  height: 520px;
+  max-height: min(680px, calc(100svh - 12rem));
+
+  background: linear-gradient(
+    180deg,
+    rgba(10, 18, 22, 0.62),
+    rgba(6, 10, 12, 0.88)
+  );
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 12px 50px rgba(0, 0, 0, 0.55);
+
+  z-index: auto; /* ❌ ไม่ต้องล็อก z-index ที่ card */
+  transform: translateZ(0); /* ✅ ช่วยให้ 3D/blur นิ่งขึ้น */
+  will-change: transform, opacity, filter;
+}
+
+/* Glow layer */
+.services-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      900px 260px at 25% 0%,
+      rgba(120, 255, 255, 0.12),
+      transparent 60%
+    ),
+    linear-gradient(90deg, transparent, rgba(120, 255, 255, 0.06), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===============================
+   MEDIA
+================================ */
+.services-card__media {
+  position: relative;
+  overflow: hidden;
+  min-height: 100%;
+  z-index: 1;
+}
+
+/* ✅ ถ้าใช้ next/image fill จะไม่มี img tag ตรง ๆ
+   ให้ใช้ selector นี้ช่วย */
+.services-card__media :is(img, picture, span) {
+  width: 100%;
+  height: 100%;
+}
+
+/* overlay ในรูปให้อ่าน text ง่ายขึ้น */
+.services-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      700px 260px at 20% 10%,
+      rgba(120, 255, 255, 0.12),
+      transparent 60%
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}
+
+/* badge */
+.services-card__badge {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  z-index: 2;
+}
+
+.services-card__badge .code {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(120, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+}
+
+.services-card__badge .tag {
+  font-size: 0.72rem;
+  padding: 0.35rem 0.55rem;
+  background: rgba(120, 255, 255, 0.08);
+  border: 1px solid rgba(120, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+/* ===============================
+   BODY (เลื่อนเฉพาะฝั่งข้อความ)
+================================ */
+.services-card__body {
+  position: relative;
+  z-index: 1;
+
+  padding: 1.25rem 1.25rem 1.1rem;
+
+  /* ✅ เลื่อนเฉพาะ body ไม่ให้กรอบโดนตัด */
+  overflow: auto;
+  max-height: min(680px, calc(100svh - 12rem));
+}
+
+.services-card__header h3 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.services-card__header .headline {
+  margin: 0.35rem 0 0;
+  opacity: 0.8;
+}
+
+.services-card__body .desc {
+  margin: 0.9rem 0 0;
+  opacity: 0.78;
+  line-height: 1.6;
+}
+
+.services-card__meta {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(120, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 16px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+.meta-row .k {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  opacity: 0.65;
+}
+
+.meta-row .v {
+  font-weight: 600;
+}
+
+.meta-row .note {
+  opacity: 0.7;
+  font-style: normal;
+  font-weight: 400;
+  margin-left: 0.35rem;
+}
+
+/* columns */
+.services-card__cols {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr; /* ✅ Deliverables เด่นกว่า Scope นิด */
+  gap: 1rem;
+}
+
+.col-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0 0 0.5rem;
+}
+
+.services-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  opacity: 0.85;
+}
+
+.services-card li {
+  margin: 0.25rem 0;
+}
+
+/* chips */
+.services-card__chips {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  font-size: 0.72rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 255, 255, 0.14);
+  background: rgba(120, 255, 255, 0.06);
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .services-container {
+    padding: 6rem 1rem 6rem;
+  }
+
+  .services-card {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+
+  .services-card__media {
+    height: 260px;
+  }
+
+  .services-card__body {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .services-card__cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   TECH CHIPS
+========================================================= */
+
+.services-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.services-card__chips .chip {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+
+  border-radius: 999px;
+
+  background: rgba(18, 34, 38, 0.75);
+  border: 1px solid rgba(120, 255, 255, 0.15);
+  color: rgba(220, 250, 255, 0.75);
+}
+.services-slot .services-card {
+  width: 100%;
+  height: 100%;
+  max-width: min(1100px, 100%);
+}
+
+/* side cards ไม่ต้องคลิก (กันแย่ง scroll/hover) */
+.services-slot--left,
+.services-slot--right {
+  pointer-events: none;
+}
+
+/* center card คลิกได้ตามปกติ */
+.services-slot--center {
+  pointer-events: auto;
+}
+.services-slot .services-card {
+  width: 100%;
+  height: 100%;
+  max-width: min(1100px, 100%);
+}
+
+/* center card คลิกได้ตามปกติ */
+.services-slot--center {
+  pointer-events: auto;
+}
+/* badge/chip ให้ follow accent */
+
+.services-card__badge .code {
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.18);
+}
+/* ===============================
+   SERVICE CARD BADGE (ROW)
+================================ */
+.services-card__badge {
+  display: inline-flex; /* อยู่บรรทัดเดียว */
+  align-items: center;
+  gap: 0.5rem;
+
+  white-space: nowrap; /* ❗ กันตัดบรรทัด */
+  pointer-events: none;
+}
+
+/* CODE + TAG ใช้ฟีลเดียวกัน */
+.services-card__badge .code,
+.services-card__badge .tag {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0.35rem 0.6rem;
+
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase; /* ✅ ตัวใหญ่ */
+  line-height: 1;
+
+  border-radius: 999px; /* pill / chip */
+}
+.services-card__badge .tag {
+  background: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.08);
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14);
+}
+
+.chip {
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14);
+  background: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.06);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+
+  text-transform: uppercase;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.14em;
+
+  border: 1px solid
+    rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14);
+  background: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.06);
+}
+/* ===============================
+   SERVICE CARD HEADER
+================================ */
+.services-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  padding-right: 1rem; /* กันชนกับ edge / effect */
+}
+
+/* TITLE */
+.services-card__header h3 {
+  margin: 0;
+
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: rgba(235, 248, 255, 0.92);
+
+  letter-spacing: 0.01em;
+}
+
+/* HEADLINE */
+.services-card__header .headline {
+  margin: 0;
+
+  font-size: 0.8rem;
+  line-height: 1.45;
+
+  color: rgba(180, 215, 225, 0.7);
+
+  letter-spacing: 0.02em;
+}
+
+/* ถ้าอยากให้ดู cinematic ขึ้นอีกนิด */
+.services-card__header h3,
+.services-card__header .headline {
+  text-rendering: optimizeLegibility;
+}
+/* ===============================
+   SERVICE CARD DESCRIPTION
+================================ */
+.services-card__body .desc,
+.services-card__header + .desc,
+.desc {
+  margin: 0;
+  margin-top: 0.65rem;
+
+  font-size: 0.85rem;
+  line-height: 1.7;
+
+  color: rgba(170, 210, 220, 0.62);
+
+  letter-spacing: 0.015em;
+
+  text-wrap: balance; /* browser ใหม่จะบาลานซ์บรรทัด */
+}
+/* ===============================
+   SERVICE CARD COLUMNS
+================================ */
+.services-card__cols {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem 2rem;
+
+  border-top: 1px solid rgba(120, 200, 220, 0.1);
+}
+
+/* COLUMN */
+.services-card__cols .col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* TITLE (Deliverables / Scope) */
+.services-card__cols .col-title {
+  margin: 0;
+
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  color: rgba(150, 190, 200, 0.55);
+}
+
+/* LIST */
+.services-card__cols ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* ITEM */
+.services-card__cols li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+
+  color: rgba(255, 255, 255, 0.658);
+
+  position: relative;
+  padding-left: 0.65rem;
+}
+
+/* subtle marker */
+.services-card__cols li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+
+  color: rgba(255, 255, 255, 0.45);
+}
+/* ===============================
+  3D Carousel Stage
+================================ */
+/* ===== 3D Carousel Stage ===== */
+.services-stage {
+  position: relative;
+  width: min(1180px, calc(100% - 2rem));
+  height: min(680px, calc(100svh - 12rem));
+  margin-inline: auto;
+
+  perspective: 1200px;
+
+  overflow: visible;
+
+  display: block;
+  isolation: isolate;
+}
+/* ✅ Stage = ขอบเขต (ให้ GSAP คุม motion ภายใน) */
+.services-stage {
+  position: relative;
+  width: min(1180px, calc(100% - 2rem));
+  height: min(680px, calc(100svh - 12rem));
+  margin-inline: auto;
+
+  perspective: 1200px;
+  transform-style: preserve-3d;
+
+  overflow: visible;
+  isolation: isolate;
+}
+/* ✅ ให้ใบกลางกดได้ */
+.services-slot--center {
+  pointer-events: auto;
+}
+
+/* ให้การ์ดกินเต็มกรอบ slot */
+.services-slot .services-card {
+  width: 100%;
+  height: 100%;
+}
+/* ✅ Slot = "กรอบนิ่ง" ไม่แตะ transform (ปล่อยให้ GSAP เขียนเอง) */
+.services-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: min(1100px, calc(100% - 2rem));
+  height: min(680px, calc(100svh - 12rem));
+
+  pointer-events: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform, opacity, filter;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .services-card {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .services-card__media {
+    height: 220px;
+  }
+
+  .services-card__body {
+    padding: 2rem;
+  }
+
+  .services-stage {
+    height: min(640px, calc(100svh - 10rem));
+  }
+
+  .services-slot {
+    height: min(640px, calc(100svh - 10rem));
+    /* ❌ ห้ามใส่ transform: none; เพราะไปทับ GSAP */
+  }
+}
