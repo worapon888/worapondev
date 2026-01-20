@@ -116,7 +116,7 @@ export function useHeroAnimations(refs: HeroRefs) {
           gsap.fromTo(
             timerEl,
             { opacity: 0.25 },
-            { opacity: 0.55, duration: 0.25, ease: "power1.out" }
+            { opacity: 0.55, duration: 0.25, ease: "power1.out" },
           );
         }
       };
@@ -236,7 +236,7 @@ export function useHeroAnimations(refs: HeroRefs) {
               ease: "sine.inOut",
               repeat: -1,
               yoyo: true,
-            }
+            },
           );
         };
 
@@ -294,7 +294,7 @@ export function useHeroAnimations(refs: HeroRefs) {
           lineRef.current,
           { scaleX: 0 },
           { scaleX: 1, y: 0, duration: 0.95, ease: "power3.out" },
-          ">-0.05"
+          ">-0.05",
         );
 
         // 3) flicker start
@@ -307,7 +307,7 @@ export function useHeroAnimations(refs: HeroRefs) {
         tl.to(
           paragraphRef.current,
           { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" },
-          ">"
+          ">",
         );
 
         // 4.5) HUD + panels boot (หลัง paragraph)
@@ -340,7 +340,7 @@ export function useHeroAnimations(refs: HeroRefs) {
             duration: 0.55,
             ease: "back.out(1.7)",
           },
-          ">"
+          ">",
         );
 
         // 6) btn2
@@ -353,7 +353,7 @@ export function useHeroAnimations(refs: HeroRefs) {
             duration: 0.55,
             ease: "back.out(1.7)",
           },
-          ">-0.45"
+          ">-0.45",
         );
 
         // 7) availability
@@ -361,7 +361,7 @@ export function useHeroAnimations(refs: HeroRefs) {
           availabilityRef.current,
           { y: -14, autoAlpha: 0 },
           { y: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" },
-          ">+0.45"
+          ">+0.45",
         );
 
         return tl;
@@ -382,7 +382,7 @@ export function useHeroAnimations(refs: HeroRefs) {
               introTl.restart();
             },
           },
-        }
+        },
       );
 
       // gradient loop

@@ -20,7 +20,7 @@ export default function Services() {
   const subtitleText = useMemo(
     () =>
       "From personal websites to professional business pages, I design and build websites that are clear, reliable, and tailored to your needs.",
-    []
+    [],
   );
 
   const words = useMemo(() => subtitleText.trim().split(/\s+/), [subtitleText]);
@@ -84,7 +84,7 @@ export default function Services() {
       if (!el) return;
 
       const wordEls = Array.from(
-        el.querySelectorAll<HTMLElement>(".services-word")
+        el.querySelectorAll<HTMLElement>(".services-word"),
       );
       if (!wordEls.length) return;
 

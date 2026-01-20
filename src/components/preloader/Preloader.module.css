@@ -1,3 +1,6 @@
+/* ============================================================
+   1. CORE SETUP & VARIABLES
+   ============================================================ */
 .overlay {
   position: fixed;
   inset: 0;
@@ -7,28 +10,13 @@
   pointer-events: none;
   overflow: hidden;
   background: transparent;
+  --loader-cyan: rgba(120, 220, 255, 0.9);
 }
 
-.grid {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.block {
-  position: absolute;
-  background: #000000;
-  opacity: 1;
-  will-change: opacity, transform, filter;
-  transform: scale(1);
-  filter: blur(0);
-}
 .backdrop {
   position: absolute;
   inset: 0;
   background: #000;
-  opacity: 1;
   z-index: 0;
   transition: opacity 0.55s ease;
 }
@@ -36,58 +24,55 @@
 .backdropFade {
   opacity: 0;
 }
+
+/* ============================================================
+   2. GRID SYSTEM (Background Layer)
+   ============================================================ */
 .grid {
+  position: absolute;
+  inset: 0;
   z-index: 1;
 }
+
+.block {
+  position: absolute;
+  background: #000;
+  will-change:
+    opacity, transform; /* ตัด filter ออกถ้าไม่ได้ใช้ animation เพื่อ performance */
+}
+
+/* ============================================================
+   3. UI COMPONENTS (Loader & Text)
+   ============================================================ */
 .ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column; /* ให้ Text กับ Ring อยู่ใน flow เดียวกัน */
+  align-items: center;
+  justify-content: center;
   z-index: 2;
 }
 
-.ui {
-  position: absolute;
-  inset: 0;
+.ring-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  transition: transform 0.3s ease;
 }
 
-.text {
+.ring,
+.disc {
   position: absolute;
-  bottom: 6rem;
-  color: rgba(231, 247, 255, 0.9);
-  font-size: 0.9rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  animation: blink 1s ease-in-out infinite;
-  animation-delay: 100ms;
-}
-
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 0.15;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.ringFrame,
-.discFrame {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ring {
-  border: 2px solid rgba(0, 0, 0, 0);
-  border-left: 2px solid rgba(120, 220, 255, 0.9);
-  border-right: 2px solid rgba(120, 220, 255, 0.9);
   border-radius: 50%;
-  position: absolute;
+  border: 2px solid transparent;
+}
+
+/* Rings Logic - Clean & Semantic */
+.ring {
+  border-left-color: var(--loader-cyan);
+  border-right-color: var(--loader-cyan);
 }
 
 .ringSm {
@@ -109,14 +94,63 @@
 .disc {
   width: 150px;
   height: 150px;
-  border: 2px solid rgba(120, 220, 255, 0.9);
-  border-radius: 50%;
+  border-color: var(--loader-cyan);
   animation: rotate3d 3s linear infinite;
-  position: absolute;
 }
 
+/* Text Indicator */
+.text {
+  position: absolute;
+  bottom: clamp(3rem, 10vh, 6rem);
+  color: rgba(231, 247, 255, 0.9);
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  padding-inline: 1rem;
+  animation: blink 1.2s ease-in-out infinite; /* ปรับจังหวะให้ดู smooth ขึ้น */
+}
+
+/* ============================================================
+   4. ADAPTIVE & ACCESSIBILITY
+   ============================================================ */
+
+/* Mobile & Landscape Optimizations */
+@media (max-width: 640px) {
+  .ring-container {
+    transform: scale(0.75);
+  }
+  .text {
+    bottom: 4rem;
+  }
+}
+
+@media (max-height: 500px) {
+  .ring-container {
+    transform: scale(0.6);
+  }
+  .text {
+    bottom: 1.5rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .text,
+  .ring,
+  .disc {
+    animation: none !important;
+    opacity: 0.8 !important;
+    border-color: var(--loader-cyan) !important;
+  }
+}
+
+/* ============================================================
+   5. KEYFRAMES
+   ============================================================ */
 @keyframes rotate3d {
-  100% {
+  to {
     transform: rotate3d(1, 0.25, 0.75, 360deg);
   }
 }
@@ -130,13 +164,12 @@
     transform: rotateZ(-360deg);
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .text,
-  .ringSm,
-  .ringMd,
-  .ringLg,
-  .disc {
-    animation: none !important;
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
   }
 }

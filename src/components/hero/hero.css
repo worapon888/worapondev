@@ -1,103 +1,168 @@
-/* ===============================
-   HERO TEXT (fix spacing jitter)
-================================ */
+/* ============================================================
+   1. CORE VARIABLES & SETUP
+   ============================================================ */
+:root {
+  /* Colors */
+  --neon-cyan: 0, 242, 255;
+  --neon-purple: 124, 58, 237;
+  --neon-core: 217, 255, 255;
 
+  /* Effects Settings */
+  --neon-strength: 1.5;
+  --hero-font-size: clamp(2rem, 8vw, 5rem);
+
+  /* Hardware Acceleration Class */
+  --gpu-boost: translateZ(0);
+}
+
+/* Base resets for stability */
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* ============================================================
+   2. HERO TEXT SYSTEM (Spacing & Jitter Fix)
+   ============================================================ */
 .hero-heading {
-  visibility: hidden; /* gsap autoAlpha:1 */
-  display: inline-block;
-
-  /* ✅ ลดอาการช่องไฟเปลี่ยนตอนสลับตัวอักษร */
+  visibility: hidden;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: var(--hero-font-size);
   font-kerning: none;
   font-feature-settings:
     "kern" 0,
     "liga" 0;
+  transform: var(--gpu-boost);
 }
 
 .hero-line {
   display: block;
-
-  /* ✅ ล็อกกรอบต่อบรรทัด */
-  height: 1.1em; /* ปรับได้ 0.75–0.95em */
+  height: 1.1em;
   line-height: 1.1;
   overflow: hidden;
-
-  /* ✅ กัน space/nbsp แตกบรรทัดหรือยุบแปลก ๆ */
   white-space: nowrap;
 }
 
 .hero-char {
   position: relative;
   display: inline-block;
-  line-height: 1.1;
   white-space: pre;
+  will-change: transform;
 }
 
-/* ตัวจริง: อยู่ใน flow */
-.hero-real {
-  display: inline-block;
-}
-
-/* ตัวหลอก: ซ้อนทับ ไม่กระทบ spacing */
-.hero-ghost {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 1; /* เริ่มให้เห็น ghost */
-}
-
-/* ตัวที่วิ่งลงมาจากด้านบน */
 .hero-char::before {
+  content: attr(data-char);
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%; /* ให้ overlay กว้างเท่ากรอบที่ล็อกไว้ */
+  width: 100%;
   text-align: inherit;
-
-  content: attr(data-char);
   transform: translateY(-103%);
   pointer-events: none;
 }
 
-/* ✅ กัน “จุด/ตัวหลอก” ในช่องว่าง */
 .hero-char[data-skip="1"]::before {
   content: "";
 }
-/* กัน flash ตอนรีเฟรช (เฟรมแรกก่อน JS) */
-.hero--preload .hero-heading,
-.hero--preload p,
-.hero--preload a,
-.hero--preload .neon-line,
-.hero--preload .brand-hud,
-.hero--preload .system-log,
-.hero--preload .system-status {
-  opacity: 0;
-  visibility: hidden;
+.hero-real {
+  display: inline-block;
+}
+.hero-ghost {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.hero--preload .brand-hud {
-  transform: translateY(4px);
+/* ============================================================
+   3. NEON COMPONENTS (Cyan & Purple)
+   ============================================================ */
+.neon-text {
+  position: relative;
+  color: rgb(var(--neon-core));
+  text-shadow:
+    0 0 1px rgba(var(--neon-core), calc(0.55 * var(--neon-strength))),
+    0 0 6px rgba(var(--neon-cyan), calc(0.4 * var(--neon-strength))),
+    0 0 14px rgba(var(--neon-cyan), calc(0.22 * var(--neon-strength)));
+  filter: brightness(1.12) saturate(1.05);
 }
 
-.hero--preload .system-log,
-.hero--preload .system-status {
-  transform: translateY(6px);
+.neon-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(230, 255, 255, 0.72) 35%,
+    rgba(0, 242, 255, 0.35) 70%,
+    rgba(0, 242, 255, 0.18) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: blur(0.55px);
+  opacity: calc(0.28 * var(--neon-strength));
+  pointer-events: none;
 }
 
-/* ✅ purple chars (pure purple gradient) */
+.neon-purple {
+  color: rgb(200, 182, 255);
+  text-shadow:
+    0 0 1px rgba(233, 213, 255, calc(0.45 * var(--neon-strength))),
+    0 0 6px rgba(167, 139, 250, calc(0.32 * var(--neon-strength))),
+    0 0 14px rgba(var(--neon-purple), calc(0.18 * var(--neon-strength)));
+  filter: brightness(1.1) saturate(1.06);
+}
 
+/* ============================================================
+   4. INTERACTIVE & DECORATIVE
+   ============================================================ */
 .neon-btn {
-  box-shadow:
-    inset 0 0 8px rgba(34, 211, 238, 0.15),
-    0 0 12px rgba(34, 211, 238, 0.25),
-    0 0 28px rgba(34, 211, 238, 0.15);
+  animation: neon-breathe 3.5s ease-in-out infinite;
+  transform: var(--gpu-boost);
 }
 
-.neon-btn:hover {
+.neon-line {
+  position: relative;
+  height: 2px;
+  width: min(90%, 800px);
+  margin-inline: auto;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(
+    to left,
+    transparent,
+    rgba(34, 211, 238, 0.75),
+    transparent
+  );
+  filter: blur(0.5px);
+  opacity: 0.85;
   box-shadow:
-    inset 0 0 12px rgba(34, 211, 238, 0.25),
-    0 0 18px rgba(34, 211, 238, 0.45),
-    0 0 42px rgba(34, 211, 238, 0.25);
+    0 0 8px rgba(192, 132, 252, 0.75),
+    0 0 18px rgba(147, 51, 234, 0.65);
 }
+
+.neon-line::after {
+  content: "";
+  position: absolute;
+  inset: -50% -30%;
+  width: 35%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(192, 132, 252, 0.95),
+    rgba(147, 51, 234, 0.85),
+    rgba(192, 132, 252, 0.95)
+  );
+  filter: blur(0.9px);
+  animation: neon-flow 3.2s linear infinite;
+}
+
+/* ============================================================
+   5. ANIMATIONS (Keyframes)
+   ============================================================ */
 @keyframes neon-breathe {
   0%,
   100% {
@@ -112,220 +177,57 @@
   }
 }
 
-.neon-btn {
-  animation: neon-breathe 3.5s ease-in-out infinite;
-}
-
-@keyframes pulse-slow {
-  0%,
-  100% {
-    opacity: 0.1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(1.02);
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 6s ease-in-out infinite;
-}
-
-@layer utilities {
-  .animate-spin-slow {
-    animation: spin-slow 30s linear infinite;
-  }
-
-  @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
-@keyframes pulse-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 8px rgba(165, 243, 252, 0.4));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(165, 243, 252, 0.9));
-  }
-}
-
-.glow-text {
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-/* ===============================
-   NEON TEXT (TUBE - CLEAN)
-================================ */
-
-/* คุมความแรงรวมด้วยตัวแปร (ปรับทีเดียวทั้งชุด) */
-:root {
-  --neon-cyan: 0, 242, 255;
-  --neon-purple: 124, 58, 237;
-  --neon-core: 217, 255, 255;
-  --neon-strength: 1.5; /* 0.8 เบาลง / 1 ปกติ / 1.2 แรงขึ้น */
-}
-
-/* CYAN NEON */
-.neon-text {
-  position: relative;
-  color: rgb(var(--neon-core));
-
-  /* ✅ ลดจำนวนชั้น + ลดระยะไกล ๆ */
-  text-shadow:
-    0 0 1px rgba(var(--neon-core), calc(0.55 * var(--neon-strength))),
-    0 0 6px rgba(var(--neon-cyan), calc(0.4 * var(--neon-strength))),
-    0 0 14px rgba(var(--neon-cyan), calc(0.22 * var(--neon-strength)));
-
-  /* ✅ ลด brightness เดิมที่ทำให้เบิร์น */
-  filter: brightness(1.12) saturate(1.05);
-}
-
-/* highlight กลางหลอด (คม ๆ ไม่ฟุ้ง) */
-.neon-text::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  color: transparent;
-
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(230, 255, 255, 0.72) 35%,
-    rgba(0, 242, 255, 0.35) 70%,
-    rgba(0, 242, 255, 0.18) 100%
-  );
-
-  -webkit-background-clip: text;
-  background-clip: text;
-
-  /* ✅ เบาลงและคมขึ้น */
-  filter: blur(0.55px);
-  opacity: calc(0.28 * var(--neon-strength));
-  pointer-events: none;
-}
-
-/* ===============================
-   PURPLE NEON (TUBE - CLEAN)
-================================ */
-
-.neon-purple {
-  color: rgb(200, 182, 255); /* core ไม่ขาวเกิน */
-
-  text-shadow:
-    0 0 1px rgba(233, 213, 255, calc(0.45 * var(--neon-strength))),
-    0 0 6px rgba(167, 139, 250, calc(0.32 * var(--neon-strength))),
-    0 0 14px rgba(var(--neon-purple), calc(0.18 * var(--neon-strength)));
-
-  filter: brightness(1.1) saturate(1.06);
-}
-
-/* ===============================
-   NEON LINE – TUBE WITH FLOW
-================================ */
-
-.neon-line {
-  position: relative;
-  height: 2px;
-  width: clamp(220px, 40vw, 800px);
-  margin-inline: auto;
-
-  border-radius: 999px;
-  overflow: hidden;
-
-  background: linear-gradient(
-    to left,
-    transparent,
-    rgba(34, 211, 238, 0.75),
-    transparent
-  );
-
-  filter: blur(0.5px);
-  opacity: 0.85;
-
-  box-shadow:
-    0 0 8px rgba(192, 132, 252, 0.75),
-    0 0 18px rgba(147, 51, 234, 0.65),
-    0 0 36px rgba(147, 51, 234, 0.45);
-}
-
-/* 🔥 แสงวิ่งในหลอด */
-.neon-line::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -30%;
-  width: 35%;
-  height: 200%;
-
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(192, 132, 252, 0.95),
-    /* purple bright */ rgba(147, 51, 234, 0.85),
-    /* purple deep */ rgba(192, 132, 252, 0.95)
-  );
-
-  filter: blur(0.9px);
-  opacity: 0.75;
-
-  animation: neon-flow 3.2s linear infinite;
-  pointer-events: none;
-}
-
-/* halo ปลายหลอด */
-.neon-line::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 999px;
-
-  background:
-    radial-gradient(
-      circle at 12% 50%,
-      rgba(34, 211, 238, 0.5),
-      transparent 45%
-    ),
-    radial-gradient(circle at 88% 50%, rgba(34, 211, 238, 0.5), transparent 45%);
-
-  filter: blur(6px);
-  opacity: 0.55;
-  pointer-events: none;
-}
-
 @keyframes neon-flow {
   0% {
     transform: translateX(-120%);
     opacity: 0;
   }
-  10% {
-    opacity: 0.9;
-  }
+  10%,
   90% {
     opacity: 0.9;
   }
   100% {
     transform: translateX(420%);
     opacity: 0;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 30s linear infinite;
+}
+
+/* ============================================================
+   6. PRELOAD & RESPONSIVE
+   ============================================================ */
+.hero--preload
+  :is(.hero-heading, p, a, .neon-line, .brand-hud, [class*="system-"]) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --neon-strength: 1.2;
+  }
+  .hero-line {
+    height: 1.3em;
+    line-height: 1.3;
+  }
+  .neon-btn {
+    padding: 12px 24px;
+    width: 100%;
+    max-width: 280px;
+  }
+  .animate-spin-slow {
+    animation-duration: 45s;
   }
 }

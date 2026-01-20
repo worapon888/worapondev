@@ -1,14 +1,50 @@
 .showcase-header {
-  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
+  font-size: clamp(2rem, 6vw, 4.2rem); /* เล็กลงในมือถือ ใหญ่ขึ้นใน Desktop */
   font-weight: 400;
   letter-spacing: 0.07em;
-  line-height: 0.8;
+  line-height: 1.1; /* ปรับให้ไม่อึดอัดเวลาตัดบรรทัด */
   text-transform: uppercase;
-  color: rgba(250, 250, 250, 0.877);
-  white-space: normal;
-  overflow-wrap: anywhere;
+  color: rgba(250, 250, 250, 0.9);
+  text-align: center;
+  margin-inline: auto;
 
+  /* เพิ่ม Shadow ให้คมชัดขึ้นบนพื้นหลัง Circuit */
   text-shadow:
-    0 0 6px rgba(34, 211, 238, 0.25),
-    0 0 18px rgba(34, 211, 238, 0.15);
+    0 0 10px rgba(34, 211, 238, 0.3),
+    0 0 20px rgba(34, 211, 238, 0.1);
+}
+
+/* Container สำหรับ Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 4rem; /* เว้นระยะเผื่อ 3D Pin เอียง */
+  padding: 2rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 640px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* SVG Wrapper Adjustment */
+.svg-wrap-container {
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+  pointer-events: none;
+  /* ป้องกัน SVG ล้นจนเกิด Scrollbar แนวนอน */
+  overflow: hidden;
 }

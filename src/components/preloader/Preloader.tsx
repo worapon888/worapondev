@@ -1,23 +1,21 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import gsap from "gsap";
 import styles from "./Preloader.module.css";
 
 type PreloaderProps = {
   enabled?: boolean;
-  durationMs?: number; // รวมเวลาทั้งหมดก่อนเริ่ม out
+  durationMs?: number;
   label?: string;
   onDone?: () => void;
   blockSize?: number;
-};
-
-type Block = {
-  id: number;
-  left: number;
-  top: number;
-  w: number;
-  h: number;
 };
 
 export default function Preloader({
@@ -27,27 +25,25 @@ export default function Preloader({
   onDone,
   blockSize = 60,
 }: PreloaderProps) {
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-  // ✅ เก็บ element ของ block แบบไม่ต้อง querySelectorAll (กันพังกับ module)
+  const scopeRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const blockElsRef = useRef<HTMLSpanElement[]>([]);
-  blockElsRef.current = [];
 
   const [ready, setReady] = useState(false);
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
+  // 1. Optimize Viewport Resize
   useEffect(() => {
-    const onResize = () =>
+    const handleResize = () =>
       setViewport({ w: window.innerWidth, h: window.innerHeight });
-    onResize();
-    window.addEventListener("resize", onResize, { passive: true });
-    return () => window.removeEventListener("resize", onResize);
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const blocks: Block[] = useMemo(() => {
-    const W = viewport.w;
-    const H = viewport.h;
+  // 2. Calculate Blocks Data
+  const blocks = useMemo(() => {
+    const { w: W, h: H } = viewport;
     if (!W || !H) return [];
 
     const cols = Math.ceil(W / blockSize);
@@ -55,114 +51,100 @@ export default function Preloader({
     const offsetX = (W - cols * blockSize) / 2;
     const offsetY = (H - rows * blockSize) / 2;
 
-    const arr: Block[] = [];
-    let id = 0;
+    return Array.from({ length: rows * cols }, (_, i) => ({
+      id: i,
+      left: (i % cols) * blockSize + offsetX,
+      top: Math.floor(i / cols) * blockSize + offsetY,
+    }));
+  }, [viewport, blockSize]);
 
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        arr.push({
-          id: id++,
-          left: c * blockSize + offsetX,
-          top: r * blockSize + offsetY,
-          w: blockSize,
-          h: blockSize,
-        });
-      }
-    }
-    return arr;
-  }, [viewport.w, viewport.h, blockSize]);
-
-  // ✅ บังคับให้ render เมื่อ enabled และมี blocks แล้ว
   useEffect(() => {
-    if (!enabled) return;
-    if (!blocks.length) return;
-    setReady(true);
+    if (enabled && blocks.length > 0) setReady(true);
   }, [enabled, blocks.length]);
 
-  useEffect(() => {
+  // 3. Animation Logic
+  useLayoutEffect(() => {
     if (!enabled || !ready) return;
 
-    const overlay = overlayRef.current;
-    const wrapper = wrapperRef.current;
-    const blockEls = blockElsRef.current;
+    const ctx = gsap.context(() => {
+      const blockEls = blockElsRef.current;
+      const uiWrapper = wrapperRef.current;
 
-    if (!overlay || !blockEls.length) return;
+      const uiOutSec = 0.6;
+      const delaySec = Math.max(0, (durationMs - uiOutSec * 2000) / 1000);
 
-    // initial
-    gsap.killTweensOf([overlay, wrapper, blockEls]);
-    gsap.set(blockEls, { opacity: 1 });
-    if (wrapper) gsap.set(wrapper, { opacity: 1 });
+      const tl = gsap.timeline({
+        delay: delaySec,
+        onComplete: () => onDone?.(),
+      });
 
-    const uiOutMs = 600; // เหมือนต้นแบบ
-    const blockDur = 0.18;
-    const staggerAmount = 0.8;
-
-    // ให้ถือว่า durationMs คือ “เวลารอก่อนเริ่มออก”
-    const delaySec = Math.max(0, (durationMs - uiOutMs * 2) / 1000);
-
-    const tl = gsap.timeline({
-      delay: delaySec,
-      onComplete: () => {
-        onDone?.();
-      },
-    });
-
-    // UI fade out
-    if (wrapper) {
+      // UI Out
       tl.to(
-        wrapper,
-        { opacity: 0, duration: uiOutMs / 1000, ease: "power2.out" },
-        0
+        uiWrapper,
+        {
+          opacity: 0,
+          duration: uiOutSec,
+          ease: "power2.out",
+        },
+        0,
       );
-    }
 
-    // blocks out random
-    tl.to(
-      blockEls,
-      {
-        opacity: 0,
-        duration: blockDur,
-        ease: "power2.inOut",
-        stagger: { amount: staggerAmount, each: 0.01, from: "random" },
-      },
-      0.05
-    );
+      // Blocks Out (Random Stagger)
+      tl.to(
+        blockEls,
+        {
+          opacity: 0,
+          scale: 0.8, // เพิ่มลูกเล่นเล็กน้อยให้ดูเบาบางลงตอนออก
+          duration: 0.25,
+          ease: "power2.inOut",
+          stagger: {
+            amount: 0.8,
+            from: "random",
+          },
+        },
+        0.1,
+      );
+    }, scopeRef);
 
-    return () => {
-      tl.kill();
-      gsap.killTweensOf([overlay, wrapper, blockEls]);
-    };
+    return () => ctx.revert();
   }, [enabled, ready, durationMs, onDone]);
 
-  // ✅ ถ้าไม่ enabled ไม่ต้องโชว์ (เวลาปิดจะ unmount)
   if (!enabled || !ready) return null;
 
   return (
-    <div ref={overlayRef} className={styles.overlay} aria-hidden="true">
-      <div className={styles.grid} aria-hidden="true">
-        {blocks.map((b) => (
+    <div ref={scopeRef} className={styles.overlay} aria-hidden="true">
+      {/* Grid of Blocks */}
+      <div className={styles.grid}>
+        {blocks.map((b, i) => (
           <span
             key={b.id}
-            className={styles.block}
-            style={{ left: b.left, top: b.top, width: b.w, height: b.h }}
             ref={(el) => {
-              if (el) blockElsRef.current.push(el);
+              if (el) blockElsRef.current[i] = el;
+            }}
+            className={styles.block}
+            style={{
+              left: b.left,
+              top: b.top,
+              width: blockSize,
+              height: blockSize,
             }}
           />
         ))}
       </div>
 
+      {/* Center UI */}
       <div ref={wrapperRef} className={styles.ui}>
         <p className={styles.text}>{label}</p>
 
-        <div className={styles.ringFrame}>
-          <span className={`${styles.ring} ${styles.ringSm}`} />
-          <span className={`${styles.ring} ${styles.ringMd}`} />
-          <span className={`${styles.ring} ${styles.ringLg}`} />
-        </div>
-
-        <div className={styles.discFrame}>
-          <span className={styles.disc} />
+        <div className={styles.ringContainer}>
+          <div className={styles.ringFrame}>
+            <span className={`${styles.ring} ${styles.ringSm}`} />
+            <span className={`${styles.ring} ${styles.ringMd}`} />
+            <span className={`${styles.ring} ${styles.ringLg}`} />
+          </div>
+          <div className={styles.discFrame}>
+            <span className={styles.disc} />
+          </div>
         </div>
       </div>
     </div>
