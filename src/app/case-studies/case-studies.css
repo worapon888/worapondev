@@ -1,0 +1,293 @@
+/* ===============================
+   CASE STUDIES (NAV + STAGE)
+   - HUD nav
+   - Cinematic slider stage
+   - Blur/DIM + Sci-fi glow edge
+================================ */
+
+/* ===============================
+   casestudies NAV (match services-nav)
+================================ */
+.casestudies-nav {
+  position: absolute;
+  top: 0;
+  left: clamp(1.5rem, 6vw, 6rem);
+  right: clamp(1.5rem, 6vw, 6rem);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding-top: 1rem;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.casestudies-nav p {
+  pointer-events: none;
+  user-select: none;
+
+  padding: 0.6rem 1rem;
+  margin-top: 1rem;
+
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 2px;
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: rgba(103, 232, 249, 0.6);
+
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
+}
+
+.casestudies-nav .service-name p {
+  font-weight: 600;
+}
+
+.casestudies-nav .service-name {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===============================
+   CASE STUDIES PAGE STAGE
+================================ */
+.cs-page {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* vignette เบา ๆ ให้เฟรมดู cinematic */
+.cs-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+}
+
+/* slider stage */
+.cs-slider {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100svh;
+
+  perspective: 250px;
+  perspective-origin: 50% 100%;
+
+  overflow: hidden;
+  z-index: 1; /* อยู่เหนือ vignette */
+}
+
+/* ===============================
+   SLIDE
+================================ */
+.cs-slide {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0px);
+
+  width: min(900px, 50vw);
+  height: 400px;
+
+  border-radius: 8px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  will-change: transform, opacity;
+}
+
+/* image */
+.cs-slide-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+
+  /* unify mood */
+  filter: brightness(0.68) saturate(0.85);
+  transform: scale(1.02); /* กันขอบตอน blur/overlay */
+}
+
+/* blur + dim layer (ทำให้ text เด่นโดยไม่ทำภาพพัง) */
+.cs-slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+
+  /* ปรับได้: 6-10px จะ cinematic มากขึ้น */
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(6px);
+
+  /* dim เบา ๆ ให้ลดรายละเอียด UI */
+  background: rgba(0, 0, 0, 0.048);
+}
+
+/* sci-fi glow edge (ของจริง ไม่ใช่ scan line) */
+.cs-slide::after {
+  content: "";
+  position: absolute;
+  inset: -1px; /* ให้ glow ล้นขอบนิด */
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+
+  box-shadow:
+    0 0 0.5px rgba(120, 255, 255, 0.45),
+    0 0 18px rgba(120, 255, 255, 0.18),
+    inset 0 0 18px rgba(120, 255, 255, 0.12);
+}
+
+/* title */
+.cs-slide-title {
+  position: relative;
+  z-index: 3;
+  color: #fff;
+
+  font-family: var(--font-sans, "Inter", system-ui);
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 450;
+  letter-spacing: -0.05em;
+
+  text-align: center;
+  padding: 0 1rem;
+
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.55);
+}
+
+/* words (SplitText) */
+.cs-slide-title .word {
+  will-change: transform;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 1000px) {
+  .casestudies-nav {
+    padding: 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  .casestudies-nav p {
+    margin-top: 0.75rem;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .cs-slide {
+    width: 72%;
+    height: 320px;
+  }
+
+  .cs-slide-title {
+    font-size: 2rem;
+    letter-spacing: 0;
+  }
+}
+
+/* ===============================
+   SMALL MOBILE
+================================ */
+@media (max-width: 560px) {
+  .cs-slide {
+    width: 86%;
+    height: 300px;
+    border-radius: 10px;
+  }
+
+  .cs-slide::before {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.26);
+  }
+}
+/* title -> left top */
+.cs-slide-title {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 3;
+
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  text-transform: uppercase;
+
+  font-family: var(--font-sans);
+  font-size: clamp(1.6rem, 2.6vw, 2.8rem);
+  font-weight: 520; /* ⬅ สำคัญ */
+  letter-spacing: -0.02em; /* ⬅ ทำให้ดู design */
+  line-height: 1.05;
+
+  color: rgba(255, 255, 255, 0.726);
+
+  text-shadow:
+    0 0 16px rgba(72, 200, 185, 0.25),
+    0 0 32px rgba(0, 0, 0, 0.7);
+}
+
+/* desc -> right bottom */
+.cs-slide-desc {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  z-index: 3;
+
+  margin: 0;
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: rgba(231, 247, 255, 0.78);
+
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(120, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  border-radius: 6px;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.08);
+}
+
+@media (max-width: 1000px) {
+  .cs-slide-title {
+    top: 14px;
+    left: 14px;
+    font-size: 1.25rem;
+  }
+  .cs-slide-desc {
+    right: 14px;
+    bottom: 14px;
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    padding: 0.5rem 0.65rem;
+  }
+}

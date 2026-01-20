@@ -424,3 +424,12 @@
     align-items: flex-start;
   }
 }
+.title-about,
+.hero.about-hero.about-hero--bio .about-hero-clip,
+.hero.about-hero.about-hero--bio .about-hero-bg,
+.hero.about-hero.about-hero--bio .about-panel-nav,
+.about-signature,
+.about-proof,
+.about-bio {
+  will-change: transform, opacity;
+}

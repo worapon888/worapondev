@@ -10,6 +10,11 @@ import React, {
 import ParticlesCursorBG from "@/components/ParticlesCursorBG";
 import "./about.css";
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
 type TypewriterOpts = {
   typeSpeed?: number;
   endHoldMs?: number;
@@ -43,7 +48,6 @@ function useTypewriterLoop(
   const clearTimers = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = 0;
-
     if (t1Ref.current) window.clearTimeout(t1Ref.current);
     if (t2Ref.current) window.clearTimeout(t2Ref.current);
     t1Ref.current = 0;
@@ -98,11 +102,9 @@ function useTypewriterLoop(
 
     while (enabled && !runningRef.current) {
       await runOnce();
-
       await new Promise<void>((r) => {
         t2Ref.current = window.setTimeout(() => r(), repeatDelayMs);
       });
-
       if (!enabled) break;
     }
   };
@@ -135,32 +137,33 @@ export default function AboutPage() {
   const heroText = "Worapon Jintajirakul";
   const [heroActive, setHeroActive] = useState(false);
 
-  // ✅ กัน SSR/hydration: ค่อยอ่าน prefersReduced ใน useEffect
   const [prefersReduced, setPrefersReduced] = useState(false);
+
+  // ===== refs สำหรับ scroll motion =====
+  const titleRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const panelClipRef = useRef<HTMLDivElement | null>(null);
+  const panelBgRef = useRef<HTMLDivElement | null>(null);
+  const panelNavRef = useRef<HTMLDivElement | null>(null);
+  const signatureRef = useRef<HTMLParagraphElement | null>(null);
+  const proofRef = useRef<HTMLParagraphElement | null>(null);
+  const bioRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     setHeroActive(true);
 
-    // ✅ ให้ mq เป็น MediaQueryList ชัดๆ
     const mq: MediaQueryList = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
-
-    // set ค่าเริ่มต้น
     setPrefersReduced(mq.matches);
 
-    // ✅ handler แบบถูก type (ใช้ได้ทั้ง addEventListener / addListener)
-    const onChange = (e: MediaQueryListEvent) => {
-      setPrefersReduced(e.matches);
-    };
+    const onChange = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
 
-    // ✅ modern browsers
     if (typeof mq.addEventListener === "function") {
       mq.addEventListener("change", onChange);
       return () => mq.removeEventListener("change", onChange);
     }
 
-    // ✅ Safari / old
     mq.addListener(onChange);
     return () => mq.removeListener(onChange);
   }, []);
@@ -172,15 +175,158 @@ export default function AboutPage() {
     glitchChance: 0,
   });
 
-  // (optional) คุมข้อความกลางกล่องไว้ในตัวแปร อ่านง่าย
   const bio = useMemo(
     () =>
-      `I design and build immersive web experiences where motion, interaction, and clarity work together. 
-My focus is not just how things look, but how people feel while navigating a digital space. 
-Every animation and transition is intentional — not decoration. 
+      `I design and build immersive web experiences where motion, interaction, and clarity work together.
+My focus is not just how things look, but how people feel while navigating a digital space.
+Every animation and transition is intentional — not decoration.
 I work independently, blending design thinking, frontend engineering, and experimental visuals to create interfaces that feel alive, precise, and human.`,
     [],
   );
+
+  // ===== subtle scroll motion =====
+  useLayoutEffect(() => {
+    if (prefersReduced) return;
+
+    const titleEl = titleRef.current;
+    const sectionEl = sectionRef.current;
+    const clipEl = panelClipRef.current;
+    const bgEl = panelBgRef.current;
+    const navEl = panelNavRef.current;
+    const sigEl = signatureRef.current;
+    const proofEl = proofRef.current;
+    const bioEl = bioRef.current;
+
+    if (!sectionEl || !clipEl || !bgEl) return;
+
+    const ctx = gsap.context(() => {
+      // 1) Title: ขยับลงนิด + fade (subtle)
+      if (titleEl) {
+        gsap.fromTo(
+          titleEl,
+          { y: -10, opacity: 1 },
+          {
+            y: 15,
+            opacity: 0.92,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: "top 85%",
+              end: "top 20%",
+            },
+          },
+        );
+      }
+
+      // 2) Panel: parallax เบา ๆ + เงา/ไฮไลท์นิด
+      gsap.fromTo(
+        clipEl,
+        { y: 0 },
+        {
+          y: 10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionEl,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.7,
+          },
+        },
+      );
+
+      gsap.fromTo(
+        bgEl,
+        { opacity: 0.95 },
+        {
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionEl,
+            start: "top 80%",
+            end: "bottom 20%",
+            scrub: 0.5,
+          },
+        },
+      );
+
+      // 3) Content: เข้าแบบเนียน ๆ
+      if (bioEl) {
+        gsap.fromTo(
+          bioEl,
+          { y: 10, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: "top 70%",
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      }
+
+      // 4) HUD top: float นิด ๆ
+      if (navEl) {
+        gsap.fromTo(
+          navEl,
+          { y: -6, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: "top 78%",
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      }
+
+      // 5) HUD bottom left/right: slide เบามาก ๆ
+      if (sigEl) {
+        gsap.fromTo(
+          sigEl,
+          { x: -10, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: "top 65%",
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      }
+
+      if (proofEl) {
+        gsap.fromTo(
+          proofEl,
+          { x: 10, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: "top 65%",
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      }
+    }, sectionEl);
+
+    return () => ctx.revert();
+  }, [prefersReduced]);
 
   return (
     <>
@@ -197,7 +343,7 @@ I work independently, blending design thinking, frontend engineering, and experi
       <ParticlesCursorBG />
 
       {/* BIG TITLE */}
-      <div className="title-about">
+      <div className="title-about" ref={titleRef}>
         <h3 data-typing={heroActive ? "1" : "0"}>
           {prefersReduced ? heroText : heroTyped}
           <span className="typing-cursor" aria-hidden="true">
@@ -207,16 +353,16 @@ I work independently, blending design thinking, frontend engineering, and experi
       </div>
 
       {/* ABOUT BIO PANEL */}
-      <section className="hero about-hero about-hero--bio">
+      <section className="hero about-hero about-hero--bio" ref={sectionRef}>
         {/* GLASS PANEL (background only) */}
-        <div className="about-hero-clip" aria-hidden="true">
-          <div className="about-hero-bg" />
+        <div className="about-hero-clip" aria-hidden="true" ref={panelClipRef}>
+          <div className="about-hero-bg" ref={panelBgRef} />
         </div>
 
         <div className="hero-container">
           <div className="hero-content">
             {/* PANEL HUD (inside the box - top) */}
-            <div className="about-panel-nav">
+            <div className="about-panel-nav" ref={panelNavRef}>
               <div className="about-logo">
                 <p>Floder_1</p>
               </div>
@@ -226,10 +372,13 @@ I work independently, blending design thinking, frontend engineering, and experi
             </div>
 
             {/* PANEL HUD (inside the box - bottom) */}
-            <p className="about-signature about-signature--left">
+            <p
+              className="about-signature about-signature--left"
+              ref={signatureRef}
+            >
               Designing interfaces where motion serves meaning.
             </p>
-            <p className="about-proof about-proof--right">
+            <p className="about-proof about-proof--right" ref={proofRef}>
               Independent · Clarity · Rhythm · Restraint
             </p>
 
@@ -237,7 +386,9 @@ I work independently, blending design thinking, frontend engineering, and experi
             <div className="container">
               <div className="hero-content-footer">
                 <div className="callout">
-                  <p className="about-bio">{bio}</p>
+                  <p className="about-bio" ref={bioRef}>
+                    {bio}
+                  </p>
                 </div>
               </div>
             </div>
