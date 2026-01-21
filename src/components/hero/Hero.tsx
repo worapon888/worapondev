@@ -23,7 +23,7 @@ export default function Hero() {
     [],
   );
 
-  // ✅ เรียกใช้ Animations (GSAP)
+  // ✅ GSAP animations
   useHeroAnimations({
     rootRef,
     headingRef,
@@ -33,51 +33,53 @@ export default function Hero() {
     availabilityRef,
     lineRef,
     brandHudRef,
-    timerRef,
+    timerRef, // ✅ ส่งให้ hook ใช้ “เฉพาะ ref” ไม่ทำ timer loop ซ้ำ
     systemLogRef,
     systemStatusRef,
   });
 
-  // ✅ Optimized Timer: ใช้ requestAnimationFrame แทน setInterval เพื่อความลื่นไหลและประหยัดพลังงาน
+  // ✅ Timer: เหลือที่เดียว (ลดงานซ้ำ / ลด TBT)
   useEffect(() => {
     const el = timerRef.current;
     if (!el) return;
 
-    let frameId: number;
-    let lastUpdate = 0;
+    // Intl formatter สร้างครั้งเดียว (เบากว่า toLocaleTimeString ซ้ำ ๆ)
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Toronto",
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
 
-    const updateTime = (timestamp: number) => {
-      // อัปเดตทุก 1 วินาที (1000ms) เพื่อลดภาระการเขียน DOM
-      if (timestamp - lastUpdate >= 1000) {
-        const options: Intl.DateTimeFormatOptions = {
-          timeZone: "America/Toronto",
-          hour12: false,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        };
+    let raf = 0;
+    let lastSec = -1;
 
-        const torontoTime = new Date().toLocaleTimeString("en-US", options);
-        const hour = parseInt(torontoTime.split(":")[0], 10);
+    const tick = () => {
+      const parts = fmt.formatToParts(new Date());
+      const hh = Number(parts.find((p) => p.type === "hour")?.value ?? "0");
+      const mm = parts.find((p) => p.type === "minute")?.value ?? "00";
+      const ss = parts.find((p) => p.type === "second")?.value ?? "00";
+      const sec = Number(ss);
 
-        // 4-hour sectors (01–06)
-        const sector = Math.floor(hour / 4) + 1;
-        const sectorFormatted = String(sector).padStart(2, "0");
-
-        el.textContent = `ZONE ${sectorFormatted}  —  ${torontoTime}`;
-        lastUpdate = timestamp;
+      // อัปเดตเฉพาะเมื่อ “วินาทีเปลี่ยนจริง”
+      if (sec !== lastSec) {
+        lastSec = sec;
+        const sector = Math.floor(hh / 4) + 1;
+        el.textContent = `ZONE ${String(sector).padStart(2, "0")}  —  ${String(hh).padStart(2, "0")}:${mm}:${ss}`;
       }
-      frameId = requestAnimationFrame(updateTime);
+
+      raf = requestAnimationFrame(tick);
     };
 
-    frameId = requestAnimationFrame(updateTime);
-    return () => cancelAnimationFrame(frameId);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
     <section
       ref={rootRef}
-      className="relative hero hero--preload h-[100vh] overflow-hidden flex items-center "
+      className="relative hero hero--preload h-[100vh] overflow-hidden flex items-center"
     >
       {/* 🧩 Brand HUD */}
       <div
@@ -101,7 +103,6 @@ export default function Hero() {
           className="hero-heading font-mono uppercase text-[clamp(2.6rem,6.6vw,5.8rem)] sm:text-[clamp(3.2rem,7.2vw,6.8rem)] lg:text-[clamp(4.2rem,8.2vw,8.2rem)] tracking-[0.05em] sm:tracking-[0.1em] lg:tracking-[0.12em] neon-text leading-[1.1] sm:leading-tight"
           style={{ fontFamily: "var(--font-beon)" }}
         >
-          {/* เพิ่ม className "block" เพื่อให้แยกบรรทัดชัดเจนบนมือถือ */}
           <span className="hero-line block mb-2 sm:mb-0">
             {buildHeroChars("Crafting ", headingPattern, 8)}
             <span className="neon-purple">

@@ -70,22 +70,19 @@ function ServiceCard({
 }: {
   svc: ServiceItem;
   priceText: string;
-  isActive: boolean; // ✅ ใบกลางเท่านั้นที่เล่นวิดีโอ
+  isActive: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // ✅ คุมการเล่น/หยุดตาม isActive (กันกินเครื่อง)
   useLayoutEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
     if (isActive) {
-      // พยายาม play (บางบราวเซอร์อาจ block ถ้าไม่ muted/playsInline)
       const p = v.play();
       if (p && typeof p.then === "function") p.catch(() => {});
     } else {
       v.pause();
-      // optional: รีเซ็ตเฟรมกลับไปต้นคลิป
       try {
         v.currentTime = 0;
       } catch {}
@@ -105,7 +102,6 @@ function ServiceCard({
             loop
             playsInline
             preload="metadata"
-            // ✅ autoplay เฉพาะใบกลาง
             autoPlay={isActive}
           />
         ) : (
@@ -118,7 +114,6 @@ function ServiceCard({
             priority
           />
         )}
-
         <div className="services-card__mediaOverlay" />
         <div className="services-card__badge">
           <span className="code">{svc.code}</span>
@@ -131,9 +126,7 @@ function ServiceCard({
           <h3>{svc.name}</h3>
           <p className="headline">{svc.headline}</p>
         </header>
-
         <p className="desc">{svc.description}</p>
-
         <div className="services-card__meta">
           <div className="meta-row">
             <span className="k">ETA</span>
@@ -147,7 +140,6 @@ function ServiceCard({
             </span>
           </div>
         </div>
-
         <div className="services-card__cols">
           <div className="col">
             <p className="col-title">Deliverables</p>
@@ -163,11 +155,9 @@ function ServiceCard({
   );
 }
 
-export default function ServicesPage({
-  title = "Zone / Services",
-}: {
-  title?: string;
-}) {
+// ✅ แก้ไข Props ของหน้า ServicesPage เพื่อไม่ให้ชนกับ PageProps ของ Next.js
+export default function ServicesPage() {
+  const displayTitle = "Zone / Services"; // กำหนดตัวแปรข้างในแทนรับผ่าน Props
   const list = SERVICES || [];
   const len = list.length;
 
@@ -175,13 +165,12 @@ export default function ServicesPage({
   const [isAnimating, setIsAnimating] = useState(false);
 
   const stageRef = useRef<HTMLDivElement>(null);
-  const elRefs = {
-    L: useRef<HTMLDivElement>(null),
-    C: useRef<HTMLDivElement>(null),
-    R: useRef<HTMLDivElement>(null),
-  };
 
-  // เก็บ Pose ปัจจุบันของแต่ละ Element ไว้ใน Ref เพื่อใช้คำนวณ Animation รอบถัดไป
+  // สร้าง Refs แยกทีละตัวเพื่อความง่ายในการระบุ Dependency
+  const refL = useRef<HTMLDivElement>(null);
+  const refC = useRef<HTMLDivElement>(null);
+  const refR = useRef<HTMLDivElement>(null);
+
   const currentPoses = useRef<Record<ElKey, PoseKey>>({
     L: "left",
     C: "center",
@@ -189,7 +178,7 @@ export default function ServicesPage({
   });
 
   useLayoutEffect(() => {
-    const targets = [elRefs.L.current, elRefs.C.current, elRefs.R.current];
+    const targets = [refL.current, refC.current, refR.current];
     gsap.set(targets, {
       position: "absolute",
       left: "50%",
@@ -200,10 +189,10 @@ export default function ServicesPage({
       force3D: true,
     });
 
-    gsap.set(elRefs.L.current!, POSES.left);
-    gsap.set(elRefs.C.current!, POSES.center);
-    gsap.set(elRefs.R.current!, POSES.right);
-  }, []);
+    if (refL.current) gsap.set(refL.current, POSES.left);
+    if (refC.current) gsap.set(refC.current, POSES.center);
+    if (refR.current) gsap.set(refR.current, POSES.right);
+  }, []); // ตัวนี้เซ็ตแค่ตอน mount
 
   const animateTo = useCallback(
     (dir: 1 | -1) => {
@@ -236,30 +225,37 @@ export default function ServicesPage({
         },
       });
 
-      tl.to(
-        elRefs.L.current,
-        { ...POSES[newPoses.L], duration: 0.6, ease: "expo.out" },
-        0,
-      )
-        .to(
-          elRefs.C.current,
+      // ใส่ dependencies refs เข้าไปใน timeline
+      if (refL.current)
+        tl.to(
+          refL.current,
+          { ...POSES[newPoses.L], duration: 0.6, ease: "expo.out" },
+          0,
+        );
+      if (refC.current)
+        tl.to(
+          refC.current,
           { ...POSES[newPoses.C], duration: 0.6, ease: "expo.out" },
           0,
-        )
-        .to(
-          elRefs.R.current,
+        );
+      if (refR.current)
+        tl.to(
+          refR.current,
           { ...POSES[newPoses.R], duration: 0.6, ease: "expo.out" },
           0,
         );
     },
-    [centerIndex, isAnimating, len],
+    [centerIndex, isAnimating, len], // refs ไม่ต้องใส่ใน dep ของ useCallback เพราะมันเสถียร
   );
 
-  const getSvcByPose = (pose: PoseKey) => {
-    if (pose === "center") return list[centerIndex];
-    if (pose === "left") return list[wrapIndex(centerIndex - 1, len)];
-    return list[wrapIndex(centerIndex + 1, len)];
-  };
+  const getSvcByPose = useCallback(
+    (pose: PoseKey) => {
+      if (pose === "center") return list[centerIndex];
+      if (pose === "left") return list[wrapIndex(centerIndex - 1, len)];
+      return list[wrapIndex(centerIndex + 1, len)];
+    },
+    [centerIndex, len, list],
+  );
 
   if (len === 0) return null;
 
@@ -267,7 +263,7 @@ export default function ServicesPage({
     <section className="services-container">
       <div className="services-nav">
         <div className="services-logo">
-          <p>{title}</p>
+          <p>{displayTitle}</p>
         </div>
         <div className="service-name">
           <p>{list[centerIndex].name}</p>
@@ -306,18 +302,19 @@ export default function ServicesPage({
         {(["L", "C", "R"] as ElKey[]).map((key) => {
           const pose = currentPoses.current[key];
           const svc = getSvcByPose(pose);
+          const activeRef = key === "L" ? refL : key === "C" ? refC : refR;
 
           return (
             <div
               key={key}
-              ref={elRefs[key]}
+              ref={activeRef}
               className={`services-slot services-slot--${key}`}
             >
               <ServiceCard
                 key={svc.code}
                 svc={svc}
                 priceText={formatPrice(svc.price)}
-                isActive={pose === "center"} // ✅ เล่นวิดีโอเฉพาะใบกลาง
+                isActive={pose === "center"}
               />
             </div>
           );

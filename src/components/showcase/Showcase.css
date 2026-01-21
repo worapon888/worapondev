@@ -1,50 +1,89 @@
-.showcase-header {
-  font-size: clamp(2rem, 6vw, 4.2rem); /* เล็กลงในมือถือ ใหญ่ขึ้นใน Desktop */
-  font-weight: 400;
-  letter-spacing: 0.07em;
-  line-height: 1.1; /* ปรับให้ไม่อึดอัดเวลาตัดบรรทัด */
-  text-transform: uppercase;
-  color: rgba(250, 250, 250, 0.9);
-  text-align: center;
-  margin-inline: auto;
-
-  /* เพิ่ม Shadow ให้คมชัดขึ้นบนพื้นหลัง Circuit */
-  text-shadow:
-    0 0 10px rgba(34, 211, 238, 0.3),
-    0 0 20px rgba(34, 211, 238, 0.1);
+/* ============================================================
+   SHOWCASE SECTION STYLES
+   ============================================================ */
+:root {
+  --cyan-glow: rgba(34, 211, 238, 0.3);
+  --text-main: rgba(250, 250, 250, 0.9);
 }
 
-/* Container สำหรับ Grid */
+.showcase-header {
+  /* ปรับขนาด Font ให้ลื่นไหลตามจอ: Min 1.8rem, Max 4.2rem */
+  font-size: clamp(1.8rem, 5vw + 1rem, 4.2rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--text-main);
+  text-align: center;
+  max-width: 90%;
+  margin: 0 auto;
+
+  /* เพิ่มมิติด้วย Glow effect */
+  text-shadow:
+    0 0 12px var(--cyan-glow),
+    0 0 24px rgba(34, 211, 238, 0.1);
+}
+
+/* Projects Grid: 
+   ใช้ padding เยอะหน่อยเพื่อให้ 3D Pin Container มีพื้นที่เอียง (Perspective) 
+*/
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 4rem; /* เว้นระยะเผื่อ 3D Pin เอียง */
-  padding: 2rem 1rem;
+  /* ปรับคอลัมน์อัตโนมัติ: ขั้นต่ำ 280px ต่อใบ */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 5rem 2rem;
+  padding: 4rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  /* สำคัญ: ปล่อยให้เห็น 3D Pin ที่ล้นออกมาตอน Hover */
+  overflow: visible;
 }
 
-/* Responsive Breakpoints */
-@media (min-width: 640px) {
-  .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 3rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .projects-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-/* SVG Wrapper Adjustment */
+/* SVG Background Wrapper */
 .svg-wrap-container {
   position: absolute;
   inset: 0;
-  opacity: 0.6;
+  opacity: 0.5;
   pointer-events: none;
-  /* ป้องกัน SVG ล้นจนเกิด Scrollbar แนวนอน */
+  z-index: -1;
   overflow: hidden;
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS (Fine-Tuning)
+   ============================================================ */
+
+/* Mobile Portrait (ต่ำกว่า 640px) */
+@media (max-width: 639px) {
+  .projects-grid {
+    gap: 6rem 1rem; /* เพิ่ม gap แนวตั้งเพราะ Pin มีหาง (Tail) */
+    padding: 2rem 1.5rem;
+  }
+
+  .showcase-header {
+    letter-spacing: 0.05em; /* ลดระยะห่างตัวอักษรบนจอเล็กเพื่อไม่ให้ตัดคำแปลกๆ */
+  }
+}
+
+/* Tablet & Small Laptop (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem 2.5rem;
+  }
+}
+
+/* ปิด Animation สำหรับผู้ใช้ที่ตั้งค่า Reduce Motion */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-header {
+    text-shadow: none;
+  }
+}
+@media (max-width: 768px) {
+  svg filter {
+    display: none;
+  } /* ปิดฟิลเตอร์ในจอเล็ก */
+  .showcase-svg-inner {
+    opacity: 0;
+  }
 }

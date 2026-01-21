@@ -1,63 +1,35 @@
 /* ===============================
    CASE STUDIES (NAV + STAGE)
-   - HUD nav
-   - Cinematic slider stage
-   - Blur/DIM + Sci-fi glow edge
 ================================ */
 
-/* ===============================
-   casestudies NAV (match services-nav)
-================================ */
 .casestudies-nav {
   position: absolute;
   top: 0;
-  left: clamp(1.5rem, 6vw, 6rem);
-  right: clamp(1.5rem, 6vw, 6rem);
-
+  left: 0;
+  right: 0;
+  padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 6vw, 6rem);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
-  padding-top: 1rem;
   z-index: 50;
   pointer-events: none;
 }
 
 .casestudies-nav p {
-  pointer-events: none;
-  user-select: none;
-
   padding: 0.6rem 1rem;
-  margin-top: 1rem;
-
   border: 1px solid rgba(103, 232, 249, 0.2);
   border-radius: 2px;
-
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: clamp(9px, 1vw, 11px);
   text-transform: uppercase;
   letter-spacing: 0.32em;
   color: rgba(103, 232, 249, 0.6);
-
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-
   box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
 }
 
-.casestudies-nav .service-name p {
-  font-weight: 600;
-}
-
-.casestudies-nav .service-name {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* ===============================
-   CASE STUDIES PAGE STAGE
-================================ */
 .cs-page {
   position: relative;
   width: 100%;
@@ -65,229 +37,160 @@
   overflow: hidden;
 }
 
-/* vignette เบา ๆ ให้เฟรมดู cinematic */
+/* Cinematic Vignette */
 .cs-page::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
   background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 40%,
-    rgba(0, 0, 0, 0.65) 100%
+    circle at center,
+    transparent 20%,
+    rgba(0, 0, 0, 0.6) 100%
   );
 }
 
-/* slider stage */
 .cs-slider {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100svh;
-
-  perspective: 250px;
-  perspective-origin: 50% 100%;
-
-  overflow: hidden;
-  z-index: 1; /* อยู่เหนือ vignette */
-}
-
-/* ===============================
-   SLIDE
-================================ */
-.cs-slide {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate3d(-50%, -50%, 0px);
-
-  width: min(900px, 50vw);
-  height: 400px;
-
-  border-radius: 8px;
-  overflow: hidden;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  will-change: transform, opacity;
+  perspective: 1000px;
+  z-index: 1;
 }
 
-/* image */
+/* --- SLIDE ITEM --- */
+.cs-slide {
+  position: absolute;
+  width: clamp(280px, 85vw, 1000px);
+  aspect-ratio: 16 / 9;
+  max-height: 75vh;
+  border-radius: 12px;
+  overflow: hidden;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
 .cs-slide-image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 0;
-
-  /* unify mood */
-  filter: brightness(0.68) saturate(0.85);
-  transform: scale(1.02); /* กันขอบตอน blur/overlay */
+  filter: brightness(0.6) saturate(0.8);
 }
 
-/* blur + dim layer (ทำให้ text เด่นโดยไม่ทำภาพพัง) */
+/* Overlay Glass & Sci-fi Edge */
 .cs-slide::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
   z-index: 1;
-
-  /* ปรับได้: 6-10px จะ cinematic มากขึ้น */
-  backdrop-filter: blur(2.5px);
-  -webkit-backdrop-filter: blur(6px);
-
-  /* dim เบา ๆ ให้ลดรายละเอียด UI */
-  background: rgba(0, 0, 0, 0.048);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 100%
+  );
 }
 
-/* sci-fi glow edge (ของจริง ไม่ใช่ scan line) */
 .cs-slide::after {
   content: "";
   position: absolute;
-  inset: -1px; /* ให้ glow ล้นขอบนิด */
-  border-radius: inherit;
-  pointer-events: none;
+  inset: 0;
   z-index: 2;
-
-  box-shadow:
-    0 0 0.5px rgba(120, 255, 255, 0.45),
-    0 0 18px rgba(120, 255, 255, 0.18),
-    inset 0 0 18px rgba(120, 255, 255, 0.12);
+  border-radius: inherit;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-/* title */
-.cs-slide-title {
-  position: relative;
-  z-index: 3;
-  color: #fff;
-
-  font-family: var(--font-sans, "Inter", system-ui);
-  font-size: clamp(2rem, 4vw, 4rem);
-  font-weight: 450;
-  letter-spacing: -0.05em;
-
-  text-align: center;
-  padding: 0 1rem;
-
-  text-shadow: 0 0 30px rgba(0, 0, 0, 0.55);
-}
-
-/* words (SplitText) */
-.cs-slide-title .word {
-  will-change: transform;
-}
-
-/* ===============================
-   MOBILE
-================================ */
-@media (max-width: 1000px) {
-  .casestudies-nav {
-    padding: 1rem;
-    left: 1rem;
-    right: 1rem;
-  }
-
-  .casestudies-nav p {
-    margin-top: 0.75rem;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    padding: 0.55rem 0.85rem;
-  }
-
-  .cs-slide {
-    width: 72%;
-    height: 320px;
-  }
-
-  .cs-slide-title {
-    font-size: 2rem;
-    letter-spacing: 0;
-  }
-}
-
-/* ===============================
-   SMALL MOBILE
-================================ */
-@media (max-width: 560px) {
-  .cs-slide {
-    width: 86%;
-    height: 300px;
-    border-radius: 10px;
-  }
-
-  .cs-slide::before {
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    background: rgba(0, 0, 0, 0.26);
-  }
-}
-/* title -> left top */
+/* --- CONTENT --- */
 .cs-slide-title {
   position: absolute;
-  top: 18px;
-  left: 18px;
+  top: clamp(1.2rem, 5vw, 2.5rem);
+  left: clamp(1.2rem, 5vw, 2.5rem);
   z-index: 3;
-
   margin: 0;
-  padding: 0;
-  text-align: left;
-  text-transform: uppercase;
-
+  max-width: 85%;
   font-family: var(--font-sans);
-  font-size: clamp(1.6rem, 2.6vw, 2.8rem);
-  font-weight: 520; /* ⬅ สำคัญ */
-  letter-spacing: -0.02em; /* ⬅ ทำให้ดู design */
-  line-height: 1.05;
-
-  color: rgba(255, 255, 255, 0.726);
-
-  text-shadow:
-    0 0 16px rgba(72, 200, 185, 0.25),
-    0 0 32px rgba(0, 0, 0, 0.7);
+  font-size: clamp(1.2rem, 4vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
 }
 
-/* desc -> right bottom */
 .cs-slide-desc {
   position: absolute;
-  right: 18px;
-  bottom: 16px;
+  bottom: clamp(1.2rem, 5vw, 5rem);
+  right: clamp(1.2rem, 5vw, 2.5rem);
   z-index: 3;
-
   margin: 0;
-
+  max-width: min(400px, 80%);
   font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.28em;
-  color: rgba(231, 247, 255, 0.78);
-
-  padding: 0.55rem 0.75rem;
-  border: 1px solid rgba(120, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
-  border-radius: 6px;
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.08);
+  font-size: clamp(9px, 1.1vw, 12px);
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  padding: 0.7rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  border-radius: 4px;
+  color: #67e8f9;
 }
 
-@media (max-width: 1000px) {
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+  .casestudies-nav .service-name,
+  .casestudies-nav .casestudies-logo {
+    display: none; /* ซ่อน HUD บนมือถือตามที่ต้องการ */
+  }
+
+  .cs-slide {
+    width: 90vw;
+    aspect-ratio: 3 / 3; /* ทรงสูงขึ้นเพื่อให้เห็น Title + Desc ครบ */
+    max-height: 65vh;
+  }
+
   .cs-slide-title {
-    top: 14px;
-    left: 14px;
-    font-size: 1.25rem;
+    top: 1.5rem;
+    left: 1.2rem;
+    font-size: 1.6rem;
+  }
+
+  .cs-slide-desc {
+    top: auto; /* ยกเลิก top 50% */
+    bottom: 35%; /* ให้เกาะขอบล่าง */
+    left: 5rem;
+    right: 1rem;
+
+    padding: 0.5rem 0.7rem; /* ลด Padding ให้กล่องแคบลง */
+    font-size: 11px; /* ลดขนาดฟอนต์ */
+    line-height: 1.3; /* ลดระยะห่างบรรทัด */
+    letter-spacing: 0.05em; /* ลดช่องว่างตัวอักษร */
+    border: none;
+    color: #ffffffdc;
+    max-width: fit-content; /* ให้กล่องกว้างเท่ากับเนื้อหา (ไม่เต็มจอ) */
+    background: rgba(0, 0, 0, 0.897); /* ความเข้มกำลังดี */
+    border-radius: 4px;
+  }
+}
+
+/* แก้ไขจอเตี้ย (Landscape phone) */
+@media (max-height: 500px) {
+  .cs-slide {
+    aspect-ratio: 21 / 9;
+  }
+  .cs-slide-title {
+    font-size: 1rem;
   }
   .cs-slide-desc {
-    right: 14px;
-    bottom: 14px;
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    padding: 0.5rem 0.65rem;
-  }
+  } /* ซ่อน desc ถ้าจอเตี้ยเกินไป */
 }

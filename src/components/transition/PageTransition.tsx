@@ -1,16 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { flushSync } from "react-dom";
 import BlocksTransition from "./BlocksTransition";
 
-type Ctx = {
+interface TransitionContextType {
   go: (href: string) => void;
   isTransitioning: boolean;
-};
+}
 
-const PageTransitionContext = createContext<Ctx | null>(null);
+const PageTransitionContext = createContext<TransitionContextType | null>(null);
 
 export function PageTransitionProvider({
   children,
@@ -19,42 +24,48 @@ export function PageTransitionProvider({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const [enabled, setEnabled] = useState(false);
+  // ใช้ useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ซ้ำๆ
+  const go = useCallback(
+    (href: string) => {
+      if (isTransitioning || href === pathname) return;
 
-  const go = (href: string) => {
-    if (enabled) return;
-    if (href === pathname) return;
+      // เริ่ม Transition และสั่งเปลี่ยนเส้นทางพร้อมกัน
+      // React 18 จัดการเรื่องลำดับการอัปเดตได้ดีเยี่ยมโดยไม่ต้องใช้ flushSync
+      setIsTransitioning(true);
+      router.push(href);
+    },
+    [isTransitioning, pathname, router],
+  );
 
-    // ✅ ทำให้ overlay โผล่ "ทันที" ก่อนเริ่ม navigation
-    flushSync(() => {
-      setEnabled(true);
-    });
-
-    // ✅ push ทันที → หน้าเปลี่ยนพร้อมกับ transition
-    router.push(href);
-  };
-
-  const value = useMemo(() => ({ go, isTransitioning: enabled }), [enabled]);
+  const value = useMemo(
+    () => ({
+      go,
+      isTransitioning,
+    }),
+    [go, isTransitioning],
+  );
 
   return (
     <PageTransitionContext.Provider value={value}>
       {children}
 
       <BlocksTransition
-        enabled={enabled}
+        enabled={isTransitioning}
         blockSize={60}
-        onDone={() => {
-          // ✅ จบแอนิเมชันค่อยปิด overlay
-          setEnabled(false);
-        }}
+        onDone={() => setIsTransitioning(false)}
       />
     </PageTransitionContext.Provider>
   );
 }
 
-export function usePageTransition() {
+export const usePageTransition = () => {
   const ctx = useContext(PageTransitionContext);
-  if (!ctx) throw new Error("usePageTransition must be used in provider");
+  if (!ctx) {
+    throw new Error(
+      "usePageTransition must be used within a PageTransitionProvider",
+    );
+  }
   return ctx;
-}
+};

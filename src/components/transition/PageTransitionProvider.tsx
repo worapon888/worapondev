@@ -1,15 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Preloader from "@/components/preloader/Preloader";
 
-type Ctx = {
+interface TransitionContextType {
   go: (href: string) => void;
   isTransitioning: boolean;
-};
+}
 
-const PageTransitionContext = createContext<Ctx | null>(null);
+const PageTransitionContext = createContext<TransitionContextType | null>(null);
 
 export function PageTransitionProvider({
   children,
@@ -19,43 +25,52 @@ export function PageTransitionProvider({
   const router = useRouter();
   const pathname = usePathname();
 
-  const [enabled, setEnabled] = useState(false);
-  const [nextHref, setNextHref] = useState<string | null>(null);
+  // ใช้เป้าหมาย (href) เป็นสถานะเดียวเพื่อบอกว่ากำลังเปลี่ยนหน้าหรือไม่
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
 
-  const go = (href: string) => {
-    // ✅ 1) กันเล่นซ้ำตอนกำลังเล่นอยู่
-    if (enabled) return;
+  const go = useCallback(
+    (href: string) => {
+      // ป้องกันการคลิกซ้ำหน้าเดิม หรือคลิกขณะกำลังโหลด
+      if (pendingHref || href === pathname) return;
+      setPendingHref(href);
+    },
+    [pendingHref, pathname],
+  );
 
-    // ✅ 2) กันเล่นซ้ำถ้ากด route เดิม
-    if (href === pathname) return;
+  const onAnimationDone = useCallback(() => {
+    if (pendingHref) {
+      router.push(pendingHref);
+      setPendingHref(null);
+    }
+  }, [pendingHref, router]);
 
-    setNextHref(href);
-    setEnabled(true);
-  };
-
-  const value = useMemo(() => ({ go, isTransitioning: enabled }), [enabled]);
+  const value = useMemo(
+    () => ({
+      go,
+      isTransitioning: !!pendingHref,
+    }),
+    [go, pendingHref],
+  );
 
   return (
     <PageTransitionContext.Provider value={value}>
       {children}
 
-      {/* ✅ ตัวนี้จะไม่เล่นเอง เพราะ enabled เริ่มต้นเป็น false */}
       <Preloader
-        enabled={enabled}
-        durationMs={0} // ไม่ต้องรอ
+        enabled={!!pendingHref}
+        durationMs={0}
         blockSize={60}
-        onDone={() => {
-          if (nextHref) router.push(nextHref);
-          setEnabled(false);
-          setNextHref(null);
-        }}
+        onDone={onAnimationDone}
       />
     </PageTransitionContext.Provider>
   );
 }
 
-export function usePageTransition() {
+export const usePageTransition = () => {
   const ctx = useContext(PageTransitionContext);
-  if (!ctx) throw new Error("usePageTransition must be used in provider");
+  if (!ctx)
+    throw new Error(
+      "usePageTransition must be used within PageTransitionProvider",
+    );
   return ctx;
-}
+};

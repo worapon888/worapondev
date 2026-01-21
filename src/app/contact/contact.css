@@ -706,3 +706,142 @@
     opacity: 0;
   }
 }
+/* ===============================
+   RESPONSIVE GLOBAL ADJUSTMENTS
+================================ */
+
+/* --- Tablet Landscape / Desktop ขนาดเล็ก (1024px - 1280px) --- */
+@media (max-width: 1200px) {
+  .hero.contact-hero .hero-content .container {
+    padding: 3rem;
+  }
+
+  .contact-form > .container {
+    padding: 4rem 3rem;
+  }
+
+  .faq-container .container {
+    gap: 2rem;
+  }
+}
+
+/* --- Tablet Portrait (768px - 1023px) --- */
+@media (max-width: 1000px) {
+  /* Hero Section */
+  .hero.contact-hero {
+    height: auto;
+    min-height: 50svh;
+    padding: 0.5rem;
+  }
+
+  .hero.contact-hero .contact-hero-clip {
+    clip-path: none; /* ปิดมุมตัดซับซ้อนบนมือถือเพื่อให้ Content อ่านง่าย */
+    border-radius: 1.5rem;
+    inset: 0.5rem;
+  }
+
+  .hero.contact-hero .hero-content .container {
+    justify-content: center;
+    padding: 4rem 1.5rem 2.5rem;
+  }
+
+  .hero.contact-hero .hero-content-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .hero.contact-hero .hero-callout {
+    margin-left: 0;
+    transform: none;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Contact Form */
+  .contact-form-row:nth-of-type(2) {
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .contact-form-row:nth-of-type(2) .contact-form-col:first-child,
+  .contact-form-row:nth-of-type(2) .contact-form-col:last-child {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .contact-form-bg {
+    clip-path: polygon(
+      2rem 0,
+      calc(100% - 2rem) 0,
+      100% 2rem,
+      100% calc(100% - 2rem),
+      calc(100% - 2rem) 100%,
+      2rem 100%,
+      0 calc(100% - 2rem),
+      0 2rem
+    );
+  }
+
+  /* FAQ */
+  .faq-container .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Mobile (ต่ำกว่า 640px) --- */
+@media (max-width: 640px) {
+  /* Hero */
+  .hero.contact-hero .hero-content-header h3 {
+    font-size: 3.2rem; /* ปรับขนาดหัวข้อ Hero ให้ไม่ล้นจอ */
+  }
+
+  /* Form Container */
+  .contact-form {
+    padding: 0.5rem;
+  }
+
+  .contact-form > .container {
+    padding: 3rem 1.25rem 2rem;
+    border-radius: 1rem;
+  }
+
+  .contact-form-bg {
+    clip-path: none; /* บนมือถือจิ๋ว ใช้สี่เหลี่ยมปกติหรือมนนิดๆ จะดูสะอาดกว่า */
+    border-radius: 1rem;
+  }
+
+  .contact-form-row:first-of-type {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Inputs */
+  .form-item input,
+  .form-item textarea {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .contact-submit {
+    height: 3.5rem;
+    line-height: 3.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* FAQ */
+  .faq-header h3 {
+    font-size: 2.2rem;
+  }
+
+  .faq-item {
+    padding: 1rem;
+  }
+
+  .faq-item h4 {
+    font-size: 0.9rem;
+    padding-right: 1rem; /* กันข้อความทับลูกศร */
+  }
+}

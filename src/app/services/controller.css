@@ -1,14 +1,25 @@
 /* ===============================
+   GENERAL CONTAINER SETUP
+================================ */
+.services-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  /* จุดสำคัญ: ต้องเป็น visible เพื่อไม่ให้ปุ่มที่จมลงไปโดนตัดขาด */
+  overflow: visible !important;
+}
+
+/* ===============================
    CONTROLLER (Sci-fi Dial)
 ================================ */
 .services-container .controller {
   position: absolute;
   left: 50%;
   top: 55%;
-  transform: translate(-50%, 230px); /* ปรับได้ */
+  transform: translate(-50%, 230px);
   width: 11rem;
   height: 11rem;
-  z-index: 10;
+  z-index: 100; /* ดันขึ้นมาให้อยู่เหนือทุกอย่าง */
   user-select: none;
 }
 
@@ -17,7 +28,6 @@
   position: absolute;
   inset: 0;
   border-radius: 999px;
-
   background:
     radial-gradient(
       circle at 30% 25%,
@@ -30,31 +40,26 @@
       rgba(0, 0, 0, 0) 60%
     ),
     rgba(18, 22, 28, 0.85);
-
   border: 1px solid rgba(120, 220, 255, 0.18);
   box-shadow:
     0 18px 60px rgba(0, 0, 0, 0.55),
     inset 0 0 0 1px rgba(255, 255, 255, 0.04),
     inset 0 0 28px rgba(80, 255, 255, 0.1);
-
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
-  overflow: hidden;
+  overflow: hidden; /* ตัดแสง glow ในวงกลมตัวเอง */
 }
 
-/* glow ring */
+/* glow ring & scanline effects */
 .services-container .controller .controller-outer::before {
   content: "";
   position: absolute;
   inset: 0.55rem;
   border-radius: 999px;
-
   box-shadow: 0 0 22px rgba(120, 220, 255, 0.12);
   pointer-events: none;
 }
 
-/* subtle scanline */
 .services-container .controller .controller-outer::after {
   content: "";
   position: absolute;
@@ -70,7 +75,7 @@
   pointer-events: none;
 }
 
-/* Label */
+/* Label & Icons */
 .services-container .controller .controller-label p {
   position: absolute;
   top: 1.4rem;
@@ -85,89 +90,46 @@
   pointer-events: none;
 }
 
-/* prev/next buttons */
-.services-container .controller .controller-outer .services-controller-nav-btn {
+/* Navigation Buttons (Prev/Next) */
+.services-container .controller .services-controller-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: 2rem;
   height: 2rem;
   border: none;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  background: none;
   display: grid;
   place-items: center;
   cursor: pointer;
   color: rgba(215, 255, 255, 0.95);
-  transition:
-    transform 0.22s ease,
-    background-color 0.22s ease,
-    box-shadow 0.22s ease,
-    opacity 0.22s ease;
-
+  transition: all 0.22s ease;
   z-index: 2;
 }
 
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn
-  svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  display: block;
-  filter: drop-shadow(0 0 10px rgba(120, 220, 255, 0.45));
-}
-
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn.prev {
+.services-container .controller .services-controller-nav-btn.prev {
   left: 0.85rem;
 }
-
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn.next {
+.services-container .controller .services-controller-nav-btn.next {
   right: 0.85rem;
 }
 
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn:hover {
-  transform: translateY(-50%) scale(1.06);
+.services-container .controller .services-controller-nav-btn svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  filter: drop-shadow(0 0 10px rgba(120, 220, 255, 0.45));
 }
 
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn:active {
-  transform: translateY(-50%) scale(0.92);
-  color: rgba(62, 220, 245, 0.685);
+.services-container .controller .services-controller-nav-btn:active {
+  transform: translateY(-50%) scale(0.9);
+  color: #3ee6f5;
 }
 
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn:disabled,
-.services-container
-  .controller
-  .controller-outer
-  .services-controller-nav-btn.disabled {
-  opacity: 0.25;
-  pointer-events: none;
-}
-
-/* inner center button */
+/* Inner Center Button */
 .services-container .controller .controller-inner {
   position: absolute;
   inset: 3.25rem;
   border-radius: 999px;
-
   background:
     radial-gradient(
       circle at 35% 30%,
@@ -175,14 +137,11 @@
       rgba(0, 0, 0, 0) 55%
     ),
     rgba(34, 34, 36, 0.9);
-
   box-shadow:
     0 10px 25px rgba(0, 0, 0, 0.45),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
-
   display: grid;
   place-items: center;
-
   z-index: 3;
 }
 
@@ -200,7 +159,6 @@
   height: 2px;
   background: rgba(200, 255, 255, 0.95);
   transform-origin: center;
-  box-shadow: 0 0 10px rgba(120, 220, 255, 0.25);
 }
 
 .services-container .controller .controller-close-icon span:first-child {
@@ -213,24 +171,71 @@
 /* ===============================
    RESPONSIVE
 ================================ */
-@media (max-width: 1000px) {
+
+/* Tablet & Smaller Desktop */
+@media (max-width: 1024px) {
   .services-container .services-nav,
   .services-container .services-footer {
     display: none;
   }
-
   .services-container .controller {
-    width: 9rem;
-    height: 9rem;
-    transform: translate(-50%, 200px);
+    width: 10rem;
+    height: 10rem;
+    transform: translate(-50%, 180px);
+  }
+  .services-container .controller .controller-inner {
+    inset: 2.8rem;
+  }
+}
+
+/* Mobile (Smartphones) */
+@media (max-width: 600px) {
+  .services-container .controller {
+    width: 8.5rem;
+    height: 8.5rem;
+    top: auto;
+    /* ปรับจมลงลึก: -4rem จะโผล่มาประมาณครึ่งวงกลม ถ้าอยากให้ลึกกว่านี้ปรับเป็น -5rem ได้เลย */
+    bottom: -13rem;
+    transform: translateX(-50%);
+  }
+
+  .services-container .controller .controller-label p {
+    font-size: 0.6rem;
+    top: 1rem;
+  }
+
+  /* ขยายพื้นที่กดปุ่มให้ใหญ่ขึ้นสำหรับนิ้วมือ */
+  .services-container .controller .services-controller-nav-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .services-container .controller .services-controller-nav-btn.prev {
+    left: 0.3rem;
+  }
+  .services-container .controller .services-controller-nav-btn.next {
+    right: 0.3rem;
   }
 
   .services-container .controller .controller-inner {
-    inset: 2.55rem;
+    inset: 2.5rem;
   }
 
+  /* ปรับระยะห่างเนื้อหาไม่ให้ปุ่มทับเนื้อหาตัวล่างสุด */
   .services-container .services-preview {
+    margin-bottom: 6rem;
     width: calc(100% - 2rem);
-    height: max-content;
+  }
+}
+
+/* Mobile Landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+  .services-container .controller {
+    width: 7rem;
+    height: 7rem;
+    bottom: -2.5rem;
+    transform: translateX(-50%) scale(0.9);
+  }
+  .services-container .controller .controller-label p {
+    display: none;
   }
 }

@@ -19,27 +19,27 @@ export default function CaseStudiesPage() {
       {
         title: "TaskSync",
         desc: "A self-reflective task system focused on energy, not pressure",
-        image: "/case-studies/slider_img_1.png",
+        image: "/case-studies/slider_img_1.webp",
       },
       {
         title: "Tech Futuristic Landing",
         desc: "Exploring cinematic motion as a communication layer",
-        image: "/case-studies/slider_img_2.png",
+        image: "/case-studies/slider_img_2.webp",
       },
       {
         title: "Luxe One",
         desc: "Luxury product experience driven by mood and visual hierarchy",
-        image: "/case-studies/slider_img_3.png",
+        image: "/case-studies/slider_img_3.webp",
       },
       {
         title: "Minimal Mart",
         desc: "Designing a calm e-commerce flow with reduced cognitive load",
-        image: "/case-studies/slider_img_4.png",
+        image: "/case-studies/slider_img_4.webp",
       },
       {
         title: "Insightfy Dashboard",
         desc: "Turning complex analytics into intuitive visual narratives",
-        image: "/case-studies/slider_img_5.png",
+        image: "/case-studies/slider_img_5.webp",
       },
     ],
     [],

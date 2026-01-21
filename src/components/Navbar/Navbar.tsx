@@ -92,7 +92,7 @@ export default function Navbar() {
 
       <div className="nav-mobile-header" onClick={toggleMenu}>
         <Image
-          src="/Logo_worapon.png"
+          src="/Logo_worapon.webp"
           alt="worapon.dev"
           width={120}
           height={24}

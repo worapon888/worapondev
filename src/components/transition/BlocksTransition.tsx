@@ -4,42 +4,36 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./BlocksTransition.module.css";
 
-type Props = {
+interface BlocksTransitionProps {
   enabled: boolean;
   onDone?: () => void;
   blockSize?: number;
-};
-
-type Block = {
-  id: number;
-  left: number;
-  top: number;
-  w: number;
-  h: number;
-};
+}
 
 export default function BlocksTransition({
   enabled,
   onDone,
   blockSize = 60,
-}: Props) {
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-  const blockElsRef = useRef<HTMLSpanElement[]>([]);
-  blockElsRef.current = [];
-
+}: BlocksTransitionProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
+  // 1. Optimized Resize Handler
   useEffect(() => {
-    const onResize = () =>
+    if (typeof window === "undefined") return;
+
+    const handleResize = () => {
       setViewport({ w: window.innerWidth, h: window.innerHeight });
-    onResize();
-    window.addEventListener("resize", onResize, { passive: true });
-    return () => window.removeEventListener("resize", onResize);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const blocks: Block[] = useMemo(() => {
-    const W = viewport.w;
-    const H = viewport.h;
+  // 2. Memoized Blocks Calculation
+  const blocks = useMemo(() => {
+    const { w: W, h: H } = viewport;
     if (!W || !H) return [];
 
     const cols = Math.ceil(W / blockSize);
@@ -47,67 +41,61 @@ export default function BlocksTransition({
     const offsetX = (W - cols * blockSize) / 2;
     const offsetY = (H - rows * blockSize) / 2;
 
-    const arr: Block[] = [];
-    let id = 0;
+    return Array.from({ length: rows * cols }, (_, i) => {
+      const r = Math.floor(i / cols);
+      const c = i % cols;
+      return {
+        id: i,
+        left: c * blockSize + offsetX,
+        top: r * blockSize + offsetY,
+      };
+    });
+  }, [viewport, blockSize]);
 
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        arr.push({
-          id: id++,
-          left: c * blockSize + offsetX,
-          top: r * blockSize + offsetY,
-          w: blockSize,
-          h: blockSize,
-        });
-      }
-    }
-    return arr;
-  }, [viewport.w, viewport.h, blockSize]);
-
+  // 3. Animation Logic
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !containerRef.current) return;
 
-    const overlay = overlayRef.current;
-    const blockEls = blockElsRef.current;
-    if (!overlay || !blockEls.length) return;
+    const blocksEls = containerRef.current.querySelectorAll(`.${styles.block}`);
+    if (!blocksEls.length) return;
 
-    gsap.killTweensOf([overlay, blockEls]);
-    gsap.set(blockEls, { opacity: 1 });
+    // Reset State ก่อนเริ่ม
+    gsap.set(blocksEls, { opacity: 1 });
 
     const tl = gsap.timeline({
       onComplete: () => onDone?.(),
+      defaults: { ease: "power2.inOut" },
     });
 
-    // ✅ แตกไวแบบ transition
-    tl.to(blockEls, {
+    tl.to(blocksEls, {
       opacity: 0,
-      duration: 0.18, // จาก 0.14 -> 0.22
-      ease: "power2.inOut",
-      stagger: { amount: 0.9, each: 0.01, from: "random" }, // จาก 0.55 -> 1.2
+      duration: 0.2,
+      stagger: {
+        amount: 0.8,
+        from: "random",
+      },
     });
 
     return () => {
       tl.kill();
-      gsap.killTweensOf([overlay, blockEls]);
+      gsap.killTweensOf(blocksEls);
     };
-  }, [enabled, onDone]);
+  }, [enabled, onDone, blocks.length]); // รันเมื่อ blocks พร้อม
 
-  // ✅ ไม่ enabled = ไม่ render (ไม่ติดมา)
-  if (!enabled) return null;
-
-  // ✅ รอ viewport ก่อน
-  if (!blocks.length) return null;
+  if (!enabled || !blocks.length) return null;
 
   return (
-    <div ref={overlayRef} className={styles.overlay} aria-hidden="true">
-      <div className={styles.grid} aria-hidden="true">
+    <div ref={containerRef} className={styles.overlay} aria-hidden="true">
+      <div className={styles.grid}>
         {blocks.map((b) => (
           <span
             key={b.id}
             className={styles.block}
-            style={{ left: b.left, top: b.top, width: b.w, height: b.h }}
-            ref={(el) => {
-              if (el) blockElsRef.current.push(el);
+            style={{
+              left: b.left,
+              top: b.top,
+              width: blockSize,
+              height: blockSize,
             }}
           />
         ))}

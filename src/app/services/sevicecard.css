@@ -547,3 +547,84 @@
     /* ❌ ห้ามใส่ transform: none; เพราะไปทับ GSAP */
   }
 }
+/* =========================================================
+   CORE RESPONSIVE ADJUSTMENTS
+   (รักษาโครงสร้างเดิม แต่ปลดล็อกความสูงสำหรับการ์ดบนมือถือ)
+========================================================= */
+
+@media (max-width: 900px) {
+  /* 1. STAGE: ปรับให้ยืดหยุ่นตามเนื้อหา */
+  .services-stage {
+    height: auto !important;
+    min-height: 100vh;
+    padding-top: 2rem;
+    padding-bottom: 160px; /* เว้นที่ด้านล่างสำหรับ Controller */
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  /* 3. CARD: เปลี่ยนจาก Grid 2 คอลัมน์ เป็น 1 คอลัมน์ */
+  .services-card {
+    grid-template-columns: 1fr;
+    height: auto !important; /* ✅ ปลดล็อกความสูงเพื่อให้เห็นเนื้อหาครบ */
+    max-height: none !important;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  /* 4. MEDIA: ปรับความสูงรูปภาพให้พอดีจอ */
+  .services-card__media {
+    height: 220px !important;
+    min-height: 220px;
+  }
+
+  /* 5. BODY: ปลดล็อกการ Scroll ภายในการ์ด */
+  .services-card__body {
+    padding: 1.5rem 1.25rem !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important; /* ✅ เนื้อหาจะดันความยาวการ์ดลงมาเอง */
+  }
+
+  /* 6. COLUMNS: Deliverables & Scope เรียงต่อกันลงมา */
+  .services-card__cols {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+    padding-top: 1.2rem;
+  }
+
+  /* 8. BADGE: ปรับขนาดให้เข้ากับจอเล็ก */
+  .services-card__badge {
+    left: 10px;
+    top: 10px;
+    gap: 0.4rem;
+  }
+
+  .services-card__badge .code,
+  .services-card__badge .tag {
+    font-size: 10px;
+    padding: 0.3rem 0.5rem;
+  }
+}
+
+/* สำหรับมือถือขนาดเล็กเป็นพิเศษ (iPhone SE / จอแคบ) */
+@media (max-width: 480px) {
+  .services-card__header h3 {
+    font-size: 1.15rem;
+  }
+
+  .services-card__meta {
+    padding: 0.75rem;
+  }
+
+  .meta-row {
+    flex-direction: column; /* เรียง ETA/PRICE ลงมา */
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .meta-row .v {
+    font-size: 0.85rem;
+  }
+}

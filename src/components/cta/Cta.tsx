@@ -26,11 +26,11 @@ export default function CtaSection() {
     const ctx = gsap.context(() => {
       const logo = root.querySelector(".cta-logo") as HTMLElement | null;
       const copyText = root.querySelector(
-        ".cta-copy .bodyCopy"
+        ".cta-copy .bodyCopy",
       ) as HTMLElement | null;
       const btn = root.querySelector(".cta .btn a.btn") as HTMLElement | null;
       const rows = Array.from(
-        root.querySelectorAll(".cta-row")
+        root.querySelectorAll(".cta-row"),
       ) as HTMLElement[];
 
       const prefersReduced =
@@ -111,10 +111,10 @@ export default function CtaSection() {
 
         rows.forEach((row, index) => {
           const cardLeft = row.querySelector(
-            ".cta-card-left"
+            ".cta-card-left",
           ) as HTMLElement | null;
           const cardRight = row.querySelector(
-            ".cta-card-right"
+            ".cta-card-right",
           ) as HTMLElement | null;
           if (!cardLeft || !cardRight) return;
 
@@ -165,7 +165,7 @@ export default function CtaSection() {
       <div className="cta-content">
         <div className="cta-logo">
           <Image
-            src="/Logo_worapon.png"
+            src="/Logo_worapon.webp"
             alt="worapon.dev"
             width={150}
             height={150}
@@ -194,7 +194,7 @@ export default function CtaSection() {
           <div className="cta-card-frame">
             <div className="cta-card-img cta-img-wrap">
               <Image
-                src="/index/cta_img_01.jpg"
+                src="/index/cta_img_01.webp"
                 alt="CTA image 01"
                 fill
                 sizes="(max-width: 1000px) 50vw, 50vw"
@@ -208,7 +208,7 @@ export default function CtaSection() {
           <div className="cta-card-frame">
             <div className="cta-card-img cta-img-wrap">
               <Image
-                src="/index/cta_img_02.jpg"
+                src="/index/cta_img_02.webp"
                 alt="CTA image 02"
                 fill
                 sizes="(max-width: 1000px) 50vw, 50vw"
@@ -224,7 +224,7 @@ export default function CtaSection() {
           <div className="cta-card-frame">
             <div className="cta-card-img cta-img-wrap">
               <Image
-                src="/index/cta_img_03.jpg"
+                src="/index/cta_img_03.webp"
                 alt="CTA image 03"
                 fill
                 sizes="(max-width: 1000px) 50vw, 50vw"
@@ -238,7 +238,7 @@ export default function CtaSection() {
           <div className="cta-card-frame">
             <div className="cta-card-img cta-img-wrap">
               <Image
-                src="/index/cta_img_04.jpg"
+                src="/index/cta_img_04.webp"
                 alt="CTA image 04"
                 fill
                 sizes="(max-width: 1000px) 50vw, 50vw"
@@ -254,7 +254,7 @@ export default function CtaSection() {
           <div className="cta-card-frame">
             <div className="cta-card-img cta-img-wrap">
               <Image
-                src="/index/cta_img_05.jpg"
+                src="/index/cta_img_05.webp"
                 alt="CTA image 05"
                 fill
                 sizes="(max-width: 1000px) 50vw, 50vw"
@@ -268,7 +268,7 @@ export default function CtaSection() {
           <div className="cta-card-frame">
             <div className="cta-card-img cta-img-wrap">
               <Image
-                src="/index/cta_img_06.jpg"
+                src="/index/cta_img_06.webp"
                 alt="CTA image 06"
                 fill
                 sizes="(max-width: 1000px) 50vw, 50vw"

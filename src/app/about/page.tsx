@@ -344,10 +344,33 @@ I work independently, blending design thinking, frontend engineering, and experi
 
       {/* BIG TITLE */}
       <div className="title-about" ref={titleRef}>
-        <h3 data-typing={heroActive ? "1" : "0"}>
-          {prefersReduced ? heroText : heroTyped}
-          <span className="typing-cursor" aria-hidden="true">
-            |
+        <h3>
+          {/* 1. ข้อความ "ผี" จองพื้นที่ 2 บรรทัดไว้ (มองไม่เห็น) */}
+          <span
+            style={{
+              visibility: "hidden",
+              display: "block",
+              pointerEvents: "none",
+            }}
+            aria-hidden="true"
+          >
+            {heroText}
+          </span>
+
+          {/* 2. ข้อความที่กำลังพิมพ์ (Absolute Overlay) */}
+          <span
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              width: "100%",
+            }}
+          >
+            {prefersReduced ? heroText : heroTyped}
+            <span className="typing-cursor" aria-hidden="true">
+              |
+            </span>
           </span>
         </h3>
       </div>

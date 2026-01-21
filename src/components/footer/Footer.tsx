@@ -20,7 +20,7 @@ type TypewriterOpts = {
 function useTypewriterLoop(
   enabled: boolean,
   text: string,
-  opts: TypewriterOpts
+  opts: TypewriterOpts,
 ) {
   const {
     typeSpeed = 40,
@@ -165,7 +165,7 @@ export default function FooterSection() {
       repeatDelayMs: 3200, // ✅ เว้นก่อนวนรอบให้นานขึ้น
       glitchChance: 0.08, // ✅ ลด/เพิ่มความมั่ว (0 = ไม่มั่ว)
       glitchChars: "01<>/\\[]{}—_+*#@!?",
-    }
+    },
   );
 
   useLayoutEffect(() => {
@@ -254,7 +254,7 @@ export default function FooterSection() {
             <div className="footer-content-col footer-brand-wrap">
               <div className="footer-brand">
                 <Image
-                  src="/Logo_worapon.png"
+                  src="/Logo_worapon.webp"
                   alt="worapon.dev"
                   width={500}
                   height={500}
