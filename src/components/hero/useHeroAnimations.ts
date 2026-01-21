@@ -44,14 +44,17 @@ export function useHeroAnimations(refs: HeroRefs) {
     dotsRef,
     availabilityRef,
     lineRef,
+
+    // ✅ NEW panels
     systemLogRef,
     systemStatusRef,
+
+    // ✅ NEW hud
     brandHudRef,
     timerRef,
   } = refs;
 
   useLayoutEffect(() => {
-    // ใช้ gsap.context เพื่อจัดการ cleanup ได้ง่าย
     const ctx = gsap.context(() => {
       const root = rootRef.current;
       const heading = headingRef.current;
@@ -86,7 +89,8 @@ export function useHeroAnimations(refs: HeroRefs) {
           .map((el) => el.querySelector(".hero-ghost"))
           .filter(Boolean) as HTMLElement[];
 
-      // ---------- Brand HUD Timer ----------
+      // ---------- Brand HUD Timer (seconds) ----------
+      // format: ZONE 03 — 09:44:46
       const updateHudTime = () => {
         if (!timerEl) return;
 
@@ -98,14 +102,16 @@ export function useHeroAnimations(refs: HeroRefs) {
           second: "2-digit",
         };
 
+        // ✅ ใช้ toLocaleTimeString ให้ชัวร์ว่าเป็น "HH:mm:ss"
         const time = new Date().toLocaleTimeString("en-US", options);
         const hour = parseInt(time.split(":")[0] || "0", 10);
 
-        const sector = Math.floor(hour / 4) + 1;
+        const sector = Math.floor(hour / 4) + 1; // 01–06
         const sectorFormatted = String(sector).padStart(2, "0");
 
         timerEl.textContent = `ZONE ${sectorFormatted} — ${time}`;
 
+        // ✅ subtle refresh pulse on time line
         if (!prefersReduced) {
           gsap.fromTo(
             timerEl,
@@ -189,16 +195,20 @@ export function useHeroAnimations(refs: HeroRefs) {
       // ---------- intro timeline ----------
       const buildIntroTl = () => {
         killFlicker();
+
         const chars = getHeroChars();
         const realEls = getRealEls(chars);
         const ghostEls = getGhostEls(chars);
 
+        // ✅ กัน pulse ซ้อนทุกครั้งที่ rebuild
         if (hud) gsap.killTweensOf(hud);
         if (log) gsap.killTweensOf(log);
         if (status) gsap.killTweensOf(status);
 
+        // ---------- helpers (ต้องอยู่ก่อนเรียกใช้) ----------
         const bootFlicker = (el: HTMLElement, finalOpacity = 1) => {
           const t = gsap.timeline({ defaults: { ease: "none" } });
+
           t.set(el, { autoAlpha: 0, y: 10 })
             .to(el, { autoAlpha: 0.18, duration: 0.05 })
             .to(el, { autoAlpha: 0.55, duration: 0.08 })
@@ -210,11 +220,13 @@ export function useHeroAnimations(refs: HeroRefs) {
               duration: 0.35,
               ease: "power2.out",
             });
+
           return t;
         };
 
         const startPulse = (el: HTMLElement, min = 0.7, max = 1) => {
           gsap.killTweensOf(el);
+
           gsap.fromTo(
             el,
             { opacity: max },
@@ -228,29 +240,24 @@ export function useHeroAnimations(refs: HeroRefs) {
           );
         };
 
-        // INITIAL SETTINGS
+        // ===== INITIAL =====
         gsap.set(heading, { autoAlpha: 1 });
         gsap.set(chars, { yPercent: -103 });
         gsap.set(realEls, { autoAlpha: 0 });
         gsap.set(ghostEls, { autoAlpha: 1 });
 
-        if (paragraphRef.current)
-          gsap.set(paragraphRef.current, { autoAlpha: 0, y: 26 });
-        if (btn1Ref.current)
-          gsap.set(btn1Ref.current, { autoAlpha: 0, y: 18, scale: 0.96 });
-        if (btn2Ref.current)
-          gsap.set(btn2Ref.current, { autoAlpha: 0, y: 18, scale: 0.96 });
-        if (availabilityRef.current)
-          gsap.set(availabilityRef.current, { autoAlpha: 0, y: 12 });
-        if (lineRef.current) {
-          gsap.set(lineRef.current, {
-            autoAlpha: 0,
-            scaleX: 0.2,
-            y: -6,
-            transformOrigin: "50% 50%",
-          });
-        }
+        gsap.set(paragraphRef.current, { autoAlpha: 0, y: 26 });
+        gsap.set(btn1Ref.current, { autoAlpha: 0, y: 18, scale: 0.96 });
+        gsap.set(btn2Ref.current, { autoAlpha: 0, y: 18, scale: 0.96 });
+        gsap.set(availabilityRef.current, { autoAlpha: 0, y: 12 });
+        gsap.set(lineRef.current, {
+          autoAlpha: 0,
+          scaleX: 0.2,
+          y: -6,
+          transformOrigin: "50% 50%",
+        });
 
+        // ✅ กันขึ้นก่อนรีเฟรช
         if (hud) gsap.set(hud, { autoAlpha: 0, y: 10 });
         if (log) gsap.set(log, { autoAlpha: 0, y: 12 });
         if (status) gsap.set(status, { autoAlpha: 0, y: 12 });
@@ -259,6 +266,7 @@ export function useHeroAnimations(refs: HeroRefs) {
 
         const tl = gsap.timeline({ paused: true });
 
+        // 1) H1 enter
         tl.to(chars, {
           duration: 1,
           yPercent: 0,
@@ -266,9 +274,12 @@ export function useHeroAnimations(refs: HeroRefs) {
           ease: "expo.inOut",
         });
 
+        // 2) H1 exit
         const exitChars = chars.filter((el) => {
           const ch = el.dataset.char;
-          return ch !== "." && el.dataset.skip !== "1" && ch !== " ";
+          const isDot = ch === ".";
+          const isSpace = el.dataset.skip === "1" || ch === " ";
+          return !isDot && !isSpace;
         });
 
         tl.to(exitChars, {
@@ -278,28 +289,28 @@ export function useHeroAnimations(refs: HeroRefs) {
           ease: "expo.inOut",
         });
 
-        if (lineRef.current) {
-          tl.set(lineRef.current, { autoAlpha: 1 }).fromTo(
-            lineRef.current,
-            { scaleX: 0 },
-            { scaleX: 1, y: 0, duration: 0.95, ease: "power3.out" },
-            ">-0.05",
-          );
-        }
+        // line
+        tl.set(lineRef.current, { autoAlpha: 1 }).fromTo(
+          lineRef.current,
+          { scaleX: 0 },
+          { scaleX: 1, y: 0, duration: 0.95, ease: "power3.out" },
+          ">-0.05",
+        );
 
+        // 3) flicker start
         tl.add(() => {
           markPurpleChars();
           startFlicker(chars);
         }, ">");
 
-        if (paragraphRef.current) {
-          tl.to(
-            paragraphRef.current,
-            { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" },
-            ">",
-          );
-        }
+        // 4) paragraph
+        tl.to(
+          paragraphRef.current,
+          { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" },
+          ">",
+        );
 
+        // 4.5) HUD + panels boot (หลัง paragraph)
         if (!prefersReduced) {
           if (hud) {
             tl.add(bootFlicker(hud, 1), ">-0.05");
@@ -319,46 +330,46 @@ export function useHeroAnimations(refs: HeroRefs) {
           if (status) tl.set(status, { autoAlpha: 1, y: 0 });
         }
 
-        if (btn1Ref.current) {
-          tl.to(
-            btn1Ref.current,
-            {
-              y: 0,
-              autoAlpha: 1,
-              scale: 1,
-              duration: 0.55,
-              ease: "back.out(1.7)",
-            },
-            ">",
-          );
-        }
-        if (btn2Ref.current) {
-          tl.to(
-            btn2Ref.current,
-            {
-              y: 0,
-              autoAlpha: 1,
-              scale: 1,
-              duration: 0.55,
-              ease: "back.out(1.7)",
-            },
-            ">-0.45",
-          );
-        }
-        if (availabilityRef.current) {
-          tl.fromTo(
-            availabilityRef.current,
-            { y: -14, autoAlpha: 0 },
-            { y: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" },
-            ">+0.45",
-          );
-        }
+        // 5) btn1
+        tl.to(
+          btn1Ref.current,
+          {
+            y: 0,
+            autoAlpha: 1,
+            scale: 1,
+            duration: 0.55,
+            ease: "back.out(1.7)",
+          },
+          ">",
+        );
+
+        // 6) btn2
+        tl.to(
+          btn2Ref.current,
+          {
+            y: 0,
+            autoAlpha: 1,
+            scale: 1,
+            duration: 0.55,
+            ease: "back.out(1.7)",
+          },
+          ">-0.45",
+        );
+
+        // 7) availability
+        tl.fromTo(
+          availabilityRef.current,
+          { y: -14, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" },
+          ">+0.45",
+        );
 
         return tl;
       };
 
       let introTl = buildIntroTl();
 
+      // ScrollTrigger (ต้องแน่ใจว่า register แล้วในโปรเจกต์)
       const st = gsap.to(
         {},
         {
@@ -374,6 +385,7 @@ export function useHeroAnimations(refs: HeroRefs) {
         },
       );
 
+      // gradient loop
       gsap.to(getHeroChars(), {
         backgroundPosition: "200% 50%",
         duration: 6,
@@ -392,18 +404,30 @@ export function useHeroAnimations(refs: HeroRefs) {
 
       if (dots) {
         dots.style.backgroundImage = `
-          repeating-radial-gradient(circle, rgba(34,211,238,0.9) 0 1.2px, rgba(34,211,238,0) 1.35px 26px),
-          repeating-radial-gradient(circle, rgba(167,139,250,0.65) 0 1.05px, rgba(167,139,250,0) 1.2px 34px)
+          repeating-radial-gradient(
+            circle,
+            rgba(34,211,238,0.9) 0 1.2px,
+            rgba(34,211,238,0) 1.35px 26px
+          ),
+          repeating-radial-gradient(
+            circle,
+            rgba(167,139,250,0.65) 0 1.05px,
+            rgba(167,139,250,0) 1.2px 34px
+          )
         `;
         dots.style.backgroundSize = "80px 80px, 96px 96px";
+        dots.style.backgroundPosition = "0px 0px, 0px 0px";
         dots.style.mixBlendMode = "screen";
         dots.style.opacity = "0.55";
         dots.style.filter = "drop-shadow(0 0 12px rgba(34,211,238,0.75))";
 
         const ds = dots.style as unknown as CSSWithWebkitMask;
-        ds.WebkitMaskImage =
-          "linear-gradient(90deg, #000 0 1px, transparent 1px 100%), linear-gradient(0deg, #000 0 1px, transparent 1px 100%)";
+        ds.WebkitMaskImage = `
+          linear-gradient(90deg, #000 0 1px, transparent 1px 100%),
+          linear-gradient(0deg,  #000 0 1px, transparent 1px 100%)
+        `;
         ds.WebkitMaskSize = "3rem 3rem";
+        ds.WebkitMaskRepeat = "repeat";
 
         gsap.to(dots, {
           backgroundPosition: "240px 0px, 0px 320px",
@@ -429,23 +453,5 @@ export function useHeroAnimations(refs: HeroRefs) {
     }, rootRef);
 
     return () => ctx.revert();
-
-    // ✅ ใส่ refs ทั้งหมดเข้า dependency array เพื่อให้ ESLint พอใจ
-    // แต่ค่า refs เหล่านี้จะไม่เปลี่ยนบ่อยเพราะเป็น ref object
-    // และการใช้ gsap.context ด้านบนช่วยป้องกันการรันซ้ำที่ซ้อนกันได้
-  }, [
-    rootRef,
-    headingRef,
-    paragraphRef,
-    btn1Ref,
-    btn2Ref,
-    gridRef,
-    dotsRef,
-    availabilityRef,
-    lineRef,
-    systemLogRef,
-    systemStatusRef,
-    brandHudRef,
-    timerRef,
-  ]);
+  }, []);
 }
