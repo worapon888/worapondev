@@ -6,7 +6,7 @@ import styles from "./Preloader.module.css";
 
 type PreloaderProps = {
   enabled?: boolean;
-  durationMs?: number; // รวมเวลาทั้งหมดก่อนเริ่ม out
+  durationMs?: number;
   label?: string;
   onDone?: () => void;
   blockSize?: number;
@@ -27,33 +27,39 @@ export default function Preloader({
   onDone,
   blockSize = 60,
 }: PreloaderProps) {
+  // ✅ ป้องกัน Hydration Error โดยเช็กว่า Mount หรือยัง
+  const [isMounted, setIsMounted] = useState(false);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-  // ✅ เก็บ element ของ block แบบไม่ต้อง querySelectorAll (กันพังกับ module)
   const blockElsRef = useRef<HTMLSpanElement[]>([]);
+
+  // ล้างค่า Array ทุกครั้งที่เรนเดอร์ใหม่
   blockElsRef.current = [];
 
-  const [ready, setReady] = useState(false);
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
-    const onResize = () =>
-      setViewport({ w: window.innerWidth, h: window.innerHeight });
+    setIsMounted(true);
+    const onResize = () => {
+      // ใช้ดักค่าที่แม่นยำขึ้นสำหรับมือถือ
+      setViewport({
+        w: document.documentElement.clientWidth || window.innerWidth,
+        h: document.documentElement.clientHeight || window.innerHeight,
+      });
+    };
     onResize();
     window.addEventListener("resize", onResize, { passive: true });
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
   const blocks: Block[] = useMemo(() => {
-    const W = viewport.w;
-    const H = viewport.h;
-    if (!W || !H) return [];
+    // ห้ามคำนวณจนกว่าจะอยู่บน Client และมีขนาดหน้าจอ
+    if (!isMounted || !viewport.w || !viewport.h) return [];
 
-    const cols = Math.ceil(W / blockSize);
-    const rows = Math.ceil(H / blockSize) + 1;
-    const offsetX = (W - cols * blockSize) / 2;
-    const offsetY = (H - rows * blockSize) / 2;
+    const cols = Math.ceil(viewport.w / blockSize);
+    const rows = Math.ceil(viewport.h / blockSize) + 1;
+    const offsetX = (viewport.w - cols * blockSize) / 2;
+    const offsetY = (viewport.h - rows * blockSize) / 2;
 
     const arr: Block[] = [];
     let id = 0;
@@ -70,76 +76,67 @@ export default function Preloader({
       }
     }
     return arr;
-  }, [viewport.w, viewport.h, blockSize]);
-
-  // ✅ บังคับให้ render เมื่อ enabled และมี blocks แล้ว
-  useEffect(() => {
-    if (!enabled) return;
-    if (!blocks.length) return;
-    setReady(true);
-  }, [enabled, blocks.length]);
+  }, [viewport.w, viewport.h, blockSize, isMounted]);
 
   useEffect(() => {
-    if (!enabled || !ready) return;
+    // รอให้ blocks พร้อมจริงๆ ก่อนเริ่ม Animation
+    if (!enabled || !isMounted || blocks.length === 0) return;
 
     const overlay = overlayRef.current;
     const wrapper = wrapperRef.current;
     const blockEls = blockElsRef.current;
 
-    if (!overlay || !blockEls.length) return;
+    if (!overlay || blockEls.length === 0) return;
 
-    // initial
     gsap.killTweensOf([overlay, wrapper, blockEls]);
     gsap.set(blockEls, { opacity: 1 });
     if (wrapper) gsap.set(wrapper, { opacity: 1 });
 
-    const uiOutMs = 600; // เหมือนต้นแบบ
-    const blockDur = 0.18;
+    const uiOutMs = 600;
+    const blockDur = 0.2;
     const staggerAmount = 0.8;
-
-    // ให้ถือว่า durationMs คือ “เวลารอก่อนเริ่มออก”
     const delaySec = Math.max(0, (durationMs - uiOutMs * 2) / 1000);
 
     const tl = gsap.timeline({
       delay: delaySec,
-      onComplete: () => {
-        onDone?.();
-      },
+      onComplete: () => onDone?.(),
     });
 
-    // UI fade out
     if (wrapper) {
       tl.to(
         wrapper,
-        { opacity: 0, duration: uiOutMs / 1000, ease: "power2.out" },
+        {
+          opacity: 0,
+          duration: uiOutMs / 1000,
+          ease: "power2.out",
+        },
         0,
       );
     }
 
-    // blocks out random
     tl.to(
       blockEls,
       {
         opacity: 0,
         duration: blockDur,
         ease: "power2.inOut",
-        stagger: { amount: staggerAmount, each: 0.01, from: "random" },
+        stagger: { amount: staggerAmount, from: "random" },
       },
-      0.05,
+      0.1,
     );
 
     return () => {
       tl.kill();
-      gsap.killTweensOf([overlay, wrapper, blockEls]);
     };
-  }, [enabled, ready, durationMs, onDone]);
+  }, [enabled, isMounted, blocks.length, durationMs, onDone]);
 
-  // ✅ ถ้าไม่ enabled ไม่ต้องโชว์ (เวลาปิดจะ unmount)
-  if (!enabled || !ready) return null;
+  // ✅ ถ้ายังไม่พร้อม ห้าม Render เด็ดขาด
+  if (!enabled || !isMounted || blocks.length === 0) return null;
 
   return (
-    <div ref={overlayRef} className={styles.overlay} aria-hidden="true">
-      <div className={styles.grid} aria-hidden="true">
+    <div ref={overlayRef} className={styles.overlay}>
+      {/* ใช้ suppressHydrationWarning เพื่อกัน Error จากการสุ่มตำแหน่ง */}
+      <div className={styles.grid} suppressHydrationWarning>
         {blocks.map((b) => (
           <span
             key={b.id}
@@ -154,13 +151,11 @@ export default function Preloader({
 
       <div ref={wrapperRef} className={styles.ui}>
         <p className={styles.text}>{label}</p>
-
         <div className={styles.ringFrame}>
           <span className={`${styles.ring} ${styles.ringSm}`} />
           <span className={`${styles.ring} ${styles.ringMd}`} />
           <span className={`${styles.ring} ${styles.ringLg}`} />
         </div>
-
         <div className={styles.discFrame}>
           <span className={styles.disc} />
         </div>

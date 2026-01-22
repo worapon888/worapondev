@@ -10,56 +10,52 @@ import Showcase from "@/components/showcase/Showcase";
 import Contact from "@/components/cta/Cta";
 import Footer from "@/components/footer/Footer";
 
+// ปิด SSR เพื่อเลี่ยง Hydration Error
 const Preloader = dynamic(() => import("@/components/preloader/Preloader"), {
   ssr: false,
-  loading: () => null,
 });
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false); // ✅ เริ่ม false ไว้ก่อน
+  const [isLoading, setIsLoading] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // ✅ เคยเล่นแล้ว = ไม่เล่นซ้ำ
     const played = sessionStorage.getItem("preloaderPlayed");
     if (played === "1") {
       setIsLoading(false);
-      return;
+    } else {
+      setIsLoading(true);
     }
-
-    // ✅ ครั้งแรกในแท็บนี้ = เล่น
-    setIsLoading(true);
-
-    const t = window.setTimeout(() => {
-      sessionStorage.setItem("preloaderPlayed", "1");
-      setIsLoading(false);
-    }, 2800);
-
-    return () => window.clearTimeout(t);
   }, []);
 
-  if (isLoading) {
+  // 1. ถ้ากำลังโหลด ให้โชว์ Preloader อย่างเดียว
+  if (isLoading === true) {
     return (
       <Preloader
         enabled={true}
-        label="Stabilizing Feed"
         onDone={() => {
-          sessionStorage.setItem("preloaderPlayed", "1"); // ✅ กันหลุด
+          sessionStorage.setItem("preloaderPlayed", "1");
           setIsLoading(false);
         }}
       />
     );
   }
 
-  return (
-    <>
-      <Navbar />
-      <main className="min-h-screen pt-16 bg-transparent">
-        <Hero />
-        <Services />
-        <Showcase />
-        <Contact />
-        <Footer />
-      </main>
-    </>
-  );
+  // 2. ถ้าโหลดเสร็จแล้ว ค่อยโชว์หน้าเว็บ
+  if (isLoading === false) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen pt-16 bg-transparent">
+          <Hero />
+          <Services />
+          <Showcase />
+          <Contact />
+          <Footer />
+        </main>
+      </>
+    );
+  }
+
+  // 3. ช่วงที่กำลังเช็กสถานะ (isLoading === null) ให้จอดำไว้ก่อน
+  return <div className="bg-black w-screen h-screen" />;
 }
