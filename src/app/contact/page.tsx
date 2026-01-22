@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import "./Contact.css";
+import "./contact.css";
 
 import FaqItemCard from "./components/FaqItemCard";
 import { useTypewriterLoop } from "./hooks/useTypewriterLoop";
