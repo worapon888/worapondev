@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import type { ContactPayload } from "@/types/contact";
+import type { CreateEmailOptions, CreateEmailResponse } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+/* ===============================
+   Utils
+================================ */
 
 function isEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
@@ -21,76 +26,122 @@ function isProd() {
   return process.env.NODE_ENV === "production";
 }
 
+function asLineBreakHtml(s: string) {
+  return escapeHtml(s).replaceAll("\n", "<br/>");
+}
+
+function makePreview(s: string, max = 220) {
+  const trimmed = s.trim();
+  if (trimmed.length <= max) return asLineBreakHtml(trimmed);
+  return asLineBreakHtml(trimmed.slice(0, max)) + "…";
+}
+
+type Env = {
+  apiKey: string;
+  to: string;
+  from: string;
+};
+
+function getEnv(): Env | { error: string; status: number } {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.CONTACT_TO_EMAIL;
+  const from =
+    process.env.CONTACT_FROM_EMAIL ?? "Worapon.dev <onboarding@resend.dev>";
+
+  if (!apiKey) return { error: "Missing RESEND_API_KEY", status: 500 };
+  if (!to) return { error: "Missing CONTACT_TO_EMAIL", status: 500 };
+
+  return { apiKey, to, from };
+}
+
+function validate(body: ContactPayload) {
+  // --- Honeypot ---
+  if (body.website && body.website.trim() !== "") {
+    return { ok: true as const, honeypot: true as const };
+  }
+
+  const name = (body.name ?? "").trim();
+  const email = (body.email ?? "").trim();
+  const message = (body.message ?? "").trim();
+
+  if (!name || !email || !message) {
+    return {
+      ok: false as const,
+      status: 400,
+      error: "Please fill in name, email, and message.",
+    };
+  }
+
+  if (!isEmail(email)) {
+    return { ok: false as const, status: 400, error: "Invalid email." };
+  }
+
+  if (name.length > 80) {
+    return { ok: false as const, status: 400, error: "Name is too long." };
+  }
+
+  if (message.length > 4000) {
+    return { ok: false as const, status: 400, error: "Message is too long." };
+  }
+
+  return {
+    ok: true as const,
+    honeypot: false as const,
+    data: { name, email, message },
+  };
+}
+
+async function sendEmail(payload: CreateEmailOptions) {
+  const result: CreateEmailResponse = await resend.emails.send(payload);
+  return result;
+}
+
+/* ===============================
+   POST /api/contact
+================================ */
+
 export async function POST(req: Request) {
   // --- Parse JSON ---
-  let body: ContactPayload | null = null;
+  let body: ContactPayload;
   try {
     body = (await req.json()) as ContactPayload;
   } catch (e) {
     console.error("[/api/contact] Invalid JSON:", e);
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  console.log("[/api/contact] body:", body);
-  // --- Honeypot ---
-  if (body.website && body.website.trim() !== "") {
-    return NextResponse.json({ ok: true }, { status: 200 });
-  }
 
   // --- Validate ---
-  const name = (body.name ?? "").trim();
-  const email = (body.email ?? "").trim();
-  const message = (body.message ?? "").trim();
+  const v = validate(body);
+  if (v.ok && v.honeypot) {
+    // bot -> pretend success
+    return NextResponse.json({ ok: true }, { status: 200 });
+  }
+  if (!v.ok) {
+    return NextResponse.json({ error: v.error }, { status: v.status });
+  }
 
-  if (!name || !email || !message) {
-    return NextResponse.json(
-      { error: "Please fill in name, email, and message." },
-      { status: 400 },
-    );
-  }
-  if (!isEmail(email)) {
-    return NextResponse.json({ error: "Invalid email." }, { status: 400 });
-  }
-  if (name.length > 80) {
-    return NextResponse.json({ error: "Name is too long." }, { status: 400 });
-  }
-  if (message.length > 4000) {
-    return NextResponse.json(
-      { error: "Message is too long." },
-      { status: 400 },
-    );
-  }
+  const { name, email, message } = v.data;
 
   // --- ENV ---
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
-  const from =
-    process.env.CONTACT_FROM_EMAIL ?? "Worapon.dev <onboarding@resend.dev>";
-
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "Missing RESEND_API_KEY" },
-      { status: 500 },
-    );
+  const env = getEnv();
+  if ("error" in env) {
+    return NextResponse.json({ error: env.error }, { status: env.status });
   }
-  if (!to) {
-    return NextResponse.json(
-      { error: "Missing CONTACT_TO_EMAIL" },
-      { status: 500 },
-    );
-  }
+  const { to, from } = env;
 
   // --- Send ---
   try {
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
-    const safeMessage = escapeHtml(message).replaceAll("\n", "<br/>");
+    const safeMessage = asLineBreakHtml(message);
 
-    const subject = `New Contact — ${name}`;
+    // 1) Owner email (ส่งเข้า inbox ของคุณ)
+    const ownerSubject = `New Contact — ${name}`;
 
-    const payload: any = {
+    const ownerPayload: CreateEmailOptions = {
       from,
       to,
-      subject,
+      subject: ownerSubject,
       html: `
         <div style="font-family: ui-sans-serif, system-ui; line-height: 1.6">
           <h2 style="margin: 0 0 12px">New Contact Message</h2>
@@ -105,27 +156,23 @@ export async function POST(req: Request) {
           </p>
         </div>
       `,
-      // ใส่ได้ทั้งสองแบบ กัน SDK/typing ต่างเวอร์ชัน
-      replyTo: email,
-      reply_to: email,
+      replyTo: email, // คุณกด reply แล้วตอบลูกค้าได้เลย
     };
 
-    const result = await resend.emails.send(payload);
+    const ownerResult = await sendEmail(ownerPayload);
 
-    // ✅ ถ้ามี error จริงจะเห็นตรงนี้
-    if ((result as any)?.error) {
-      console.error("[Resend] send error:", (result as any).error, {
+    if (ownerResult.error) {
+      console.error("[Resend] owner send error:", ownerResult.error, {
         from,
         to,
       });
 
-      // dev mode: ส่งรายละเอียดกลับไปดูใน Postman
       if (!isProd()) {
         return NextResponse.json(
           {
             error: "Resend error",
-            detail: (result as any).error,
-            hint: "Most common: FROM domain not verified in Resend. Try using onboarding@resend.dev as FROM first.",
+            detail: ownerResult.error,
+            hint: "Most common: FROM domain not verified. Try onboarding@resend.dev",
           },
           { status: 502 },
         );
@@ -137,17 +184,103 @@ export async function POST(req: Request) {
       );
     }
 
+    // 2) Auto-reply to customer (ส่งกลับหาลูกค้า)
+    // NOTE: แนะนำให้ใช้ FROM ที่ verify domain แล้วเพื่อ deliver ดีสุด
+    const customerSubject = "✅ Received — Worapon.dev";
+
+    const customerPayload: CreateEmailOptions = {
+      from,
+      to: email,
+      subject: customerSubject,
+      html: `
+    <div style="background:#ffffff;">
+      <div style="
+        max-width:600px;
+        margin:0 auto;
+        padding:0 16px 24px;
+        font-family: ui-sans-serif, system-ui;
+        line-height:1.7;
+      ">
+
+        <!-- EMAIL HEADER IMAGE -->
+        <img
+          src="https://worapon.dev/email/contact-header.png"
+          alt="Worapon.dev"
+          width="600"
+          style="
+            display:block;
+            width:100%;
+            max-width:600px;
+            height:auto;
+            border:0;
+            margin:0 auto 20px;
+          "
+        />
+
+        <h2 style="margin: 0 0 12px">
+          Message sent successfully. Your information has been received.
+        </h2>
+
+        <p style="margin: 0 0 10px">
+          Hi ${safeName}, thanks for reaching out.
+          I’ve received your message and will get back to you soon.
+        </p>
+
+        <div style="
+          padding:12px;
+          border:1px solid #e5e7eb;
+          border-radius:12px;
+          background:#fafafa
+        ">
+          <p style="margin:0 0 6px; color:#6b7280; font-size:12px">
+            Your message preview:
+          </p>
+          <div style="font-size:14px">
+            ${makePreview(message, 220)}
+          </div>
+        </div>
+
+        <p style="margin:12px 0 0">
+          <b>Expected response time:</b> within 24–48 hours.
+        </p>
+
+        <p style="margin:12px 0 0; color:#6b7280; font-size:12px">
+          If you didn’t send this message, you can ignore this email.
+        </p>
+
+        <hr style="margin:16px 0; border:0; border-top:1px solid #e5e7eb" />
+
+        <p style="margin:0; font-size:13px">
+          — Thank you,<br/>
+          Worapon.dev
+        </p>
+
+      </div>
+    </div>
+  `,
+    };
+
+    // auto-reply ล้มไม่ทำให้ request ล้ม (กันลูกค้ากดส่งแล้วเว็บขึ้น error ทั้งที่คุณได้เมลแล้ว)
+    const customerResult = await sendEmail(customerPayload);
+    if (customerResult.error) {
+      console.warn("[Resend] auto-reply failed:", customerResult.error, {
+        to: email,
+      });
+    }
+
     return NextResponse.json(
-      { ok: true, id: (result as any)?.data?.id ?? null },
+      { ok: true, id: ownerResult.data?.id ?? null },
       { status: 200 },
     );
-  } catch (err: any) {
+  } catch (err) {
     console.error("[/api/contact] Exception:", err);
 
-    // dev mode: ส่งรายละเอียดกลับไปดูใน Postman
     if (!isProd()) {
       return NextResponse.json(
-        { error: "Server exception", detail: String(err?.message ?? err) },
+        {
+          error: "Server exception",
+          detail: err instanceof Error ? err.message : String(err),
+        },
         { status: 500 },
       );
     }
