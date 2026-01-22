@@ -115,10 +115,10 @@ footer .footer-bg-container::before {
       rgba(120, 255, 255, 0) 60%
     ),
     /* subtle grid (match your site bg vibe) */
-      linear-gradient(to right, rgba(120, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to right, rgba(120, 255, 255, 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(120, 255, 255, 0.05) 1px, transparent 1px),
     /* scanline */
-      repeating-linear-gradient(
+    repeating-linear-gradient(
         to bottom,
         rgba(255, 255, 255, 0.03) 0px,
         rgba(255, 255, 255, 0.03) 1px,
@@ -609,5 +609,169 @@ footer .footer-content-meta:last-child {
   footer .footer-content-col h3,
   footer .footer-content-col p {
     margin-bottom: clamp(1.25rem, 2.5vw, 2.5rem);
+  }
+}
+/* =============================================
+   RESPONSIVE STRATEGY
+   ============================================= */
+
+/* --- จอใหญ่พิเศษ (Ultra Wide) --- */
+@media (min-width: 2000px) {
+  footer .footer-content {
+    padding: 8rem 10rem;
+  }
+}
+
+/* --- จอ Tablet / Laptop เล็ก (<= 1100px) --- */
+@media (max-width: 1100px) {
+  footer .footer-content {
+    padding: 5rem 3rem 3rem 3rem; /* ลด padding แต่ยังคงระยะ notch ไว้ */
+  }
+
+  footer .footer-content-meta:nth-child(1) {
+    gap: 3rem; /* ลดช่องว่างระหว่าง Headline กับ Body Copy */
+  }
+}
+
+/* --- จอ Tablet แนวตั้ง / มือถือใหญ่ (<= 900px) --- */
+@media (max-width: 900px) {
+  footer {
+    height: auto; /* ให้ยืดตามเนื้อหา */
+    min-height: 100svh;
+    padding: 0.5rem;
+  }
+
+  footer .footer-bg-container {
+    /* บนมือถือ notch อาจจะทำให้คลิกยาก ให้ลดความลึกลงหรือเอาออก */
+    --notchDepth: 2.5rem;
+  }
+
+  footer .footer-content {
+    position: relative; /* เปลี่ยนจาก absolute เป็น relative เพื่อให้ยืดตาม content */
+    padding: 5rem 1.5rem 3rem 1.5rem;
+  }
+
+  footer .footer-content-meta {
+    flex-direction: column; /* เรียงเป็นแนวตั้ง */
+    gap: 2rem;
+  }
+
+  footer .footer-content-meta:nth-child(1) {
+    gap: 2rem;
+  }
+
+  footer .footer-content-col h3 {
+    margin-bottom: 1.5rem;
+    font-size: clamp(2rem, 8vw, 3rem); /* ปรับขนาดตัวอักษร Typing */
+  }
+
+  footer .footer-content-col .bodyCopy {
+    display: block; /* มั่นใจว่ายังแสดงอยู่แต่จัดระเบียบใหม่ */
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  footer .footer-form {
+    flex-direction: column; /* input กับปุ่ม แยกบรรทัด */
+    gap: 0.75rem;
+  }
+
+  footer .footer-form input {
+    width: 100%;
+    flex: none;
+  }
+
+  footer .footer-brand {
+    align-items: flex-start; /* Logo ชิดซ้ายแทน */
+    margin-top: 2rem;
+  }
+  /* 1. ปรับ Wrapper ของ Form ให้แยกชั้นชัดเจน */
+  footer .footer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* เพิ่มช่องว่างระหว่าง input กับปุ่ม */
+    width: 100%;
+  }
+
+  /* 2. ขยายความสูงของ Input และปุ่มให้ "หนา" ขึ้น */
+  footer .footer-form input,
+  footer .footer-form .btn > a.btn {
+    height: 4.2rem !important; /* หนาขึ้นกว่าเดิมเพื่อให้กดง่ายด้วยนิ้ว (Touch Target) */
+    font-size: 0.9rem; /* ขยายขนาดตัวอักษรเล็กน้อย */
+    width: 100%;
+    border-radius: 4px; /* เพิ่มโค้งมนนิดหน่อยให้ดู Modern */
+  }
+
+  /* 3. ทำให้ปุ่ม "สว่าง" และ "ชัด" กว่าเดิม (High-End Glitch Look) */
+  footer a.btn {
+    letter-spacing: 0.35em; /* เพิ่มระยะห่างตัวอักษรให้ดู Tech */
+
+    /* เพิ่ม Glow รอบปุ่ม */
+    box-shadow: 0 0 15px rgba(206, 21, 61, 0.2);
+  }
+
+  /* 5. เอฟเฟกต์ตอนกด (Active State) แทน Hover */
+  footer a.btn:active {
+    transform: scale(0.98); /* ยุบตัวลงนิดหน่อยตอนกด */
+    transition: 0.1s;
+  }
+}
+
+/* --- มือถือขนาดเล็ก (<= 600px) --- */
+@media (max-width: 600px) {
+  footer .footer-bg-container {
+    clip-path: none; /* เอา notch ออกเพื่อให้มีพื้นที่แสดงผลมากขึ้น */
+    border-radius: 2rem; /* ใช้มุมโค้งปกติแทน */
+  }
+
+  footer .footer-content {
+    padding: 3rem 1.25rem 2rem 1.25rem;
+  }
+
+  footer .footer-socials {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* แบ่ง social เป็น 2 คอลัมน์ */
+    gap: 0.5rem;
+  }
+
+  footer .footer-socials .footer-social {
+    margin: 0;
+  }
+
+  footer .footer-socials a {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+  }
+
+  /* ปรับลำดับการแสดงผลด้านล่างสุด */
+  footer .footer-content-meta:nth-child(2) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  footer .footer-content-meta:nth-child(2) .footer-content-col:nth-child(1) {
+    flex-direction: column;
+    order: 2; /* เอาข้อความลิขสิทธิ์ไว้ล่างสุด */
+  }
+
+  footer .footer-brand-wrap {
+    order: 1; /* เอา Logo ไว้เหนือข้อความลิขสิทธิ์ */
+    width: 100%;
+  }
+
+  footer .footer-brand img {
+    width: 180px; /* ลดขนาดโลโก้ */
+    height: auto;
+  }
+}
+
+/* ป้องกันปัญหาจอเตี้ย (Landscape) */
+@media (max-height: 500px) {
+  footer {
+    height: auto;
+    padding: 2rem 0;
+  }
+  footer .footer-content {
+    position: relative;
   }
 }

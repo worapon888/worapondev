@@ -10,7 +10,7 @@
   pointer-events: none;
   overflow: hidden;
   /* เปลี่ยนจาก transparent เป็นสีดำ เพื่อไม่ให้เห็นหน้าเว็บหลักแลบออกมาก่อน */
-  background: #000000;
+  background: transparent;
 }
 
 .grid {

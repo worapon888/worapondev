@@ -1,19 +1,18 @@
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100svh; /* สำคัญสำหรับ iOS Safari */
-  z-index: 2147483647; /* ค่าสูงสุด เพื่อให้ทับทุกอย่างบนหน้าจอ */
+  inset: 0;
+  z-index: 9999;
   pointer-events: none;
-  overflow: hidden;
   background: transparent;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
 }
 
 .block {
   position: absolute;
-  background: #000000; /* สีของแผ่น Transition */
   opacity: 1;
-  will-change: opacity; /* ช่วยให้ลื่นขึ้นบนมือถือ */
+  background: rgb(0, 0, 0);
 }

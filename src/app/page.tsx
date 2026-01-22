@@ -1,61 +1,52 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-
 import Navbar from "@/components/Navbar/Navbar";
 import Hero from "@/components/hero/Hero";
 import Services from "@/components/services/Services";
 import Showcase from "@/components/showcase/Showcase";
 import Contact from "@/components/cta/Cta";
 import Footer from "@/components/footer/Footer";
-
-// ปิด SSR เพื่อเลี่ยง Hydration Error
-const Preloader = dynamic(() => import("@/components/preloader/Preloader"), {
-  ssr: false,
-});
+import Preloader from "@/components/preloader/Preloader";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState<boolean | null>(null);
+  // 1. เริ่มต้นเป็น true เพื่อให้โชว์ Preloader ทันที
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const played = sessionStorage.getItem("preloaderPlayed");
+    // เช็กจาก sessionStorage ว่าเคยเล่นไปหรือยัง (ถ้าไม่อยากให้เล่นซ้ำทุกครั้งที่กด Home)
+    const played = sessionStorage.getItem("initialPreloaderPlayed");
     if (played === "1") {
       setIsLoading(false);
-    } else {
-      setIsLoading(true);
+      return;
     }
+
+    // ถ้ายังไม่เคยเล่น ให้รอเวลา (durationMs) แล้วค่อยปิด
+    // หมายเหตุ: หากใน Preloader มี onDone ให้ใช้ onDone ปิดจะเนียนกว่า
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      sessionStorage.setItem("initialPreloaderPlayed", "1");
+    }, 4000); // ปรับให้ตรงกับเวลา Animation ของคุณ
+
+    return () => clearTimeout(timer);
   }, []);
 
-  // 1. ถ้ากำลังโหลด ให้โชว์ Preloader อย่างเดียว
-  if (isLoading === true) {
-    return (
-      <Preloader
-        enabled={true}
-        onDone={() => {
-          sessionStorage.setItem("preloaderPlayed", "1");
-          setIsLoading(false);
-        }}
-      />
-    );
-  }
+  return (
+    <>
+      {/* 2. แสดง Preloader เมื่อ isLoading เป็น true */}
+      {isLoading && (
+        <Preloader enabled={true} onDone={() => setIsLoading(false)} />
+      )}
 
-  // 2. ถ้าโหลดเสร็จแล้ว ค่อยโชว์หน้าเว็บ
-  if (isLoading === false) {
-    return (
-      <>
-        <Navbar />
-        <main className="min-h-screen pt-16 bg-transparent">
-          <Hero />
-          <Services />
-          <Showcase />
-          <Contact />
-          <Footer />
-        </main>
-      </>
-    );
-  }
-
-  // 3. ช่วงที่กำลังเช็กสถานะ (isLoading === null) ให้จอดำไว้ก่อน
-  return <div className="bg-black w-screen h-screen" />;
+      {/* 3. เนื้อหาหลักของหน้า Page */}
+      <Navbar />
+      <main className="min-h-screen pt-16 bg-transparent">
+        <Hero />
+        <Services />
+        <Showcase />
+        <Contact />
+        <Footer />
+      </main>
+    </>
+  );
 }

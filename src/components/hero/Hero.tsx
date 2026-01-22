@@ -84,15 +84,15 @@ export default function Hero() {
       {/* 🧩 Brand HUD */}
       <div
         ref={brandHudRef}
-        className="brand-hud absolute top-6 left-6 md:top-12 md:left-20 lg:top-25 lg:left-45 px-4 py-3 font-mono uppercase text-[11px] md:text-[13px] tracking-[0.25em] md:tracking-[0.32em] text-cyan-300/60 pointer-events-none select-none border border-cyan-300/20 rounded-sm bg-black/40 backdrop-blur-md md:backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.08)] min-w-[160px] md:min-w-[200px]"
+        className="brand-hud absolute top-6 left-6 md:top-12 md:left-20 lg:top-20 lg:left-40 px-4 py-3 font-mono uppercase text-[11px] md:text-[13px] tracking-[0.25em] md:tracking-[0.32em] text-cyan-300/60 pointer-events-none select-none border border-cyan-300/20 rounded-sm bg-black/40 backdrop-blur-md md:backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.08)] min-w-[160px] md:min-w-[200px]"
       >
-        <span className="font-bold text-cyan-200/80">WORAPON.DEV</span>
+        <span className="font-bold text-cyan-200/50">WORAPON.DEV</span>
         <p className="mt-1 text-[8px] md:text-[9px] tracking-[0.2em] md:tracking-[0.28em] text-cyan-100/40">
           IMMERSIVE WEB SYSTEMS
         </p>
         <p
           ref={timerRef}
-          className="mt-2 text-[8px] md:text-[9px] tracking-[0.28em] text-cyan-200/35 border-t border-cyan-300/10 pt-2"
+          className="mt-2 text-[8px] md:text-[9px] tracking-[0.28em] text-cyan-200/40 border-t border-cyan-300/20 pt-2"
         />
       </div>
 
@@ -161,7 +161,7 @@ export default function Hero() {
       {/* 🧭 System Observation Log */}
       <div
         ref={systemLogRef}
-        className="system-log absolute bottom-10 left-6 md:bottom-20 md:left-20 lg:left-40 max-w-[240px] md:max-w-sm text-left font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/50 pointer-events-none hidden sm:block"
+        className="system-log absolute bottom-10 left-6 md:bottom-20 md:left-20 lg:bottom-25 lg:left-40  md:max-w-sm text-left font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/50 pointer-events-none hidden sm:block"
       >
         <div className="mb-2 md:mb-3 flex items-center gap-x-3 md:gap-x-4 text-cyan-300/60 uppercase">
           <span className="whitespace-nowrap">Zone / 01</span>
@@ -181,7 +181,7 @@ export default function Hero() {
       {/* 📡 System Status */}
       <div
         ref={systemStatusRef}
-        className="system-status absolute bottom-10 right-6 md:bottom-20 md:right-20 lg:right-40 font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/45 pointer-events-none text-right hidden sm:block"
+        className="system-status absolute bottom-10 right-6 md:bottom-20 md:right-20 lg:bottom-25 lg:right-40 font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/45 pointer-events-none text-right hidden sm:block"
       >
         <p className="mb-2 md:mb-3 uppercase text-cyan-300/60 font-semibold tracking-widest">
           System Status

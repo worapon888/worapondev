@@ -27,13 +27,12 @@ export default function Preloader({
   onDone,
   blockSize = 60,
 }: PreloaderProps) {
-  // ✅ ป้องกัน Hydration Error โดยเช็กว่า Mount หรือยัง
   const [isMounted, setIsMounted] = useState(false);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const blockElsRef = useRef<HTMLSpanElement[]>([]);
 
-  // ล้างค่า Array ทุกครั้งที่เรนเดอร์ใหม่
+  // ล้างค่า Array ทุกครั้งที่เรนเดอร์ใหม่เพื่อป้องกัน Element ซ้ำ
   blockElsRef.current = [];
 
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
@@ -41,7 +40,6 @@ export default function Preloader({
   useEffect(() => {
     setIsMounted(true);
     const onResize = () => {
-      // ใช้ดักค่าที่แม่นยำขึ้นสำหรับมือถือ
       setViewport({
         w: document.documentElement.clientWidth || window.innerWidth,
         h: document.documentElement.clientHeight || window.innerHeight,
@@ -53,7 +51,6 @@ export default function Preloader({
   }, []);
 
   const blocks: Block[] = useMemo(() => {
-    // ห้ามคำนวณจนกว่าจะอยู่บน Client และมีขนาดหน้าจอ
     if (!isMounted || !viewport.w || !viewport.h) return [];
 
     const cols = Math.ceil(viewport.w / blockSize);
@@ -63,7 +60,6 @@ export default function Preloader({
 
     const arr: Block[] = [];
     let id = 0;
-
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         arr.push({
@@ -79,50 +75,53 @@ export default function Preloader({
   }, [viewport.w, viewport.h, blockSize, isMounted]);
 
   useEffect(() => {
-    // รอให้ blocks พร้อมจริงๆ ก่อนเริ่ม Animation
     if (!enabled || !isMounted || blocks.length === 0) return;
 
-    const overlay = overlayRef.current;
     const wrapper = wrapperRef.current;
     const blockEls = blockElsRef.current;
 
-    if (!overlay || blockEls.length === 0) return;
+    if (blockEls.length === 0) return;
 
-    gsap.killTweensOf([overlay, wrapper, blockEls]);
+    // --- 1. SETUP INITIAL STATE ---
+    // ให้บล็อกทุกตัวทึบแสง (เป็นพื้นหลังดำ) และ UI พร้อมแสดง
     gsap.set(blockEls, { opacity: 1 });
     if (wrapper) gsap.set(wrapper, { opacity: 1 });
 
-    const uiOutMs = 600;
-    const blockDur = 0.2;
-    const staggerAmount = 0.8;
-    const delaySec = Math.max(0, (durationMs - uiOutMs * 2) / 1000);
-
     const tl = gsap.timeline({
-      delay: delaySec,
-      onComplete: () => onDone?.(),
+      // เรียก onDone เมื่อบล็อกสุดท้ายหายไปสนิทเท่านั้น
+      onComplete: () => {
+        if (onDone) onDone();
+      },
     });
 
+    // --- 2. THE ANIMATION SEQUENCE ---
+
+    // STEP A: แสดง UI (วงกลม/ข้อความ) ค้างไว้ตามเวลาที่กำหนด (ลบเวลาจางออกนิดหน่อย)
+    const holdTime = Math.max(0, durationMs - 800) / 1000;
+    tl.to({}, { duration: holdTime });
+
+    // STEP B: จาง UI ออก
     if (wrapper) {
-      tl.to(
-        wrapper,
-        {
-          opacity: 0,
-          duration: uiOutMs / 1000,
-          ease: "power2.out",
-        },
-        0,
-      );
+      tl.to(wrapper, {
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      });
     }
 
+    // STEP C: เริ่มสลาย Blocks (เล่นต่อจาก UI จาง หรือเหลื่อมกันนิดหน่อย)
     tl.to(
       blockEls,
       {
         opacity: 0,
-        duration: blockDur,
+        duration: 0.4,
         ease: "power2.inOut",
-        stagger: { amount: staggerAmount, from: "random" },
+        stagger: {
+          amount: 0.7, // ระยะเวลาทั้งหมดที่ใช้ในการสุ่มจางบล็อกทังหมด
+          from: "random",
+        },
       },
-      0.1,
+      "-=0.3", // เริ่มสลายบล็อกก่อน UI จะจางหายสนิท 0.3 วินาที เพื่อความลื่นไหล
     );
 
     return () => {
@@ -130,18 +129,24 @@ export default function Preloader({
     };
   }, [enabled, isMounted, blocks.length, durationMs, onDone]);
 
-  // ✅ ถ้ายังไม่พร้อม ห้าม Render เด็ดขาด
   if (!enabled || !isMounted || blocks.length === 0) return null;
 
   return (
     <div ref={overlayRef} className={styles.overlay}>
-      {/* ใช้ suppressHydrationWarning เพื่อกัน Error จากการสุ่มตำแหน่ง */}
+      {/* GRID ของแผ่นสี่เหลี่ยมสีดำที่ทำหน้าที่เป็นฉากหลัง */}
       <div className={styles.grid} suppressHydrationWarning>
         {blocks.map((b) => (
           <span
             key={b.id}
             className={styles.block}
-            style={{ left: b.left, top: b.top, width: b.w, height: b.h }}
+            style={{
+              left: b.left,
+              top: b.top,
+              width: b.w,
+              height: b.h,
+              position: "absolute",
+              backgroundColor: "#000", // สีพื้นหลังของม่าน
+            }}
             ref={(el) => {
               if (el) blockElsRef.current.push(el);
             }}
@@ -149,6 +154,7 @@ export default function Preloader({
         ))}
       </div>
 
+      {/* UI ส่วนหน้า (ข้อความและวงกลม) */}
       <div ref={wrapperRef} className={styles.ui}>
         <p className={styles.text}>{label}</p>
         <div className={styles.ringFrame}>

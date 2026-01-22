@@ -23,7 +23,7 @@
 }
 @media (max-width: 768px) {
   .cta {
-    height: 30vh;
+    height: 50vh;
   }
   .cta .cta-row {
     margin: -0.5rem 0;
