@@ -1,46 +1,32 @@
 .overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
+  /* แก้ปัญหาความสูงในมือถือ */
+  height: 100vh;
   height: 100svh;
   z-index: 999999;
   pointer-events: none;
   overflow: hidden;
-  background: transparent;
+  /* เปลี่ยนจาก transparent เป็นสีดำ เพื่อไม่ให้เห็นหน้าเว็บหลักแลบออกมาก่อน */
+  background: #000000;
 }
 
 .grid {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  z-index: 0;
+  /* จัดระเบียบ z-index ให้ grid อยู่หลังสุดของ overlay */
+  z-index: 10;
 }
 
 .block {
   position: absolute;
   background: #000000;
   opacity: 1;
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
   transform: scale(1);
-  filter: blur(0);
-}
-.backdrop {
-  position: absolute;
-  inset: 0;
-  background: #000;
-  opacity: 1;
-  z-index: 0;
-  transition: opacity 0.55s ease;
-}
-
-.backdropFade {
-  opacity: 0;
-}
-.grid {
-  z-index: 1;
-}
-.ui {
-  z-index: 2;
 }
 
 .ui {
@@ -49,30 +35,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  /* ให้ UI อยู่บนสุดของ grid */
+  z-index: 20;
 }
 
 .text {
   position: absolute;
-  bottom: 6rem;
+  bottom: 20%; /* ใช้ % เพื่อให้รองรับหน้าจอหลายขนาด */
   color: rgba(231, 247, 255, 0.9);
   font-size: 0.9rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   animation: blink 1s ease-in-out infinite;
-  animation-delay: 100ms;
 }
 
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 0.15;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
+/* --- Animation Rings --- */
 .ringFrame,
 .discFrame {
   position: absolute;
@@ -83,36 +60,48 @@
 }
 
 .ring {
-  border: 2px solid rgba(0, 0, 0, 0);
+  border: 2px solid transparent;
   border-left: 2px solid rgba(120, 220, 255, 0.9);
   border-right: 2px solid rgba(120, 220, 255, 0.9);
   border-radius: 50%;
   position: absolute;
 }
 
+/* ปรับขนาดให้เล็กลงหน่อยสำหรับมือถือ (Responsive) */
 .ringSm {
-  width: 108px;
-  height: 108px;
+  width: 80px;
+  height: 80px;
   animation: spin 1s linear infinite;
 }
 .ringMd {
-  width: 138px;
-  height: 138px;
+  width: 110px;
+  height: 110px;
   animation: spinR 1.5s linear infinite;
 }
 .ringLg {
-  width: 172px;
-  height: 172px;
+  width: 140px;
+  height: 140px;
   animation: spin 2s linear infinite;
 }
 
 .disc {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border: 2px solid rgba(120, 220, 255, 0.9);
   border-radius: 50%;
   animation: rotate3d 3s linear infinite;
   position: absolute;
+}
+
+/* --- Keyframes --- */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes rotate3d {
@@ -120,6 +109,7 @@
     transform: rotate3d(1, 0.25, 0.75, 360deg);
   }
 }
+
 @keyframes spin {
   to {
     transform: rotateZ(360deg);
@@ -131,11 +121,10 @@
   }
 }
 
+/* ปิด Animation สำหรับเครื่องที่ตั้งค่าลดการเคลื่อนไหว */
 @media (prefers-reduced-motion: reduce) {
   .text,
-  .ringSm,
-  .ringMd,
-  .ringLg,
+  .ring,
   .disc {
     animation: none !important;
   }

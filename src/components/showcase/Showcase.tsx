@@ -13,25 +13,25 @@ const projects = [
   {
     title: "MinimalMart",
     description: "Immersive e-commerce concept with animation-first UI.",
-    image: "/projects/Minimalmart3.webm",
+    image: "/projects/Minimalmart3.mp4",
     link: "https://minimart-three.vercel.app/",
   },
   {
     title: "TaskSync",
     description: "A calm, gamified task system with real-time drag & drop.",
-    image: "/projects/tasksync.webm",
+    image: "/projects/tasksync.mp4",
     link: "https://tasksync-chi.vercel.app/",
   },
   {
     title: "Insightify",
     description: "Futuristic analytics dashboard with real data hooks.",
-    image: "/projects/insightify.webm",
+    image: "/projects/insightify.mp4",
     link: "https://insighttify-dashboard.vercel.app/",
   },
   {
     title: "Code404",
     description: "Your portal to clean code, immersive UI, and dev identity.",
-    image: "/projects/code404.webm",
+    image: "/projects/code404.mp4",
     link: "https://code404-five.vercel.app/",
   },
 ];
