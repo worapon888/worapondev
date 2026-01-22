@@ -3,8 +3,6 @@ import { Resend } from "resend";
 import type { ContactPayload } from "@/types/contact";
 import type { CreateEmailOptions, CreateEmailResponse } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 /* ===============================
    Utils
 ================================ */
@@ -91,7 +89,7 @@ function validate(body: ContactPayload) {
   };
 }
 
-async function sendEmail(payload: CreateEmailOptions) {
+async function sendEmail(resend: Resend, payload: CreateEmailOptions) {
   const result: CreateEmailResponse = await resend.emails.send(payload);
   return result;
 }
@@ -113,7 +111,6 @@ export async function POST(req: Request) {
   // --- Validate ---
   const v = validate(body);
   if (v.ok && v.honeypot) {
-    // bot -> pretend success
     return NextResponse.json({ ok: true }, { status: 200 });
   }
   if (!v.ok) {
@@ -127,15 +124,18 @@ export async function POST(req: Request) {
   if ("error" in env) {
     return NextResponse.json({ error: env.error }, { status: env.status });
   }
-  const { to, from } = env;
 
-  // --- Send ---
+  const { apiKey, to, from } = env;
+
+  // ✅ สร้าง Resend ตอน runtime เท่านั้น (กัน build crash)
+  const resend = new Resend(apiKey);
+
   try {
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
     const safeMessage = asLineBreakHtml(message);
 
-    // 1) Owner email (ส่งเข้า inbox ของคุณ)
+    // 1) Owner email
     const ownerSubject = `New Contact — ${name}`;
 
     const ownerPayload: CreateEmailOptions = {
@@ -156,10 +156,10 @@ export async function POST(req: Request) {
           </p>
         </div>
       `,
-      replyTo: email, // คุณกด reply แล้วตอบลูกค้าได้เลย
+      replyTo: email,
     };
 
-    const ownerResult = await sendEmail(ownerPayload);
+    const ownerResult = await sendEmail(resend, ownerPayload);
 
     if (ownerResult.error) {
       console.error("[Resend] owner send error:", ownerResult.error, {
@@ -184,8 +184,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2) Auto-reply to customer (ส่งกลับหาลูกค้า)
-    // NOTE: แนะนำให้ใช้ FROM ที่ verify domain แล้วเพื่อ deliver ดีสุด
+    // 2) Auto-reply to customer
     const customerSubject = "✅ Received — Worapon.dev";
 
     const customerPayload: CreateEmailOptions = {
@@ -193,75 +192,59 @@ export async function POST(req: Request) {
       to: email,
       subject: customerSubject,
       html: `
-    <div style="background:#ffffff;">
-      <div style="
-        max-width:600px;
-        margin:0 auto;
-        padding:0 16px 24px;
-        font-family: ui-sans-serif, system-ui;
-        line-height:1.7;
-      ">
-
-        <!-- EMAIL HEADER IMAGE -->
-        <img
-          src="https://worapon.dev/email/contact-header.png"
-          alt="Worapon.dev"
-          width="600"
-          style="
-            display:block;
-            width:100%;
+        <div style="background:#ffffff;">
+          <div style="
             max-width:600px;
-            height:auto;
-            border:0;
-            margin:0 auto 20px;
-          "
-        />
+            margin:0 auto;
+            padding:0 16px 24px;
+            font-family: ui-sans-serif, system-ui;
+            line-height:1.7;
+          ">
+            <img
+              src="https://worapon.dev/email/contact-header.png"
+              alt="Worapon.dev"
+              width="600"
+              style="display:block;width:100%;max-width:600px;height:auto;border:0;margin:0 auto 20px;"
+            />
 
-        <h2 style="margin: 0 0 12px">
-          Message sent successfully. Your information has been received.
-        </h2>
+            <h2 style="margin: 0 0 12px">
+              Message sent successfully. Your information has been received.
+            </h2>
 
-        <p style="margin: 0 0 10px">
-          Hi ${safeName}, thanks for reaching out.
-          I’ve received your message and will get back to you soon.
-        </p>
+            <p style="margin: 0 0 10px">
+              Hi ${safeName}, thanks for reaching out.
+              I’ve received your message and will get back to you soon.
+            </p>
 
-        <div style="
-          padding:12px;
-          border:1px solid #e5e7eb;
-          border-radius:12px;
-          background:#fafafa
-        ">
-          <p style="margin:0 0 6px; color:#6b7280; font-size:12px">
-            Your message preview:
-          </p>
-          <div style="font-size:14px">
-            ${makePreview(message, 220)}
+            <div style="padding:12px;border:1px solid #e5e7eb;border-radius:12px;background:#fafafa">
+              <p style="margin:0 0 6px;color:#6b7280;font-size:12px">
+                Your message preview:
+              </p>
+              <div style="font-size:14px">
+                ${makePreview(message, 220)}
+              </div>
+            </div>
+
+            <p style="margin:12px 0 0">
+              <b>Expected response time:</b> within 24–48 hours.
+            </p>
+
+            <p style="margin:12px 0 0;color:#6b7280;font-size:12px">
+              If you didn’t send this message, you can ignore this email.
+            </p>
+
+            <hr style="margin:16px 0;border:0;border-top:1px solid #e5e7eb" />
+
+            <p style="margin:0;font-size:13px">
+              — Thank you,<br/>
+              Worapon.dev
+            </p>
           </div>
         </div>
-
-        <p style="margin:12px 0 0">
-          <b>Expected response time:</b> within 24–48 hours.
-        </p>
-
-        <p style="margin:12px 0 0; color:#6b7280; font-size:12px">
-          If you didn’t send this message, you can ignore this email.
-        </p>
-
-        <hr style="margin:16px 0; border:0; border-top:1px solid #e5e7eb" />
-
-        <p style="margin:0; font-size:13px">
-          — Thank you,<br/>
-          Worapon.dev
-        </p>
-
-      </div>
-    </div>
-  `,
+      `,
     };
 
-    // auto-reply ล้มไม่ทำให้ request ล้ม (กันลูกค้ากดส่งแล้วเว็บขึ้น error ทั้งที่คุณได้เมลแล้ว)
-    const customerResult = await sendEmail(customerPayload);
+    const customerResult = await sendEmail(resend, customerPayload);
     if (customerResult.error) {
       console.warn("[Resend] auto-reply failed:", customerResult.error, {
         to: email,
