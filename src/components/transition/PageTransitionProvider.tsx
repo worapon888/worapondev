@@ -1,14 +1,8 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import Preloader from "@/components/preloader/Preloader";
+import BlocksTransition from "./BlocksTransition";
 
 interface TransitionContextType {
   go: (href: string) => void;
@@ -24,43 +18,35 @@ export function PageTransitionProvider({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-
-  // ใช้เป้าหมาย (href) เป็นสถานะเดียวเพื่อบอกว่ากำลังเปลี่ยนหน้าหรือไม่
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
   const go = useCallback(
     (href: string) => {
-      // ป้องกันการคลิกซ้ำหน้าเดิม หรือคลิกขณะกำลังโหลด
-      if (pendingHref || href === pathname) return;
+      if (isTransitioning || href === pathname) return;
       setPendingHref(href);
+      setIsTransitioning(true);
     },
-    [pendingHref, pathname],
+    [isTransitioning, pathname],
   );
 
-  const onAnimationDone = useCallback(() => {
+  const handleAnimationDone = useCallback(() => {
     if (pendingHref) {
       router.push(pendingHref);
-      setPendingHref(null);
+      // หน่วงเวลาให้หน้าใหม่โหลดแป๊บนึงค่อยเอาแผ่นดำออก
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setPendingHref(null);
+      }, 150);
     }
   }, [pendingHref, router]);
 
-  const value = useMemo(
-    () => ({
-      go,
-      isTransitioning: !!pendingHref,
-    }),
-    [go, pendingHref],
-  );
-
   return (
-    <PageTransitionContext.Provider value={value}>
+    <PageTransitionContext.Provider value={{ go, isTransitioning }}>
       {children}
-
-      <Preloader
-        enabled={!!pendingHref}
-        durationMs={0}
-        blockSize={60}
-        onDone={onAnimationDone}
+      <BlocksTransition
+        enabled={isTransitioning}
+        onDone={handleAnimationDone}
       />
     </PageTransitionContext.Provider>
   );
@@ -68,9 +54,6 @@ export function PageTransitionProvider({
 
 export const usePageTransition = () => {
   const ctx = useContext(PageTransitionContext);
-  if (!ctx)
-    throw new Error(
-      "usePageTransition must be used within PageTransitionProvider",
-    );
+  if (!ctx) throw new Error("usePageTransition must be used within Provider");
   return ctx;
 };

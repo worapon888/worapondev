@@ -16,37 +16,40 @@ const Preloader = dynamic(() => import("@/components/preloader/Preloader"), {
 });
 
 export default function Home() {
-  // เริ่มต้นเป็น null เพื่อเช็กสถานะ sessionStorage ก่อน render
-  const [isLoading, setIsLoading] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // ✅ เริ่ม false ไว้ก่อน
 
   useEffect(() => {
+    // ✅ เคยเล่นแล้ว = ไม่เล่นซ้ำ
     const played = sessionStorage.getItem("preloaderPlayed");
     if (played === "1") {
       setIsLoading(false);
-    } else {
-      setIsLoading(true);
+      return;
     }
+
+    // ✅ ครั้งแรกในแท็บนี้ = เล่น
+    setIsLoading(true);
+
+    const t = window.setTimeout(() => {
+      sessionStorage.setItem("preloaderPlayed", "1");
+      setIsLoading(false);
+    }, 2800);
+
+    return () => window.clearTimeout(t);
   }, []);
 
-  // ถ้ายังไม่ได้เช็ก sessionStorage (เช่นช่วงแรกที่โหลดหน้า) ให้คืนค่าว่างไว้ก่อน
-  if (isLoading === null) return <div className="bg-black min-h-screen" />;
-
-  // ถ้าต้องโหลด Preloader
   if (isLoading) {
     return (
       <Preloader
         enabled={true}
-        durationMs={2800}
         label="Stabilizing Feed"
         onDone={() => {
-          sessionStorage.setItem("preloaderPlayed", "1");
-          setIsLoading(false); // เปลี่ยนสถานะเมื่อแอนิเมชันเล่นจบจริงๆ เท่านั้น
+          sessionStorage.setItem("preloaderPlayed", "1"); // ✅ กันหลุด
+          setIsLoading(false);
         }}
       />
     );
   }
 
-  // หน้าเว็บหลัก
   return (
     <>
       <Navbar />

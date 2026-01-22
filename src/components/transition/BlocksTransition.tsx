@@ -13,93 +13,83 @@ interface BlocksTransitionProps {
 export default function BlocksTransition({
   enabled,
   onDone,
-  blockSize = 60,
+  blockSize = 50,
 }: BlocksTransitionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  const [isReady, setIsReady] = useState(false);
 
-  // 1. Optimized Resize Handler
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const handleResize = () => {
-      setViewport({ w: window.innerWidth, h: window.innerHeight });
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setViewport({ w, h });
+      if (w > 0) setIsReady(true);
     };
-
     handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 2. Memoized Blocks Calculation
   const blocks = useMemo(() => {
-    const { w: W, h: H } = viewport;
-    if (!W || !H) return [];
+    if (!isReady || viewport.w === 0) return [];
+    const cols = Math.ceil(viewport.w / blockSize);
+    const rows = Math.ceil(viewport.h / blockSize) + 1;
+    return Array.from({ length: rows * cols }, (_, i) => ({
+      id: i,
+      left: (i % cols) * blockSize,
+      top: Math.floor(i / cols) * blockSize,
+    }));
+  }, [viewport, blockSize, isReady]);
 
-    const cols = Math.ceil(W / blockSize);
-    const rows = Math.ceil(H / blockSize) + 1;
-    const offsetX = (W - cols * blockSize) / 2;
-    const offsetY = (H - rows * blockSize) / 2;
-
-    return Array.from({ length: rows * cols }, (_, i) => {
-      const r = Math.floor(i / cols);
-      const c = i % cols;
-      return {
-        id: i,
-        left: c * blockSize + offsetX,
-        top: r * blockSize + offsetY,
-      };
-    });
-  }, [viewport, blockSize]);
-
-  // 3. Animation Logic
   useEffect(() => {
-    if (!enabled || !containerRef.current) return;
+    if (!enabled || !isReady || blocks.length === 0 || !containerRef.current)
+      return;
 
-    const blocksEls = containerRef.current.querySelectorAll(`.${styles.block}`);
-    if (!blocksEls.length) return;
+    const el = containerRef.current;
+    const blocksEls = el.querySelectorAll(`.${styles.block}`);
 
-    // Reset State ก่อนเริ่ม
+    if (blocksEls.length === 0) return;
+
     gsap.set(blocksEls, { opacity: 1 });
 
     const tl = gsap.timeline({
-      onComplete: () => onDone?.(),
-      defaults: { ease: "power2.inOut" },
+      onComplete: () => {
+        if (onDone) onDone();
+      },
     });
 
     tl.to(blocksEls, {
       opacity: 0,
-      duration: 0.2,
+      duration: 0.4,
       stagger: {
-        amount: 0.8,
+        amount: 0.6,
         from: "random",
       },
+      ease: "power2.inOut",
     });
 
     return () => {
       tl.kill();
-      gsap.killTweensOf(blocksEls);
     };
-  }, [enabled, onDone, blocks.length]); // รันเมื่อ blocks พร้อม
+  }, [enabled, isReady, blocks.length, onDone]);
 
-  if (!enabled || !blocks.length) return null;
+  if (!enabled || !isReady || blocks.length === 0) return null;
 
   return (
-    <div ref={containerRef} className={styles.overlay} aria-hidden="true">
-      <div className={styles.grid}>
-        {blocks.map((b) => (
-          <span
-            key={b.id}
-            className={styles.block}
-            style={{
-              left: b.left,
-              top: b.top,
-              width: blockSize,
-              height: blockSize,
-            }}
-          />
-        ))}
-      </div>
+    <div ref={containerRef} className={styles.overlay}>
+      {blocks.map((b) => (
+        <span
+          key={b.id}
+          className={styles.block}
+          style={{
+            left: b.left,
+            top: b.top,
+            width: blockSize,
+            height: blockSize,
+          }}
+        />
+      ))}
     </div>
   );
 }
