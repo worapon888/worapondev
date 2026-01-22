@@ -185,7 +185,7 @@ export async function POST(req: Request) {
     }
 
     // 2) Auto-reply to customer
-    const customerSubject = "✅ Received — Worapon.dev";
+    const customerSubject = "Message received — Worapon.dev";
 
     const customerPayload: CreateEmailOptions = {
       from,
