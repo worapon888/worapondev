@@ -23,16 +23,18 @@ const projects = [
     link: "https://tasksync-chi.vercel.app/",
   },
   {
-    title: "Insightify",
-    description: "Futuristic analytics dashboard with real data hooks.",
-    image: "/projects/insightify.mp4",
-    link: "https://insighttify-dashboard.vercel.app/",
+    title: "Luxe-One | Premium Digital",
+    description:
+      "High-end luxury experience with seamless transitions and immersive motion design.",
+    image: "/projects/luxe-one.mp4",
+    link: "https://luxe-one-tau.vercel.app/",
   },
   {
-    title: "Code404",
-    description: "Your portal to clean code, immersive UI, and dev identity.",
-    image: "/projects/code404.mp4",
-    link: "https://code404-five.vercel.app/",
+    title: "Futuristic Landing Page",
+    description:
+      "An immersive portal designed for the modern developer identity.",
+    image: "/projects/tech-futuristic-landing.mp4",
+    link: "https://tech-futuristic-landing.vercel.app/",
   },
 ];
 

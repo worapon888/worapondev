@@ -143,11 +143,19 @@ function ServiceCard({
         <div className="services-card__cols">
           <div className="col">
             <p className="col-title">Deliverables</p>
-            <ul>{svc.deliverables?.map((it) => <li key={it}>{it}</li>)}</ul>
+            <ul>
+              {svc.deliverables?.map((it) => (
+                <li key={it}>{it}</li>
+              ))}
+            </ul>
           </div>
           <div className="col">
             <p className="col-title">Scope</p>
-            <ul>{svc.scope?.map((it) => <li key={it}>{it}</li>)}</ul>
+            <ul>
+              {svc.scope?.map((it) => (
+                <li key={it}>{it}</li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

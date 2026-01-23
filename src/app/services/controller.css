@@ -4,22 +4,24 @@
 .services-container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  /* จุดสำคัญ: ต้องเป็น visible เพื่อไม่ให้ปุ่มที่จมลงไปโดนตัดขาด */
+  min-height: 100svh;
+  padding: 8rem 1rem /* top */ 15rem; /* bottom ← เว้นระยะกับ footer */
   overflow: visible !important;
+  max-width: 2000px;
 }
 
 /* ===============================
    CONTROLLER (Sci-fi Dial)
 ================================ */
 .services-container .controller {
+  margin-top: 3rem;
   position: absolute;
   left: 50%;
-  top: 55%;
+  top: 50%;
   transform: translate(-50%, 230px);
   width: 11rem;
   height: 11rem;
-  z-index: 100; /* ดันขึ้นมาให้อยู่เหนือทุกอย่าง */
+  z-index: 3; /* ดันขึ้นมาให้อยู่เหนือทุกอย่าง */
   user-select: none;
 }
 
@@ -190,12 +192,18 @@
 
 /* Mobile (Smartphones) */
 @media (max-width: 600px) {
+  .services-container {
+    /* เพิ่มพื้นที่ด้านล่าง เผื่อ controller + safe area */
+    padding-bottom: calc(22rem + env(safe-area-inset-bottom));
+    min-height: calc(100svh + 360px); /* กัน section จบเร็วเกิน */
+  }
+
   .services-container .controller {
     width: 8.5rem;
     height: 8.5rem;
+
     top: auto;
-    /* ปรับจมลงลึก: -4rem จะโผล่มาประมาณครึ่งวงกลม ถ้าอยากให้ลึกกว่านี้ปรับเป็น -5rem ได้เลย */
-    bottom: -13rem;
+    bottom: calc(-3.5rem + env(safe-area-inset-bottom)); /* ✅ ไม่จม */
     transform: translateX(-50%);
   }
 
@@ -232,7 +240,7 @@
   .services-container .controller {
     width: 7rem;
     height: 7rem;
-    bottom: -2.5rem;
+
     transform: translateX(-50%) scale(0.9);
   }
   .services-container .controller .controller-label p {
