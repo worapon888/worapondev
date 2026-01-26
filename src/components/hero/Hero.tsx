@@ -79,15 +79,17 @@ export default function Hero() {
   return (
     <section
       ref={rootRef}
-      className="relative hero hero--preload h-[100vh] overflow-hidden flex items-center"
+      className="relative hero hero--preload min-h-[100svh] md:min-h-[100dvh] overflow-hidden flex items-center"
     >
       {/* 🧩 Brand HUD */}
       <div
         ref={brandHudRef}
         className="brand-hud absolute top-6 left-6 md:top-12 md:left-20 lg:top-20 lg:left-40 px-4 py-3 font-mono uppercase text-[11px] md:text-[13px] tracking-[0.25em] md:tracking-[0.32em] text-cyan-300/60 pointer-events-none select-none border border-cyan-300/20 rounded-sm bg-black/40 backdrop-blur-md md:backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.08)] min-w-[160px] md:min-w-[200px]"
       >
-        <span className="font-bold text-cyan-200/50">WORAPON.DEV</span>
-        <p className="mt-1 text-[8px] md:text-[9px] tracking-[0.2em] md:tracking-[0.28em] text-cyan-100/40">
+        <span className="title-bud font-bold text-cyan-200/50">
+          WORAPON.DEV
+        </span>
+        <p className="subtitle-bud mt-1 text-[8px] md:text-[9px] tracking-[0.2em] md:tracking-[0.28em] text-cyan-100/40">
           IMMERSIVE WEB SYSTEMS
         </p>
         <p
@@ -122,13 +124,26 @@ export default function Hero() {
 
         <p
           ref={paragraphRef}
-          className="mt-7 mx-auto max-w-xl text-[clamp(14px,4vw,16.5px)] leading-[1.6] md:leading-7 text-cyan-100/65 tracking-[0.04em] px-6 md:px-0"
+          className=" paragraph-subtle
+    mt-6
+    mx-auto
+    max-w-xl
+    text-[clamp(14px,4vw,16.5px)]
+    leading-[1.6]
+    md:text-[15px]
+    md:leading-[1.45]
+    lg:text-[14px]
+    lg:leading-7
+    text-cyan-100/65
+    tracking-[0.04em]
+    px-6 md:px-0
+  "
         >
           Frontend Developer specializing in high-end interactions and cinematic
           interfaces. Merging technical precision with creative vision.
         </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-y-8 sm:gap-x-10">
+        <div className="all-btn mt-10 flex flex-col sm:flex-row items-center justify-center gap-y-8 sm:gap-x-10">
           <a
             ref={btn1Ref}
             href="#contact"
@@ -140,7 +155,7 @@ export default function Hero() {
           <a
             ref={btn2Ref}
             href="#services"
-            className="relative text-[13px] sm:text-sm uppercase tracking-[0.22em] text-white/70 transition-all duration-300 hover:text-cyan-200 group py-2"
+            className="btn-opacity relative text-[13px] sm:text-sm uppercase tracking-[0.22em] text-white/70 transition-all duration-300 hover:text-cyan-200 group py-2"
           >
             View Projects
             <span className="inline-block ml-2 transition-transform duration-300 group-hover:translate-x-1">
@@ -152,7 +167,7 @@ export default function Hero() {
 
         <p
           ref={availabilityRef}
-          className="mt-5 text-[11px] tracking-[0.28em] uppercase text-white/45"
+          className="paragraph-able mt-5 text-[11px] tracking-[0.28em] uppercase text-white/45"
         >
           Available for select projects
         </p>
