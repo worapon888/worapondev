@@ -13,9 +13,11 @@ export const SERVICES: ServiceItem[] = [
       src: "/services_card/Lite-Motion-Landing.jpg",
     },
 
-    headline: "Clean presence. Fast deployment.",
+    // ✅ slightly more “approachable” tone (optional)
+    headline: "Simple, clean, and ready to ship.",
     description:
-      "A focused landing experience with subtle motion — built to look premium without heavy complexity.",
+      "A straightforward landing build with subtle motion — designed to look premium without heavy complexity or long timelines.",
+
     deliverables: [
       "Hero + core sections",
       "Subtle motion & micro-interactions",
@@ -27,11 +29,16 @@ export const SERVICES: ServiceItem[] = [
       "Expandable sections if needed",
       "Additional pages quoted after briefing",
     ],
-    timeline: "5–10 days",
-    price: { currency: "USD", from: 800, to: 1200, note: "Typical range" },
+
+    // ✅ shorter / more realistic for “easy work”
+    timeline: "3–7 days",
+
+    // ✅ NEW: entry-level pricing (easier to sell)
+    price: { currency: "USD", from: 450, to: 650, note: "Starting range" },
+
     highlights: [
-      "Great for launches & campaigns",
-      "Premium look with controlled scope",
+      "Great for quick launches & campaigns",
+      "Clean scope, low overhead",
     ],
     tech: ["Next.js", "React", "GSAP", "CSS/SCSS"],
     accent: { rgb: [120, 255, 255] }, // ✅ CYAN
@@ -52,6 +59,7 @@ export const SERVICES: ServiceItem[] = [
     headline: "Story-driven motion designed to convert.",
     description:
       "Cinematic pacing, scroll-linked transitions, and a brand-first interaction system for flagship pages.",
+
     deliverables: [
       "Story-driven structure",
       "GSAP animation timeline",
@@ -64,7 +72,11 @@ export const SERVICES: ServiceItem[] = [
       "Final scope confirmed after briefing",
     ],
     timeline: "10–18 days",
-    price: { currency: "USD", from: 1500, to: 3000, note: "Most selected" },
+
+    // ✅ keep price
+    // ✅ soften note so it doesn’t feel like “hard sell”
+    price: { currency: "USD", from: 1500, to: 3000, note: "Selected projects" },
+
     highlights: [
       "Flagship page for premium brands",
       "High perceived value & clarity",
@@ -88,6 +100,7 @@ export const SERVICES: ServiceItem[] = [
     headline: "Built for impact. Designed to be remembered.",
     description:
       "An immersive web experience with advanced choreography and optional pseudo-3D / shader elements.",
+
     deliverables: [
       "Immersive interaction system",
       "Advanced motion choreography",
@@ -100,11 +113,14 @@ export const SERVICES: ServiceItem[] = [
       "Final quote after briefing",
     ],
     timeline: "18–35 days",
+
+    // ✅ keep price (special work)
     price: {
       currency: "USD",
       from: 3500,
-      note: "Starting at / Quoted after briefing",
+      note: "Starting at • Quoted after briefing",
     },
+
     highlights: ["Awards/showcase-ready", "Maximum differentiation"],
     tech: ["GSAP", "R3F/Three.js (optional)", "Custom shaders (optional)"],
     accent: { rgb: [185, 130, 255] }, // ✅ VIOLET
