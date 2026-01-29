@@ -449,7 +449,7 @@
   color: rgba(242, 234, 210, 0.72);
 
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   text-decoration: none;
 
   transition:

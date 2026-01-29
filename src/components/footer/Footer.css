@@ -160,19 +160,16 @@ footer .footer-bg-container::after {
 }
 footer .footer-form {
   display: flex;
-  align-items: stretch;
-
-  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
 }
 
 /* input */
 footer .footer-form input {
   flex: 0 1 clamp(18rem, 28vw, 26rem);
   min-width: 14rem;
-
   height: clamp(3rem, 4.2vh, 3.6rem);
   padding: 0 clamp(1rem, 1.4vh, 1.4rem);
-
   font-size: clamp(0.75rem, 1.1vh, 0.85rem);
 }
 /* ===== Button base ===== */
@@ -187,7 +184,7 @@ footer a.btn {
   background: rgba(0, 0, 0, 0.35);
 
   /* border แค่เป็นโครงเบา ๆ */
-  border: 1px solid rgba(231, 247, 255, 0.12);
+  border: 1px solid rgba(255, 231, 231, 0.12);
 
   color: rgba(206, 21, 61, 0.75);
   text-transform: uppercase;
@@ -212,7 +209,7 @@ footer a.btn .btn-line {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 5;
 }
 
 /* เส้นบน / ล่าง */
@@ -264,30 +261,31 @@ footer a.btn .btn-line::after {
 ================================ */
 footer a.btn:hover {
   color: rgba(206, 21, 61, 0.95);
+  border-color: rgba(206, 21, 61, 0.295); /* ขอบกล่องจางๆ */
 }
 
 /* บน / ล่าง หดเข้า */
 footer a.btn:hover::before {
   left: 0;
   width: 20px;
-  background: rgba(206, 21, 61, 0.9);
+  background: rgba(206, 21, 61, 0.65);
 }
 
 footer a.btn:hover::after {
   right: 0;
   width: 20px;
-  background: rgba(206, 21, 61, 0.9);
+  background: rgba(206, 21, 61, 0.65);
 }
 
 /* ซ้าย / ขวา วิ่ง */
 footer a.btn:hover .btn-line::before {
   bottom: 0;
-  background: rgba(206, 21, 61, 0.9);
+  background: rgba(206, 21, 61, 0.65);
 }
 
 footer a.btn:hover .btn-line::after {
   top: 0;
-  background: rgba(206, 21, 61, 0.9);
+  background: rgba(206, 21, 61, 0.65);
 }
 
 /* wrapper ปุ่ม */
@@ -296,7 +294,7 @@ footer .footer-form .btn {
 }
 footer .footer-form .btn,
 footer .footer-form .btn > a.btn {
-  height: auto !important; /* ไม่ fix เอง */
+  height: 3.5rem !important;
   align-self: stretch; /* ยืดเท่า input */
   display: inline-flex;
   align-items: center;
