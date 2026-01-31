@@ -1,7 +1,7 @@
 "use client";
 import "./Cta.css";
 
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -17,7 +17,7 @@ type SplitTextInstance = {
 export default function CtaSection() {
   const rootRef = useRef<HTMLElement | null>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
@@ -33,23 +33,28 @@ export default function CtaSection() {
         root.querySelectorAll(".cta-row"),
       ) as HTMLElement[];
 
-      const prefersReduced =
-        typeof window !== "undefined" &&
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const prefersReduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
 
       const run = async () => {
-        if (document?.fonts?.ready) {
+        // รอให้ Font โหลดเสร็จก่อนคำนวณ SplitText (จุดสำคัญที่ทำให้ Production เละ)
+        if (typeof document !== "undefined" && document.fonts) {
           try {
             await document.fonts.ready;
-          } catch {}
+          } catch (e) {
+            console.error("Font loading failed", e);
+          }
         }
 
         if (copyText) {
-          split = SplitText.create(copyText, {
+          // ใช้ SplitText.create และ cast type ให้ถูกต้อง
+          const splitResult = SplitText.create(copyText, {
             type: "lines",
             linesClass: "line",
-          }) as unknown as SplitTextInstance;
+          });
+
+          split = splitResult as unknown as SplitTextInstance;
 
           split.lines?.forEach((line) => {
             const mask = document.createElement("div");
@@ -103,6 +108,7 @@ export default function CtaSection() {
           });
         }
 
+        // --- คง Logic การคำนวณการเลื่อนของ Card ไว้เหมือนเดิม ---
         const leftXValues = [-800, -900, -400];
         const rightXValues = [800, 900, 400];
         const leftRotationValues = [-30, -20, -35];
@@ -128,18 +134,13 @@ export default function CtaSection() {
             scrub: prefersReduced ? false : true,
             onUpdate: (self) => {
               const p = self.progress;
-
-              cardLeft.style.transform = `translateX(${p * leftXValues[i]}px) translateY(${
-                p * yValues[i]
-              }px) rotate(${p * leftRotationValues[i]}deg)`;
-
-              cardRight.style.transform = `translateX(${p * rightXValues[i]}px) translateY(${
-                p * yValues[i]
-              }px) rotate(${p * rightRotationValues[i]}deg)`;
+              cardLeft.style.transform = `translateX(${p * leftXValues[i]}px) translateY(${p * yValues[i]}px) rotate(${p * leftRotationValues[i]}deg)`;
+              cardRight.style.transform = `translateX(${p * rightXValues[i]}px) translateY(${p * yValues[i]}px) rotate(${p * rightRotationValues[i]}deg)`;
             },
           });
         });
 
+        // บังคับ Refresh อีกรอบเพื่อให้ ScrollTrigger คำนวณตำแหน่งจาก Layout ที่นิ่งแล้ว
         ScrollTrigger.refresh();
       };
 
@@ -147,14 +148,15 @@ export default function CtaSection() {
 
       const onLoad = () => ScrollTrigger.refresh();
       window.addEventListener("load", onLoad);
-
       return () => window.removeEventListener("load", onLoad);
     }, root);
 
     return () => {
-      try {
-        split?.revert();
-      } catch {}
+      if (split) {
+        try {
+          split.revert();
+        } catch (e) {}
+      }
       ctx.revert();
       ScrollTrigger.refresh();
     };
