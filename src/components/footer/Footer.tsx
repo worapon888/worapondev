@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Footer.css";
 import Image from "next/image";
 
@@ -30,104 +30,92 @@ function useTypewriterLoop(
     glitchChars = "01<>/\\[]{}—_+*#@!?",
   } = opts;
 
-  const [out, setOut] = useState(text); // default = ของจริง (กัน flash)
-  const runningRef = useRef(false);
-  const rafRef = useRef<number>(0);
-  const t1Ref = useRef<number>(0);
-  const t2Ref = useRef<number>(0);
+  const [out, setOut] = useState(text); // กัน flash
+  const rafRef = useRef<number | null>(null);
+  const tRef = useRef<number | null>(null);
+
+  const enabledRef = useRef(enabled);
+  const textRef = useRef(text);
+
+  enabledRef.current = enabled;
+  textRef.current = text;
+
+  const clearAll = () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+
+    if (tRef.current) window.clearTimeout(tRef.current);
+    tRef.current = null;
+  };
 
   const randChar = () =>
     glitchChars[Math.floor(Math.random() * glitchChars.length)];
 
-  const clearTimers = () => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = 0;
+  useLayoutEffect(() => {
+    // ถ้าไม่ enable: คืนค่าเป็น text จริงเสมอ
+    if (!enabled) {
+      clearAll();
+      setOut(text);
+      return;
+    }
 
-    if (t1Ref.current) window.clearTimeout(t1Ref.current);
-    if (t2Ref.current) window.clearTimeout(t2Ref.current);
-    t1Ref.current = 0;
-    t2Ref.current = 0;
-  };
+    let cancelled = false;
 
-  const stop = () => {
-    runningRef.current = false;
-    clearTimers();
-  };
+    const typeOnce = () =>
+      new Promise<void>((resolve) => {
+        clearAll();
 
-  const runOnce = () =>
-    new Promise<void>((resolve) => {
-      stop();
-      runningRef.current = true;
+        const final = textRef.current ?? "";
+        const len = final.length;
 
-      const final = text ?? "";
-      const len = final.length;
+        let i = 0;
+        let last = 0;
 
-      let i = 0;
-      let last = 0;
+        setOut(""); // เริ่มว่าง
 
-      // เริ่มจากว่าง
-      setOut("");
+        const tick = (now: number) => {
+          if (cancelled || !enabledRef.current) return;
 
-      const tick = (now: number) => {
-        if (!runningRef.current) return;
+          if (now - last < typeSpeed) {
+            rafRef.current = requestAnimationFrame(tick);
+            return;
+          }
+          last = now;
 
-        if (now - last < typeSpeed) {
-          rafRef.current = requestAnimationFrame(tick);
-          return;
-        }
-        last = now;
+          i = Math.min(len, i + 1);
 
-        i = Math.min(len, i + 1);
+          const next =
+            i < len && Math.random() < glitchChance ? randChar() : "";
+          setOut(final.slice(0, i) + next);
 
-        const next = i < len && Math.random() < glitchChance ? randChar() : "";
+          if (i < len) {
+            rafRef.current = requestAnimationFrame(tick);
+          } else {
+            setOut(final); // จบ: เซ็ตของจริงชัวร์
+            tRef.current = window.setTimeout(() => resolve(), endHoldMs);
+          }
+        };
 
-        setOut(final.slice(0, i) + next);
-
-        if (i < len) {
-          rafRef.current = requestAnimationFrame(tick);
-        } else {
-          // จบ: เซ็ตของจริงชัวร์
-          setOut(final);
-
-          // ค้างหลังพิมพ์จบ
-          t1Ref.current = window.setTimeout(() => {
-            resolve();
-          }, endHoldMs);
-
-          runningRef.current = false;
-        }
-      };
-
-      rafRef.current = requestAnimationFrame(tick);
-    });
-
-  const loop = async () => {
-    if (!enabled) return;
-
-    // loop แบบนุ่ม ๆ
-    while (enabled && !runningRef.current) {
-      await runOnce();
-
-      // เว้นก่อนเริ่มรอบใหม่
-      await new Promise<void>((r) => {
-        t2Ref.current = window.setTimeout(() => r(), repeatDelayMs);
+        rafRef.current = requestAnimationFrame(tick);
       });
 
-      // กันหลุด enabled ระหว่างรอ
-      if (!enabled) break;
-    }
-  };
+    const loop = async () => {
+      // loop แบบนุ่ม ๆ
+      while (!cancelled && enabledRef.current) {
+        await typeOnce();
+        if (cancelled || !enabledRef.current) break;
 
-  useLayoutEffect(() => {
-    if (!enabled) return;
+        await new Promise<void>((r) => {
+          tRef.current = window.setTimeout(() => r(), repeatDelayMs);
+        });
+      }
+    };
 
-    // start loop
-    stop();
     loop();
 
     return () => {
-      stop();
-      // กลับเป็น text จริงกันค้าง
+      cancelled = true;
+      clearAll();
       setOut(text);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,23 +135,24 @@ function useTypewriterLoop(
 export default function FooterSection() {
   const rootRef = useRef<HTMLElement | null>(null);
 
-  // ✅ ใช้ state render text แทนการ set textContent
   const originalText = "Send a signal if you want to connect";
-
   const [isActive, setIsActive] = useState(false);
 
-  const prefersReduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  const prefersReduced = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+    );
+  }, []);
 
   const typedText = useTypewriterLoop(
     isActive && !prefersReduced,
     originalText,
     {
-      typeSpeed: 42, // ✅ ช้าลง/เร็วขึ้นได้
-      endHoldMs: 1600, // ✅ ค้างตอนพิมพ์จบให้นานขึ้น
-      repeatDelayMs: 3200, // ✅ เว้นก่อนวนรอบให้นานขึ้น
-      glitchChance: 0.08, // ✅ ลด/เพิ่มความมั่ว (0 = ไม่มั่ว)
+      typeSpeed: 42,
+      endHoldMs: 1600,
+      repeatDelayMs: 3200,
+      glitchChance: 0.08,
       glitchChars: "01<>/\\[]{}—_+*#@!?",
     },
   );
@@ -182,7 +171,6 @@ export default function FooterSection() {
         onEnter: () => {
           setIsActive(true);
 
-          // กันกรณีเพิ่งหลุดจาก preloader/lenis
           requestAnimationFrame(() => ScrollTrigger.refresh());
           setTimeout(() => ScrollTrigger.refresh(), 150);
         },
@@ -200,6 +188,7 @@ export default function FooterSection() {
         <div className="footer-content">
           <div className="footer-content-meta">
             <div className="footer-content-col">
+              {/* ✅ ใช้ data-typing ให้ CSS คุมสีได้จริง */}
               <h3 data-typing={isActive ? "1" : "0"}>
                 {prefersReduced ? originalText : typedText}
                 <span className="typing-cursor" aria-hidden="true">
@@ -209,6 +198,7 @@ export default function FooterSection() {
 
               <div className="footer-form">
                 <input type="text" placeholder="Unit Address" />
+
                 <div className="btn">
                   <a href="/contact" className="btn">
                     <span className="btn-line" />
@@ -245,8 +235,8 @@ export default function FooterSection() {
             </div>
           </div>
 
-          <div className="footer-content-meta">
-            <div className="footer-content-col">
+          <div className="footer-content-meta footer-bottom">
+            <div className="footer-content-col footer-meta">
               <p>[ Constructed by Worapon.dev ]</p>
               <p>[ Template Release / Jan 2026 ]</p>
             </div>

@@ -5,20 +5,28 @@
 
   /* footer frame */
   --footer-corner: 4rem; /* มุมกรอบใหญ่ */
-  --notch-pad: 0.2rem; /* เผื่อหายใจซ้ายขวา (ปรับได้) */
+  --notch-pad: 0.2rem; /* เผื่อหายใจซ้ายขวา */
   --footer-bottom-gap: 2.5rem;
+
+  /* base */
+  --base-100: rgba(255, 255, 255, 0.95);
+  --base-200: rgba(255, 255, 255, 0.72);
 }
 
-/* footer */
+/* =========================
+   FOOTER LAYOUT
+========================= */
 footer {
   position: relative;
   width: 100%;
   height: 100svh;
   max-height: 1200px;
   padding: 1rem;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   overflow: hidden;
 }
 
@@ -26,60 +34,43 @@ footer .footer-container {
   position: relative;
   width: 100%;
   height: 100%;
-  filter: url("#goo");
   max-width: 2000px;
+  filter: url("#goo");
 }
 
+/* =========================
+   BACKGROUND PANEL (clip-path)
+========================= */
 footer .footer-bg-container {
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
 
-  /* ===== THEME ===== */
+  /* THEME */
   --panel-top: rgba(14, 26, 30, 0.62);
   --panel-bot: rgba(8, 14, 18, 0.92);
   --stroke: rgba(120, 255, 255, 0.12);
   --glow: rgba(120, 255, 255, 0.22);
 
-  /* base glass */
   background: linear-gradient(180deg, var(--panel-top), var(--panel-bot));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  /* border + glow (คล้าย nav แต่ซอฟต์กว่า) */
   border: 1px solid var(--stroke);
   box-shadow:
     0 0 28px var(--glow),
     inset 0 0 18px rgba(120, 255, 255, 0.08);
 
-  /* ===== notch vars (ของเดิมคุณ) ===== */
+  /* notch vars */
   --notchOuter: calc((var(--nav-max) / 2) + var(--notch-pad));
   --notchInner: calc(var(--notchOuter) - var(--nav-cut));
   --notchDepth: calc(var(--nav-h) + var(--notch-pad));
 
-  /* ✅ ช่องไฟล่าง ใช้ pad เดียวกัน */
-  --footerBottom: calc(var(--notch-pad) * 6);
-
-  clip-path: polygon(
-    var(--footer-corner) 0,
-    calc(50% - var(--notchOuter)) 0,
-    calc(50% - var(--notchInner)) var(--notchDepth),
-    calc(50% + var(--notchInner)) var(--notchDepth),
-    calc(50% + var(--notchOuter)) 0,
-    calc(100% - var(--footer-corner)) 0,
-    100% var(--footer-corner),
-    100% calc(100% - var(--footer-corner)),
-    calc(100% - var(--footer-corner)) 100%,
-    var(--footer-corner) 100%,
-    0 calc(100% - var(--footer-corner)),
-    0 var(--footer-corner)
-  );
-
-  /* กันเส้นจาง ๆ ที่บางทีเกิดจาก clip-path + blur */
-  transform: translateZ(0);
+  /* bottom gap */
   --footerBottom: var(--footer-bottom-gap);
 
+  /* ✅ ใช้ polygon เดียว (ล้างของซ้ำ) */
   clip-path: polygon(
     var(--footer-corner) 0,
     calc(50% - var(--notchOuter)) 0,
@@ -88,43 +79,38 @@ footer .footer-bg-container {
     calc(50% + var(--notchOuter)) 0,
     calc(100% - var(--footer-corner)) 0,
     100% var(--footer-corner),
-    /* right side down */ 100%
-      calc(100% - var(--footer-corner) - var(--footerBottom)),
+    100% calc(100% - var(--footer-corner) - var(--footerBottom)),
     calc(100% - var(--footer-corner)) calc(100% - var(--footerBottom)),
-    /* bottom edge (raised) */ var(--footer-corner)
-      calc(100% - var(--footerBottom)),
+    var(--footer-corner) calc(100% - var(--footerBottom)),
     0 calc(100% - var(--footer-corner) - var(--footerBottom)),
     0 var(--footer-corner)
   );
+
+  transform: translateZ(0);
 }
 
-/* ===== overlays: grid + scanline + vignette ===== */
+/* overlays: grid + scanline */
 footer .footer-bg-container::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.42;
 
-  /* grid + subtle lighting */
   background:
-    /* soft highlight around notch area */
     radial-gradient(
       900px 260px at 50% 0%,
       rgba(120, 255, 255, 0.12),
       rgba(120, 255, 255, 0) 60%
     ),
-    /* subtle grid (match your site bg vibe) */
     linear-gradient(to right, rgba(120, 255, 255, 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(120, 255, 255, 0.05) 1px, transparent 1px),
-    /* scanline */
     repeating-linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.03) 0px,
-        rgba(255, 255, 255, 0.03) 1px,
-        rgba(0, 0, 0, 0) 6px,
-        rgba(0, 0, 0, 0) 10px
-      );
+      to bottom,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(0, 0, 0, 0) 6px,
+      rgba(0, 0, 0, 0) 10px
+    );
 
   background-size:
     auto,
@@ -136,7 +122,7 @@ footer .footer-bg-container::before {
   mix-blend-mode: screen;
 }
 
-/* ===== noise + vignette (ทำให้ไม่แบน) ===== */
+/* noise + vignette */
 footer .footer-bg-container::after {
   content: "";
   position: absolute;
@@ -158,170 +144,20 @@ footer .footer-bg-container::after {
   opacity: 0.35;
   mix-blend-mode: overlay;
 }
-footer .footer-form {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
 
-/* input */
-footer .footer-form input {
-  flex: 0 1 clamp(18rem, 28vw, 26rem);
-  min-width: 14rem;
-  height: clamp(3rem, 4.2vh, 3.6rem);
-  padding: 0 clamp(1rem, 1.4vh, 1.4rem);
-  font-size: clamp(0.75rem, 1.1vh, 0.85rem);
-}
-/* ===== Button base ===== */
-footer a.btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: auto;
-  padding: 0 1.2rem;
-
-  background: rgba(0, 0, 0, 0.35);
-
-  /* border แค่เป็นโครงเบา ๆ */
-  border: 1px solid rgba(255, 231, 231, 0.12);
-
-  color: rgba(206, 21, 61, 0.75);
-  text-transform: uppercase;
-  letter-spacing: 0.28em;
-  font-size: 11px;
-  font-family: var(--font-mono);
-
-  overflow: hidden;
-  text-decoration: none;
-}
-
-/* text อยู่บนสุด */
-footer a.btn > *:not(.btn-line) {
-  position: relative;
-  z-index: 3;
-}
-
-/* ===============================
-   BTN-LINE = เส้นจริง
-================================ */
-footer a.btn .btn-line {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* เส้นบน / ล่าง */
-footer a.btn::before,
-footer a.btn::after {
-  content: "";
-  position: absolute;
-  height: 1px;
-  width: 60px;
-  background: rgba(206, 21, 61, 0.45); /* ✅ สีเส้น */
-  transition: all 0.35s ease;
-  z-index: 2;
-}
-
-footer a.btn::before {
-  top: 0;
-  left: 10%;
-}
-
-footer a.btn::after {
-  bottom: 0;
-  right: 10%;
-}
-
-/* เส้นซ้าย / ขวา (btn-line จริง) */
-footer a.btn .btn-line::before,
-footer a.btn .btn-line::after {
-  content: "";
-  position: absolute;
-  width: 1px;
-  height: 18px;
-  background: rgba(206, 21, 61, 0.45);
-  transition: all 0.35s ease;
-}
-
-/* ⚠️ ห้าม -1px */
-footer a.btn .btn-line::before {
-  right: 0;
-  bottom: 30%;
-}
-
-footer a.btn .btn-line::after {
-  left: 0;
-  top: 30%;
-}
-
-/* ===============================
-   HOVER = ขยับเฉพาะ btn-line
-================================ */
-footer a.btn:hover {
-  color: rgba(206, 21, 61, 0.95);
-  border-color: rgba(206, 21, 61, 0.295); /* ขอบกล่องจางๆ */
-}
-
-/* บน / ล่าง หดเข้า */
-footer a.btn:hover::before {
-  left: 0;
-  width: 20px;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-footer a.btn:hover::after {
-  right: 0;
-  width: 20px;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-/* ซ้าย / ขวา วิ่ง */
-footer a.btn:hover .btn-line::before {
-  bottom: 0;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-footer a.btn:hover .btn-line::after {
-  top: 0;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-/* wrapper ปุ่ม */
-footer .footer-form .btn {
-  flex: 0 0 auto;
-}
-footer .footer-form .btn,
-footer .footer-form .btn > a.btn {
-  height: 3.5rem !important;
-  align-self: stretch; /* ยืดเท่า input */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-/* ปุ่ม */
-footer .footer-form .btn > a.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  height: clamp(3rem, 4.2vh, 3.6rem);
-  padding: 0 clamp(1.1rem, 1.6vh, 1.6rem);
-
-  font-size: clamp(0.7rem, 1vh, 0.8rem);
-  white-space: nowrap;
-}
-
+/* =========================
+   CONTENT WRAP
+========================= */
 footer .footer-content {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   padding: 6rem;
 }
 
@@ -331,202 +167,53 @@ footer .footer-content-meta {
   gap: 1.5rem;
 }
 
+footer .footer-content-meta:first-child {
+  gap: 7.5rem;
+}
+
 footer .footer-content-col {
   flex: 1;
 }
 
-footer .footer-content-col h3,
-footer .footer-content-col p {
-  margin-bottom: 3rem;
-}
-
-footer input {
-  width: 50%;
-  border: none;
-  outline: none;
-  padding: 1.5rem;
-  text-decoration: none;
-  text-transform: uppercase;
-  background-color: #3a3a3a;
-  color: var(--base-100);
-  font-family: "Geist Mono", monospace;
-  font-size: clamp(0.8rem, 0.75vw, 0.85rem);
-  font-weight: 500;
-  line-height: 1;
-}
-
-footer .footer-socials {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-footer .footer-socials .footer-social {
-  display: inline-block;
-  margin-right: 0.3rem;
-}
-
-footer .footer-socials .footer-social a {
-  color: var(--base-200);
-}
-
-footer .footer-content-meta:nth-child(1) {
-  gap: 7.5rem;
-}
-
-footer .footer-content-meta:nth-child(2) {
-  align-items: flex-end;
-}
-
-footer .footer-content-meta:nth-child(2) .footer-content-col:nth-child(1) {
-  display: flex;
-}
-
-footer
-  .footer-content-meta:nth-child(2)
-  .footer-content-col:nth-child(1)
-  p:nth-child(2) {
-  color: var(--base-200);
-}
-
-footer .footer-content-meta:nth-child(2) p {
-  margin-bottom: 0;
-  flex: 1;
-}
-
-@media (max-width: 1000px) {
-  footer .footer-bg-container {
-    clip-path: none;
-  }
-
-  footer .footer-content {
-    padding: 6rem 1rem 2rem 1rem;
-  }
-
-  footer .footer-content-meta {
-    flex-direction: column;
-  }
-
-  footer .footer-content-meta:nth-child(2) {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-  }
-
-  footer input {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  footer .footer-content-meta:nth-child(1) {
-    gap: 3rem;
-  }
-
-  footer .footer-content-col h3 {
-    margin-bottom: 1.5rem;
-  }
-
-  footer .footer-content-meta:nth-child(1) p.bodyCopy {
-    display: none;
-  }
-
-  footer .footer-content-meta:nth-child(2) .footer-content-col:nth-child(1) {
-    flex-direction: column-reverse;
-    gap: 0.25rem;
-  }
-}
+/* =========================
+   HEADLINE (typing)
+========================= */
 footer .footer-content-col h3 {
+  margin: 0 0 3rem 0;
+
   font-size: clamp(2.2rem, 4.5vw, 4.2rem);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 0.9;
+
   text-transform: uppercase;
-  color: rgba(250, 250, 250, 0.88);
   white-space: normal;
   overflow-wrap: anywhere;
+
+  /* ✅ default เป็น white */
+  color: rgba(250, 250, 250, 0.88);
 
   text-shadow:
     0 0 6px rgba(34, 211, 238, 0.25),
     0 0 18px rgba(34, 211, 238, 0.15);
-}
-footer .footer-socials a {
-  margin-top: 1.25rem; /* mt-5 */
-  font-size: 11px; /* text-[11px] */
-  letter-spacing: 0.28em; /* tracking-[0.28em] */
-  text-transform: uppercase; /* uppercase */
-  color: rgba(255, 255, 255, 0.45); /* text-white/45 */
 
-  font-family: var(--font-mono); /* แนะนำให้ใช้ mono จะดู tech */
+  /* กัน layout กระโดด */
+  min-height: calc(2 * 0.9em);
 }
-footer .footer-content-meta:nth-child(2) .footer-content-col:nth-child(1) {
-  font-size: 11px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42); /* ← ใช้ค่าเดียวกัน */
-  font-family: var(--font-mono);
-  line-height: 1.4;
-  margin: 0;
-}
-footer .footer-content-col .bodyCopy {
-  font-size: clamp(13px, 1vw, 14px);
-  line-height: 1.7;
-  letter-spacing: 0.06em;
-  text-transform: none;
 
-  color: rgba(255, 255, 255, 0.68);
-
-  font-family: var(--font-mono);
-}
-footer .footer-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end; /* ชิดขวาเหมือนเดิม */
-  line-height: 0.85;
-  text-transform: uppercase;
-  margin: 0;
-
-  font-family: var(--font-display), sans-serif;
-  font-weight: 900;
-  letter-spacing: -0.05em;
-}
-/* ตอนกำลัง scramble: ให้ดูเป็น “yellow glitch” */
-footer .footer-content-col h3[data-scrambling="1"] {
-  color: rgba(195, 195, 21, 0.92); /* เหลือง */
+/* ✅ ทำงานจริง เพราะ JSX ใช้ data-typing */
+footer .footer-content-col h3[data-typing="1"] {
+  color: rgba(195, 195, 21, 0.92);
   text-shadow:
     0 0 8px rgba(195, 195, 21, 0.28),
     0 0 18px rgba(195, 195, 21, 0.18),
     0 0 30px rgba(34, 211, 238, 0.1);
 }
 
-/* พอกลับเป็นตัวจริง: กลับสีเดิม */
-footer .footer-content-col h3[data-scrambling="0"] {
+footer .footer-content-col h3[data-typing="0"] {
   color: rgba(250, 250, 250, 0.88);
 }
-/* =========================
-   Typing Headline
-========================= */
-footer .footer-content-col h3 {
-  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
-  text-transform: uppercase;
-  white-space: normal;
-  min-height: calc(2 * 0.9em);
-  display: block;
-  overflow-wrap: anywhere;
-  color: rgba(195, 195, 21, 0.95);
 
-  text-shadow:
-    0 0 6px rgba(34, 211, 238, 0.25),
-    0 0 18px rgba(34, 211, 238, 0.15);
-}
-footer .footer-content-col h3,
-footer .footer-content-col p {
-  margin-bottom: 3rem;
-}
-
-/* =========================
-   Typing Cursor
-========================= */
 .typing-cursor {
   display: inline-block;
   margin-left: 0.08em;
@@ -547,28 +234,35 @@ footer .footer-content-col p {
 }
 
 /* =========================
-   Form
+   BODY COPY
 ========================= */
-footer .footer-form {
-  display: flex;
-}
+footer .footer-content-col .bodyCopy {
+  margin: 0 0 3rem 0;
 
-footer .footer-form input {
-  flex: 1;
-  height: 3.4rem;
-  padding: 0 1.2rem;
-  background: #3a3a3a;
-  border: none;
-  outline: none;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(13px, 1vw, 14px);
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  text-transform: none;
+
+  color: rgba(255, 255, 255, 0.68);
   font-family: var(--font-mono);
-  text-transform: uppercase;
 }
 
 /* =========================
-   Social / Meta
+   SOCIALS
 ========================= */
+footer .footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+footer .footer-socials .footer-social {
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+
 footer .footer-socials a {
+  margin-top: 1.25rem;
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -576,14 +270,189 @@ footer .footer-socials a {
   font-family: var(--font-mono);
 }
 
-footer .footer-content-meta:last-child {
+/* =========================
+   FORM (input + button)  ✅ รวมให้เหลือชุดเดียว
+========================= */
+footer .footer-form {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+footer .footer-form input {
+  flex: 0 1 clamp(18rem, 28vw, 26rem);
+  min-width: 14rem;
+
+  height: clamp(3rem, 4.2vh, 3.6rem);
+  padding: 0 clamp(1rem, 1.4vh, 1.4rem);
+
+  border: none;
+  outline: none;
+
+  background: #3a3a3a;
+  color: rgba(255, 255, 255, 0.9);
+
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+
+  font-size: clamp(0.75rem, 1.1vh, 0.85rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* wrapper ปุ่ม */
+footer .footer-form .btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+/* ✅ scope ปุ่มให้แค่อยู่ใน form (กันชนส่วนอื่น) */
+footer .footer-form a.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: clamp(3rem, 4.2vh, 3.6rem);
+  padding: 0 clamp(1.1rem, 1.6vh, 1.6rem);
+
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 231, 231, 0.12);
+
+  color: rgba(206, 21, 61, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 11px;
+  font-family: var(--font-mono);
+
+  overflow: hidden;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* text อยู่บนสุด */
+footer .footer-form a.btn > *:not(.btn-line) {
+  position: relative;
+  z-index: 3;
+}
+
+/* BTN-LINE */
+footer .footer-form a.btn .btn-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* top / bottom lines */
+footer .footer-form a.btn::before,
+footer .footer-form a.btn::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: 60px;
+  background: rgba(206, 21, 61, 0.45);
+  transition: all 0.35s ease;
+  z-index: 2;
+}
+
+footer .footer-form a.btn::before {
+  top: 0;
+  left: 10%;
+}
+
+footer .footer-form a.btn::after {
+  bottom: 0;
+  right: 10%;
+}
+
+/* left / right lines */
+footer .footer-form a.btn .btn-line::before,
+footer .footer-form a.btn .btn-line::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 18px;
+  background: rgba(206, 21, 61, 0.45);
+  transition: all 0.35s ease;
+}
+
+footer .footer-form a.btn .btn-line::before {
+  right: 0;
+  bottom: 30%;
+}
+
+footer .footer-form a.btn .btn-line::after {
+  left: 0;
+  top: 30%;
+}
+
+/* hover */
+footer .footer-form a.btn:hover {
+  color: rgba(206, 21, 61, 0.95);
+  border-color: rgba(206, 21, 61, 0.295);
+}
+
+footer .footer-form a.btn:hover::before {
+  left: 0;
+  width: 20px;
+  background: rgba(206, 21, 61, 0.65);
+}
+
+footer .footer-form a.btn:hover::after {
+  right: 0;
+  width: 20px;
+  background: rgba(206, 21, 61, 0.65);
+}
+
+footer .footer-form a.btn:hover .btn-line::before {
+  bottom: 0;
+  background: rgba(206, 21, 61, 0.65);
+}
+
+footer .footer-form a.btn:hover .btn-line::after {
+  top: 0;
+  background: rgba(206, 21, 61, 0.65);
+}
+
+/* =========================
+   BOTTOM META
+========================= */
+footer .footer-bottom {
   align-items: flex-end;
+}
+
+footer .footer-meta {
+  display: flex;
   gap: 1.5rem;
 }
 
+footer .footer-meta p {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  font-family: var(--font-mono);
+  line-height: 1.4;
+}
+
+footer .footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 0.85;
+  text-transform: uppercase;
+  margin: 0;
+
+  font-family: var(--font-display), sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
 /* ===============================
-   RESPONSIVE OVERRIDES (drop-in)
-   วางท้ายไฟล์เพื่อทับของเดิม
+   RESPONSIVE (คง logic เดิม แต่ให้ชัด)
 ================================ */
 
 /* กัน content แน่นเกินบนจอเตี้ย */
@@ -594,132 +463,127 @@ footer .footer-content-meta:last-child {
   }
 }
 
-/* ====== <= 1200px (laptop/large tablet) ====== */
+/* <= 1200px */
 @media (max-width: 1200px) {
   footer .footer-content {
     padding: clamp(2.5rem, 4vw, 4rem);
   }
 
-  footer .footer-content-meta:nth-child(1) {
+  footer .footer-content-meta:first-child {
     gap: clamp(2.5rem, 5vw, 5rem);
   }
 
   footer .footer-content-col h3,
-  footer .footer-content-col p {
+  footer .footer-content-col .bodyCopy {
     margin-bottom: clamp(1.25rem, 2.5vw, 2.5rem);
   }
 }
-/* =============================================
-   RESPONSIVE STRATEGY
-   ============================================= */
 
-/* --- จอใหญ่พิเศษ (Ultra Wide) --- */
-@media (min-width: 2000px) {
+/* <= 1000px (คุณเดิม: remove clip-path) */
+@media (max-width: 1000px) {
+  footer .footer-bg-container {
+    clip-path: none;
+  }
+
   footer .footer-content {
-    padding: 8rem 10rem;
+    padding: 6rem 1rem 2rem 1rem;
+    position: relative;
+  }
+
+  footer .footer-content-meta {
+    flex-direction: column;
+  }
+
+  footer .footer-bottom {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  footer .footer-meta {
+    flex-direction: column-reverse;
+    gap: 0.25rem;
+  }
+
+  footer .footer-content-meta:first-child {
+    gap: 3rem;
+  }
+
+  footer .footer-content-col h3 {
+    margin-bottom: 1.5rem;
+  }
+
+  /* คุณเดิม: ซ่อน bodyCopy ด้านขวาบนจอเล็ก */
+  footer .footer-content-meta:first-child .bodyCopy {
+    display: none;
   }
 }
 
-/* --- จอ Tablet / Laptop เล็ก (<= 1100px) --- */
-@media (max-width: 1100px) {
-  footer .footer-content {
-    padding: 5rem 3rem 3rem 3rem; /* ลด padding แต่ยังคงระยะ notch ไว้ */
-  }
-
-  footer .footer-content-meta:nth-child(1) {
-    gap: 3rem; /* ลดช่องว่างระหว่าง Headline กับ Body Copy */
-  }
-}
-
-/* --- จอ Tablet แนวตั้ง / มือถือใหญ่ (<= 900px) --- */
+/* <= 900px (มือถือใหญ่/แท็บเล็ตตั้ง) */
 @media (max-width: 900px) {
   footer {
-    height: auto; /* ให้ยืดตามเนื้อหา */
+    height: auto;
     min-height: 100svh;
     padding: 0.5rem;
   }
 
   footer .footer-bg-container {
-    /* บนมือถือ notch อาจจะทำให้คลิกยาก ให้ลดความลึกลงหรือเอาออก */
     --notchDepth: 2.5rem;
   }
 
   footer .footer-content {
-    position: relative; /* เปลี่ยนจาก absolute เป็น relative เพื่อให้ยืดตาม content */
     padding: 5rem 1.5rem 3rem 1.5rem;
   }
 
-  footer .footer-content-meta {
-    flex-direction: column; /* เรียงเป็นแนวตั้ง */
-    gap: 2rem;
-  }
-
-  footer .footer-content-meta:nth-child(1) {
-    gap: 2rem;
-  }
-
   footer .footer-content-col h3 {
-    margin-bottom: 1.5rem;
-    font-size: clamp(2rem, 8vw, 3rem); /* ปรับขนาดตัวอักษร Typing */
-  }
-
-  footer .footer-content-col .bodyCopy {
-    display: block; /* มั่นใจว่ายังแสดงอยู่แต่จัดระเบียบใหม่ */
-    max-width: 100%;
-    margin-bottom: 2rem;
+    font-size: clamp(2rem, 8vw, 3rem);
   }
 
   footer .footer-form {
-    flex-direction: column; /* input กับปุ่ม แยกบรรทัด */
+    flex-direction: column;
     gap: 0.75rem;
+    width: 100%;
   }
 
   footer .footer-form input {
     width: 100%;
     flex: none;
+    min-width: 0;
   }
 
-  footer .footer-brand {
-    align-items: flex-start; /* Logo ชิดซ้ายแทน */
-    margin-top: 2rem;
-  }
-  /* 1. ปรับ Wrapper ของ Form ให้แยกชั้นชัดเจน */
-  footer .footer-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; /* เพิ่มช่องว่างระหว่าง input กับปุ่ม */
+  footer .footer-form .btn,
+  footer .footer-form a.btn {
     width: 100%;
   }
 
-  /* 2. ขยายความสูงของ Input และปุ่มให้ "หนา" ขึ้น */
+  /* touch target หนาขึ้น */
   footer .footer-form input,
-  footer .footer-form .btn > a.btn {
-    height: 4.2rem !important; /* หนาขึ้นกว่าเดิมเพื่อให้กดง่ายด้วยนิ้ว (Touch Target) */
-    font-size: 0.9rem; /* ขยายขนาดตัวอักษรเล็กน้อย */
-    width: 100%;
-    border-radius: 4px; /* เพิ่มโค้งมนนิดหน่อยให้ดู Modern */
+  footer .footer-form a.btn {
+    height: 4.2rem !important;
+    font-size: 0.9rem;
+    border-radius: 4px;
   }
 
-  /* 3. ทำให้ปุ่ม "สว่าง" และ "ชัด" กว่าเดิม (High-End Glitch Look) */
-  footer a.btn {
-    letter-spacing: 0.35em; /* เพิ่มระยะห่างตัวอักษรให้ดู Tech */
-
-    /* เพิ่ม Glow รอบปุ่ม */
+  footer .footer-form a.btn {
+    letter-spacing: 0.35em;
     box-shadow: 0 0 15px rgba(206, 21, 61, 0.2);
   }
 
-  /* 5. เอฟเฟกต์ตอนกด (Active State) แทน Hover */
-  footer a.btn:active {
-    transform: scale(0.98); /* ยุบตัวลงนิดหน่อยตอนกด */
+  footer .footer-form a.btn:active {
+    transform: scale(0.98);
     transition: 0.1s;
+  }
+
+  footer .footer-brand {
+    align-items: flex-start;
+    margin-top: 2rem;
   }
 }
 
-/* --- มือถือขนาดเล็ก (<= 600px) --- */
+/* <= 600px (มือถือเล็ก) */
 @media (max-width: 600px) {
   footer .footer-bg-container {
-    clip-path: none; /* เอา notch ออกเพื่อให้มีพื้นที่แสดงผลมากขึ้น */
-    border-radius: 2rem; /* ใช้มุมโค้งปกติแทน */
+    clip-path: none;
+    border-radius: 2rem;
   }
 
   footer .footer-content {
@@ -728,7 +592,7 @@ footer .footer-content-meta:last-child {
 
   footer .footer-socials {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* แบ่ง social เป็น 2 คอลัมน์ */
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
   }
 
@@ -741,35 +605,27 @@ footer .footer-content-meta:last-child {
     letter-spacing: 0.15em;
   }
 
-  /* ปรับลำดับการแสดงผลด้านล่างสุด */
-  footer .footer-content-meta:nth-child(2) {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  footer .footer-content-meta:nth-child(2) .footer-content-col:nth-child(1) {
-    flex-direction: column;
-    order: 2; /* เอาข้อความลิขสิทธิ์ไว้ล่างสุด */
-  }
-
-  footer .footer-brand-wrap {
-    order: 1; /* เอา Logo ไว้เหนือข้อความลิขสิทธิ์ */
-    width: 100%;
-  }
-
   footer .footer-brand img {
-    width: 180px; /* ลดขนาดโลโก้ */
+    width: 180px;
     height: auto;
   }
 }
 
-/* ป้องกันปัญหาจอเตี้ย (Landscape) */
+/* จอเตี้ยมาก (landscape phone) */
 @media (max-height: 500px) {
   footer {
     height: auto;
     padding: 2rem 0;
   }
+
   footer .footer-content {
     position: relative;
+  }
+}
+
+/* ultra wide */
+@media (min-width: 2000px) {
+  footer .footer-content {
+    padding: 8rem 10rem;
   }
 }
