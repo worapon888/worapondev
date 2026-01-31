@@ -3,6 +3,7 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Footer.css";
 import Image from "next/image";
+import Link from "next/link";
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
@@ -10,10 +11,10 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 type TypewriterOpts = {
-  typeSpeed?: number; // ms ต่อ 1 ตัว
-  endHoldMs?: number; // ค้างหลังพิมพ์จบก่อนวนรอบ
-  repeatDelayMs?: number; // เว้นก่อนเริ่มรอบใหม่
-  glitchChance?: number; // 0..1
+  typeSpeed?: number;
+  endHoldMs?: number;
+  repeatDelayMs?: number;
+  glitchChance?: number;
   glitchChars?: string;
 };
 
@@ -30,7 +31,7 @@ function useTypewriterLoop(
     glitchChars = "01<>/\\[]{}—_+*#@!?",
   } = opts;
 
-  const [out, setOut] = useState(text); // กัน flash
+  const [out, setOut] = useState(text);
   const rafRef = useRef<number | null>(null);
   const tRef = useRef<number | null>(null);
 
@@ -43,7 +44,6 @@ function useTypewriterLoop(
   const clearAll = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
-
     if (tRef.current) window.clearTimeout(tRef.current);
     tRef.current = null;
   };
@@ -52,7 +52,6 @@ function useTypewriterLoop(
     glitchChars[Math.floor(Math.random() * glitchChars.length)];
 
   useLayoutEffect(() => {
-    // ถ้าไม่ enable: คืนค่าเป็น text จริงเสมอ
     if (!enabled) {
       clearAll();
       setOut(text);
@@ -71,7 +70,7 @@ function useTypewriterLoop(
         let i = 0;
         let last = 0;
 
-        setOut(""); // เริ่มว่าง
+        setOut("");
 
         const tick = (now: number) => {
           if (cancelled || !enabledRef.current) return;
@@ -91,7 +90,7 @@ function useTypewriterLoop(
           if (i < len) {
             rafRef.current = requestAnimationFrame(tick);
           } else {
-            setOut(final); // จบ: เซ็ตของจริงชัวร์
+            setOut(final);
             tRef.current = window.setTimeout(() => resolve(), endHoldMs);
           }
         };
@@ -100,7 +99,6 @@ function useTypewriterLoop(
       });
 
     const loop = async () => {
-      // loop แบบนุ่ม ๆ
       while (!cancelled && enabledRef.current) {
         await typeOnce();
         if (cancelled || !enabledRef.current) break;
@@ -118,7 +116,6 @@ function useTypewriterLoop(
       clearAll();
       setOut(text);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     enabled,
     text,
@@ -170,7 +167,6 @@ export default function FooterSection() {
         once: true,
         onEnter: () => {
           setIsActive(true);
-
           requestAnimationFrame(() => ScrollTrigger.refresh());
           setTimeout(() => ScrollTrigger.refresh(), 150);
         },
@@ -188,7 +184,6 @@ export default function FooterSection() {
         <div className="footer-content">
           <div className="footer-content-meta">
             <div className="footer-content-col">
-              {/* ✅ ใช้ data-typing ให้ CSS คุมสีได้จริง */}
               <h3 data-typing={isActive ? "1" : "0"}>
                 {prefersReduced ? originalText : typedText}
                 <span className="typing-cursor" aria-hidden="true">
@@ -199,11 +194,11 @@ export default function FooterSection() {
               <div className="footer-form">
                 <input type="text" placeholder="Unit Address" />
 
-                <div className="btn">
-                  <a href="/contact" className="btn">
+                <div className="footer-btn-wrap">
+                  <Link href="/contact" className="footer-btn">
                     <span className="btn-line" />
                     Transmit Message
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -228,7 +223,7 @@ export default function FooterSection() {
                   { label: "[ Homebase ]", href: "/contact" },
                 ].map((item) => (
                   <div className="footer-social" key={item.label}>
-                    <a href={item.href}>{item.label}</a>
+                    <Link href={item.href}>{item.label}</Link>
                   </div>
                 ))}
               </div>

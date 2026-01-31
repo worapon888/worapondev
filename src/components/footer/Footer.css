@@ -70,7 +70,6 @@ footer .footer-bg-container {
   /* bottom gap */
   --footerBottom: var(--footer-bottom-gap);
 
-  /* ✅ ใช้ polygon เดียว (ล้างของซ้ำ) */
   clip-path: polygon(
     var(--footer-corner) 0,
     calc(50% - var(--notchOuter)) 0,
@@ -171,6 +170,11 @@ footer .footer-content-meta:first-child {
   gap: 7.5rem;
 }
 
+footer .footer-content-meta:last-child {
+  align-items: flex-end;
+}
+
+/* คอลัมน์ */
 footer .footer-content-col {
   flex: 1;
 }
@@ -190,18 +194,16 @@ footer .footer-content-col h3 {
   white-space: normal;
   overflow-wrap: anywhere;
 
-  /* ✅ default เป็น white */
   color: rgba(250, 250, 250, 0.88);
 
   text-shadow:
     0 0 6px rgba(34, 211, 238, 0.25),
     0 0 18px rgba(34, 211, 238, 0.15);
 
-  /* กัน layout กระโดด */
+  /* กัน layout กระโดดระหว่าง typing */
   min-height: calc(2 * 0.9em);
 }
 
-/* ✅ ทำงานจริง เพราะ JSX ใช้ data-typing */
 footer .footer-content-col h3[data-typing="1"] {
   color: rgba(195, 195, 21, 0.92);
   text-shadow:
@@ -214,6 +216,7 @@ footer .footer-content-col h3[data-typing="0"] {
   color: rgba(250, 250, 250, 0.88);
 }
 
+/* cursor */
 .typing-cursor {
   display: inline-block;
   margin-left: 0.08em;
@@ -268,10 +271,16 @@ footer .footer-socials a {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
   font-family: var(--font-mono);
+  text-decoration: none;
+}
+
+footer .footer-socials a:hover {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* =========================
-   FORM (input + button)  ✅ รวมให้เหลือชุดเดียว
+   FORM (input + button)
+   ✅ กัน global .footer-btn มาทับ (สาเหตุ deploy เพี้ยน)
 ========================= */
 footer .footer-form {
   display: flex;
@@ -279,6 +288,7 @@ footer .footer-form {
   gap: 0;
 }
 
+/* input */
 footer .footer-form input {
   flex: 0 1 clamp(18rem, 28vw, 26rem);
   min-width: 14rem;
@@ -301,21 +311,22 @@ footer .footer-form input {
 }
 
 /* wrapper ปุ่ม */
-footer .footer-form .btn {
+footer .footer-form .footer-btn {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: stretch;
 }
 
-/* ✅ scope ปุ่มให้แค่อยู่ใน form (กันชนส่วนอื่น) */
-footer .footer-form a.btn {
+/* ✅ LOCK: ปุ่มใน footer ต้องชนะ global .footer-btn เสมอ */
+footer .footer-form .footer-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  height: clamp(3rem, 4.2vh, 3.6rem);
-  padding: 0 clamp(1.1rem, 1.6vh, 1.6rem);
+  height: clamp(3rem, 4.2vh, 3.6rem) !important;
+  padding: 0 clamp(1.1rem, 1.6vh, 1.6rem) !important;
+  min-width: 0 !important;
 
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 231, 231, 0.12);
@@ -332,13 +343,13 @@ footer .footer-form a.btn {
 }
 
 /* text อยู่บนสุด */
-footer .footer-form a.btn > *:not(.btn-line) {
+footer .footer-form .footer-btn > *:not(.btn-line) {
   position: relative;
   z-index: 3;
 }
 
 /* BTN-LINE */
-footer .footer-form a.btn .btn-line {
+footer .footer-form .footer-btn .btn-line {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -346,8 +357,8 @@ footer .footer-form a.btn .btn-line {
 }
 
 /* top / bottom lines */
-footer .footer-form a.btn::before,
-footer .footer-form a.btn::after {
+footer .footer-form .footer-btn::before,
+footer .footer-form .footer-btn::after {
   content: "";
   position: absolute;
   height: 1px;
@@ -357,19 +368,19 @@ footer .footer-form a.btn::after {
   z-index: 2;
 }
 
-footer .footer-form a.btn::before {
+footer .footer-form .footer-btn::before {
   top: 0;
   left: 10%;
 }
 
-footer .footer-form a.btn::after {
+footer .footer-form .footer-btn::after {
   bottom: 0;
   right: 10%;
 }
 
 /* left / right lines */
-footer .footer-form a.btn .btn-line::before,
-footer .footer-form a.btn .btn-line::after {
+footer .footer-form .footer-btn .btn-line::before,
+footer .footer-form .footer-btn .btn-line::after {
   content: "";
   position: absolute;
   width: 1px;
@@ -378,64 +389,75 @@ footer .footer-form a.btn .btn-line::after {
   transition: all 0.35s ease;
 }
 
-footer .footer-form a.btn .btn-line::before {
+footer .footer-form .footer-btn .btn-line::before {
   right: 0;
   bottom: 30%;
 }
 
-footer .footer-form a.btn .btn-line::after {
+footer .footer-form .footer-btn .btn-line::after {
   left: 0;
   top: 30%;
 }
 
 /* hover */
-footer .footer-form a.btn:hover {
+footer .footer-form .footer-btn:hover {
   color: rgba(206, 21, 61, 0.95);
   border-color: rgba(206, 21, 61, 0.295);
 }
 
-footer .footer-form a.btn:hover::before {
+footer .footer-form .footer-btn:hover::before {
   left: 0;
   width: 20px;
   background: rgba(206, 21, 61, 0.65);
 }
 
-footer .footer-form a.btn:hover::after {
+footer .footer-form .footer-btn:hover::after {
   right: 0;
   width: 20px;
   background: rgba(206, 21, 61, 0.65);
 }
 
-footer .footer-form a.btn:hover .btn-line::before {
+footer .footer-form .footer-btn:hover .btn-line::before {
   bottom: 0;
   background: rgba(206, 21, 61, 0.65);
 }
 
-footer .footer-form a.btn:hover .btn-line::after {
+footer .footer-form .footer-btn:hover .btn-line::after {
   top: 0;
   background: rgba(206, 21, 61, 0.65);
 }
 
 /* =========================
-   BOTTOM META
+   BOTTOM META (ให้ตรง JSX จริง)
+   JSX บรรทัดล่างคือ .footer-content-meta (อันที่ 2)
 ========================= */
-footer .footer-bottom {
-  align-items: flex-end;
-}
-
-footer .footer-meta {
+footer .footer-content-meta:last-child .footer-content-col:first-child {
   display: flex;
   gap: 1.5rem;
 }
 
-footer .footer-meta p {
+footer .footer-content-meta:last-child .footer-content-col:first-child p {
   margin: 0;
+  flex: 1;
   font-size: 11px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.42);
   font-family: var(--font-mono);
   line-height: 1.4;
+}
+
+footer
+  .footer-content-meta:last-child
+  .footer-content-col:first-child
+  p:nth-child(2) {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* โลโก้ขวาล่าง */
+footer .footer-brand-wrap {
+  display: flex;
+  justify-content: flex-end;
 }
 
 footer .footer-brand {
@@ -452,7 +474,7 @@ footer .footer-brand {
 }
 
 /* ===============================
-   RESPONSIVE (คง logic เดิม แต่ให้ชัด)
+   RESPONSIVE
 ================================ */
 
 /* กัน content แน่นเกินบนจอเตี้ย */
@@ -479,7 +501,7 @@ footer .footer-brand {
   }
 }
 
-/* <= 1000px (คุณเดิม: remove clip-path) */
+/* <= 1000px */
 @media (max-width: 1000px) {
   footer .footer-bg-container {
     clip-path: none;
@@ -494,16 +516,6 @@ footer .footer-brand {
     flex-direction: column;
   }
 
-  footer .footer-bottom {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-  }
-
-  footer .footer-meta {
-    flex-direction: column-reverse;
-    gap: 0.25rem;
-  }
-
   footer .footer-content-meta:first-child {
     gap: 3rem;
   }
@@ -512,13 +524,28 @@ footer .footer-brand {
     margin-bottom: 1.5rem;
   }
 
-  /* คุณเดิม: ซ่อน bodyCopy ด้านขวาบนจอเล็ก */
+  /* ซ่อน bodyCopy ด้านขวาบนจอเล็ก (เหมือนเดิม) */
   footer .footer-content-meta:first-child .bodyCopy {
     display: none;
   }
+
+  /* บรรทัดล่าง: ให้เรียงสวย */
+  footer .footer-content-meta:last-child {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  footer .footer-brand-wrap {
+    justify-content: flex-start;
+  }
+
+  footer .footer-content-meta:last-child .footer-content-col:first-child {
+    flex-direction: column-reverse;
+    gap: 0.25rem;
+  }
 }
 
-/* <= 900px (มือถือใหญ่/แท็บเล็ตตั้ง) */
+/* <= 900px */
 @media (max-width: 900px) {
   footer {
     height: auto;
@@ -551,24 +578,24 @@ footer .footer-brand {
   }
 
   footer .footer-form .btn,
-  footer .footer-form a.btn {
+  footer .footer-form .footer-btn {
     width: 100%;
   }
 
   /* touch target หนาขึ้น */
   footer .footer-form input,
-  footer .footer-form a.btn {
+  footer .footer-form .footer-btn {
     height: 4.2rem !important;
     font-size: 0.9rem;
     border-radius: 4px;
   }
 
-  footer .footer-form a.btn {
+  footer .footer-form .footer-btn {
     letter-spacing: 0.35em;
     box-shadow: 0 0 15px rgba(206, 21, 61, 0.2);
   }
 
-  footer .footer-form a.btn:active {
+  footer .footer-form .footer-btn:active {
     transform: scale(0.98);
     transition: 0.1s;
   }
@@ -579,7 +606,7 @@ footer .footer-brand {
   }
 }
 
-/* <= 600px (มือถือเล็ก) */
+/* <= 600px */
 @media (max-width: 600px) {
   footer .footer-bg-container {
     clip-path: none;
@@ -611,7 +638,7 @@ footer .footer-brand {
   }
 }
 
-/* จอเตี้ยมาก (landscape phone) */
+/* จอเตี้ยมาก */
 @media (max-height: 500px) {
   footer {
     height: auto;
