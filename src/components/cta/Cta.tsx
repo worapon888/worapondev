@@ -1,7 +1,7 @@
 "use client";
 import "./Cta.css";
 
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -17,7 +17,7 @@ type SplitTextInstance = {
 export default function CtaSection() {
   const rootRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
@@ -28,33 +28,33 @@ export default function CtaSection() {
       const copyText = root.querySelector(
         ".cta-copy .bodyCopy",
       ) as HTMLElement | null;
-      const btn = root.querySelector(".cta .btn a.btn") as HTMLElement | null;
+
+      // ✅ ปรับให้ชัดและไม่พึ่ง selector กว้าง
+      const btn = root.querySelector(
+        ".cta-content .btn a.btn",
+      ) as HTMLElement | null;
+
       const rows = Array.from(
         root.querySelectorAll(".cta-row"),
       ) as HTMLElement[];
 
-      const prefersReduced = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
+      const prefersReduced =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       const run = async () => {
-        // รอให้ Font โหลดเสร็จก่อนคำนวณ SplitText (จุดสำคัญที่ทำให้ Production เละ)
-        if (typeof document !== "undefined" && document.fonts) {
+        if (document?.fonts?.ready) {
           try {
             await document.fonts.ready;
-          } catch (e) {
-            console.error("Font loading failed", e);
-          }
+          } catch {}
         }
 
         if (copyText) {
-          // ใช้ SplitText.create และ cast type ให้ถูกต้อง
-          const splitResult = SplitText.create(copyText, {
+          split = SplitText.create(copyText, {
             type: "lines",
             linesClass: "line",
-          });
-
-          split = splitResult as unknown as SplitTextInstance;
+          }) as unknown as SplitTextInstance;
 
           split.lines?.forEach((line) => {
             const mask = document.createElement("div");
@@ -108,7 +108,6 @@ export default function CtaSection() {
           });
         }
 
-        // --- คง Logic การคำนวณการเลื่อนของ Card ไว้เหมือนเดิม ---
         const leftXValues = [-800, -900, -400];
         const rightXValues = [800, 900, 400];
         const leftRotationValues = [-30, -20, -35];
@@ -134,13 +133,18 @@ export default function CtaSection() {
             scrub: prefersReduced ? false : true,
             onUpdate: (self) => {
               const p = self.progress;
-              cardLeft.style.transform = `translateX(${p * leftXValues[i]}px) translateY(${p * yValues[i]}px) rotate(${p * leftRotationValues[i]}deg)`;
-              cardRight.style.transform = `translateX(${p * rightXValues[i]}px) translateY(${p * yValues[i]}px) rotate(${p * rightRotationValues[i]}deg)`;
+
+              cardLeft.style.transform = `translateX(${p * leftXValues[i]}px) translateY(${
+                p * yValues[i]
+              }px) rotate(${p * leftRotationValues[i]}deg)`;
+
+              cardRight.style.transform = `translateX(${p * rightXValues[i]}px) translateY(${
+                p * yValues[i]
+              }px) rotate(${p * rightRotationValues[i]}deg)`;
             },
           });
         });
 
-        // บังคับ Refresh อีกรอบเพื่อให้ ScrollTrigger คำนวณตำแหน่งจาก Layout ที่นิ่งแล้ว
         ScrollTrigger.refresh();
       };
 
@@ -148,15 +152,14 @@ export default function CtaSection() {
 
       const onLoad = () => ScrollTrigger.refresh();
       window.addEventListener("load", onLoad);
+
       return () => window.removeEventListener("load", onLoad);
     }, root);
 
     return () => {
-      if (split) {
-        try {
-          split.revert();
-        } catch (e) {}
-      }
+      try {
+        split?.revert();
+      } catch {}
       ctx.revert();
       ScrollTrigger.refresh();
     };
@@ -176,7 +179,7 @@ export default function CtaSection() {
         </div>
 
         <div className="cta-copy">
-          <p className="bodyCopy lg ">
+          <p className="bodyCopy lg">
             Already have an idea for your website? Let’s talk about how to make
             it stand out.
           </p>
@@ -191,6 +194,7 @@ export default function CtaSection() {
         </div>
       </div>
 
+      {/* rows (คงเดิม) */}
       <div className="cta-row">
         <div className="cta-card cta-card-left">
           <div className="cta-card-frame">

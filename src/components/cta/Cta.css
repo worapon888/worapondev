@@ -21,6 +21,7 @@
   z-index: 2;
   pointer-events: auto;
 }
+
 @media (max-width: 768px) {
   .cta {
     height: 50vh;
@@ -44,20 +45,17 @@
   object-fit: contain;
 }
 
-/* ✅ CTA copy: center จริงแบบล็อกกรอบ */
+/* ✅ CTA copy */
 .cta .cta-content .cta-copy {
   width: 30%;
   padding: 1.5rem;
   margin: 1.5rem 0 3rem 0;
-
-  /* override ของเดิม */
   display: block;
   text-align: center;
 }
 
-/* ✅ ให้ย่อหน้ามีกรอบที่คุมได้ แล้ว center */
 .cta .cta-content .cta-copy .bodyCopy {
-  display: inline-block; /* สำคัญ: ทำให้ block นี้ถูก center ตาม text-align */
+  display: inline-block;
   max-width: 72ch;
   margin: 0 auto;
   text-align: center;
@@ -143,14 +141,17 @@
   z-index: 1;
 }
 
-/* basic button styling placeholder (keep your own if already exist) */
+/* ✅ button styling (SCOPE เฉพาะ CTA) */
 .cta .btn a.btn {
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
   text-decoration: none;
   color: rgba(103, 232, 249, 0.8);
+  width: fit-content; /* ✅ กันยืด */
+  flex: 0 0 auto; /* ✅ กันยืด */
 }
 
 /* index - media queries */
@@ -173,35 +174,38 @@
     width: 100%;
   }
 }
-.bodyCopy {
-  font-size: 11px; /* text-[11px] */
-  letter-spacing: 0.28em; /* tracking-[0.28em] */
-  text-transform: uppercase; /* uppercase */
-  color: rgba(255, 255, 255, 0.849); /* text-white/45 */
+
+/* ✅ เดิมคุณทำ .bodyCopy แบบ global → เปลี่ยนให้ scoped */
+.cta .bodyCopy {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.849);
   align-items: center;
 }
-.btn {
-  font-size: 12px; /* text-[11px] */
-  letter-spacing: 0.28em; /* tracking-[0.28em] */
-  text-transform: uppercase; /* uppercase */
-  color: rgba(255, 255, 255, 0.849); /* text-white/45 */
+
+/* ✅ เดิมคุณทำ .btn แบบ global → เปลี่ยนให้ scoped */
+.cta .btn {
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.849);
   align-items: center;
-  /* ทึบกว่าเดิม */
 }
+
 /* ===============================
-   CTA BUTTON – BASE
+   CTA BUTTON – BASE (SCOPE)
 ================================ */
-a.btn {
+.cta a.btn {
   position: relative;
-  display: flex;
+  display: inline-flex; /* ✅ สำคัญมาก: กันยืดเป็นเส้น */
   align-items: center;
   justify-content: center;
   background: rgba(20, 20, 20, 0.85);
   gap: 0.75rem;
 
-  /* ล็อกความสูงให้ตายตัว ห้ามใช้ padding บน-ล่าง */
-  height: 50px !important; /* ใช้ px แทน rem ในจุดที่ต้องการความเป๊ะ */
-  min-width: 220px; /* ป้องกันปุ่มหดจนตัวหนังสือทะลัก */
+  height: 50px !important;
+  min-width: 220px;
   padding: 0 1.5rem !important;
 
   font-size: 11px;
@@ -212,14 +216,19 @@ a.btn {
   text-decoration: none;
   box-sizing: border-box !important;
   white-space: nowrap;
+
+  width: fit-content; /* ✅ กันยืด */
+  flex: 0 0 auto; /* ✅ กันยืด */
 }
-footer .footer-form .btn > a.btn {
-  height: 3.2rem !important;
-  padding: 0 1.5rem !important;
-}
+
+/* ❌ ลบออกจากไฟล์นี้:
+footer .footer-form .btn > a.btn { ... }
+เพราะไม่ใช่ CTA
+*/
+
 /* top / bottom accent lines */
-a.btn::before,
-a.btn::after {
+.cta a.btn::before,
+.cta a.btn::after {
   content: "";
   position: absolute;
   height: 1px;
@@ -229,50 +238,46 @@ a.btn::after {
   z-index: 2;
 }
 
-a.btn::before {
+.cta a.btn::before {
   top: -1px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-a.btn::after {
+.cta a.btn::after {
   bottom: -1px;
   right: 50%;
   transform: translateX(50%);
 }
 
-/* ===============================
-   HOVER STATE
-================================ */
-a.btn:hover {
+/* hover */
+.cta a.btn:hover {
   color: var(--base-100);
   border: solid 1px var(--base-300);
   text-shadow: 0 0 10px rgba(242, 238, 218, 0.2);
 }
 
-a.btn:hover::before {
+.cta a.btn:hover::before {
   width: 20px;
   left: 0;
   transform: none;
 }
 
-a.btn:hover::after {
+.cta a.btn:hover::after {
   width: 20px;
   right: 0;
   transform: none;
 }
 
-/* ===============================
-   INNER VERTICAL LINES
-================================ */
-.btn-line {
+/* inner vertical lines */
+.cta .btn-line {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.btn-line::before,
-.btn-line::after {
+.cta .btn-line::before,
+.cta .btn-line::after {
   content: "";
   position: absolute;
   width: 1px;
@@ -281,362 +286,48 @@ a.btn:hover::after {
   transition: all 0.3s ease;
 }
 
-.btn-line::before {
+.cta .btn-line::before {
   bottom: 30%;
   right: -1px;
 }
 
-.btn-line::after {
+.cta .btn-line::after {
   top: 30%;
   left: -1px;
 }
 
-/* hover micro-shift */
-a.btn:hover .btn-line::before {
+.cta a.btn:hover .btn-line::before {
   bottom: -1px;
 }
 
-a.btn:hover .btn-line::after {
+.cta a.btn:hover .btn-line::after {
   top: -1px;
 }
-/* ===============================
-   SERVICES (Intro-style header)
-================================ */
-.services {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-}
 
-/* ถ้าคุณมี .container กลางอยู่แล้ว ข้ามได้ */
-.services .container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 1rem;
-  margin: 0 auto;
-}
-
-/* kicker เล็ก ๆ */
-.services-kicker {
-  opacity: 0.8;
-  letter-spacing: 0.14em;
-  color: var(--white-60);
-  text-transform: uppercase;
-  margin-bottom: 1rem;
-  margin-top: 1.25rem;
-  font-size: 11px;
-}
-
-/* header */
-.services-intro-header {
-  width: 50%;
-  margin-bottom: 2.5rem;
-}
-
-/* title */
-.services-title {
-  color: rgba(103, 232, 249, 0.8);
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 0.82;
-  text-transform: uppercase;
-  font-family: var(--font-display), sans-serif;
-  font-size: clamp(3.5rem, 10vw, 8.5rem);
-}
-
-.services-title span {
-  display: block;
-}
-
-/* copy wrapper */
-.services-intro-copy {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 2.5rem;
-
-  /* ✅ แก้ typo */
-  font-family: var(--font-display), sans-serif;
-}
-
-.services-intro-copy-wrapper {
-  width: 70%;
-}
-
-.services-subtitle {
-  margin-top: 3rem;
-  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
-  font-weight: 400;
-  letter-spacing: -0.07em;
-  line-height: 1.05;
-  text-transform: uppercase;
-
-  /* ✅ ให้มันตัดบรรทัดได้แน่นอน */
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-/* char */
-.services-char {
-  display: inline-block;
-  will-change: color;
-}
-
-/* space: ตัดบรรทัดได้ + spacing ไม่พัง */
-.services-space {
-  display: inline-block;
-  width: 0.35em;
-}
-
-/* ===============================
-   Optional: define base colors
-   (ถ้าคุณยังไม่มีใน global)
-================================ */
-:root {
-  --base-100: rgba(255, 255, 255, 0.95);
-  --base-300: rgba(164, 231, 255, 0.45);
-}
-
-/* ===============================
-   Responsive
-================================ */
-@media (max-width: 1000px) {
-  .services .container {
-    padding: 0 1rem;
-    align-items: center;
-    text-align: center;
-  }
-
-  .services-intro-header {
-    width: 75%;
-  }
-
-  .services-intro-copy {
-    justify-content: center;
-  }
-
-  .services-intro-copy-wrapper {
-    width: 100%;
-  }
-}
-
-/* grid layout เหมือนรูป */
-.services-cards-wrap {
-  width: min(1500px, calc(100% - 48px));
-  margin: 0 auto;
-}
-
-/* grid layout เหมือนรูป แต่ไม่ชนขอบ */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 2rem;
-}
-
-@media (max-width: 1024px) {
-  .services-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 640px) {
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.services-title span {
-  display: block;
-  overflow: hidden;
-}
-/* card style: metric panel */
-.metric-card {
-  position: relative;
-  padding: 1.4rem 1.6rem;
-  border-radius: 0.6rem; /* ไม่กลมมาก */
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(20, 20, 20, 0.85); /* ทึบกว่าเดิม */
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(10px);
-  transition:
-    transform 220ms ease,
-    box-shadow 220ms ease,
-    border-color 220ms ease;
-  overflow: hidden;
-}
-
-.metric-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
-}
-
-/* top row */
-.metric-top {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.metric-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #ff3d7e; /* dot ส้มเหมือนรูป */
-  flex: 0 0 auto;
-  box-shadow: 0 0 10px rgba(255, 106, 61, 0.35);
-}
-
-/* label */
-.metric-label {
-  margin: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-
-  font-weight: 600;
-}
-
-/* big number/value */
-.metric-value {
-  margin-top: 1.05rem;
-  font-size: clamp(3rem, 4.2vw, 4.4rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.62);
-  font-weight: 800;
-
-  /* ถ้าอยากให้เหมือนรูปมากขึ้น ใช้ font-display ของคุณ */
-  font-family: var(--font-display), system-ui, sans-serif;
-}
-/* ===============================
-   NEON BORDER (power sweep)
-================================ */
-.metric-card {
-  /* ต้องมีเพื่อให้ pseudo-element ยึดขอบได้ */
-  isolation: isolate;
-}
-
-/* glow โอบรอบนอก (นุ่ม ๆ) */
-.metric-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-
-  /* เริ่มต้นไม่โชว์ */
-  opacity: 0;
-  filter: blur(10px);
-
-  /* glow color (ตาม dot) */
-  background: radial-gradient(
-    circle at 30% 20%,
-    rgba(255, 61, 126, 0.35),
-    transparent 60%
-  );
-
-  transition: opacity 220ms ease;
-}
-
-/* เส้นพลังวิ่งรอบขอบ (ring) */
-.metric-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-
-  /* เทคนิคทำ border glow แบบ ring ด้วย mask */
-  padding: 1px; /* ความหนาเส้น */
-  background: conic-gradient(
-    from 180deg,
-    transparent 0deg,
-    rgba(255, 61, 126, 0) 40deg,
-    rgba(255, 61, 126, 0.95) 95deg,
-    rgba(34, 211, 238, 0.75) 130deg,
-    rgba(255, 61, 126, 0) 180deg,
-    transparent 360deg
-  );
-
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-
-  opacity: 0;
-  filter: blur(0.2px);
-
-  transition:
-    opacity 220ms ease,
-    transform 500ms ease;
-}
-
-/* ✅ hover state */
-.metric-card:hover::before {
-  opacity: 1;
-}
-
-.metric-card:hover::after {
-  opacity: 1;
-  transform: rotate(18deg); /* ให้รู้สึกเหมือนมีพลังเคลื่อน */
-}
-
-/* ให้เนื้อหาอยู่เหนือเอฟเฟกต์ */
-.metric-card > * {
-  position: relative;
-  z-index: 1;
-}
-.btn-sweep {
+/* CTA specific */
+.cta .btn-sweep {
   opacity: 0.8;
   animation: btnSweep 3.8s ease-in-out infinite;
 }
-.btn-cta {
+
+.cta .btn-cta {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 1.2rem;
 
   font-size: 11px;
-  letter-spacing: 0.42em; /* ⬅️ ยาวขึ้นกว่าปกติ */
+  letter-spacing: 0.42em;
   text-transform: uppercase;
   white-space: nowrap;
 
   color: var(--base-200);
 }
 
-/* เส้นยาวต่อท้ายข้อความ */
-.btn-cta .btn-text {
-  position: relative;
-}
-
-.btn-cta .btn-text::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 1rem);
-  width: 64px; /* ความยาวเส้น */
-  height: 1px;
-  background: currentColor;
-  opacity: 0.6;
-  transform: translateY(-50%);
-}
-
-/* hover – เส้นเรือง + ยืด */
-.btn-cta:hover .btn-text::after {
-  width: 96px;
-  opacity: 1;
-  box-shadow: 0 0 8px rgba(103, 232, 249, 0.45);
-  transition: all 0.35s ease;
-}
-/* --- Responsive Adjustments --- */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .cta-card-frame {
-    clip-path: none; /* เพื่อความคลีนในมือถือ */
+    clip-path: none;
     border-radius: 8px;
   }
   .cta-row {
@@ -644,3 +335,8 @@ a.btn:hover .btn-line::after {
     gap: 0.75rem;
   }
 }
+
+/* (ส่วนอื่น ๆ เช่น services / metric-card ถ้าอยู่ในไฟล์เดียวกัน)
+   แนะนำให้ย้ายออกไปไฟล์ของมันเอง
+   แต่ถ้าจะเก็บไว้จริง ๆ ให้ scope เช่น .services ... อยู่แล้ว = โอเค
+*/

@@ -175,24 +175,16 @@ export default function FooterSection() {
     const ctx = gsap.context(() => {
       if (prefersReduced) return;
 
-      // สร้าง ScrollTrigger
-      const st = ScrollTrigger.create({
+      ScrollTrigger.create({
         trigger: root,
         start: "top 85%",
         once: true,
         onEnter: () => {
           setIsActive(true);
 
-          // 1. รอจนกว่า Font จะพร้อม
-          if (document.fonts) {
-            document.fonts.ready.then(() => {
-              ScrollTrigger.refresh();
-            });
-          }
-
-          // 2. ป้องกันปัญหา Preloader หรือการขยับของหน้าเว็บในช่วงแรก
+          // กันกรณีเพิ่งหลุดจาก preloader/lenis
           requestAnimationFrame(() => ScrollTrigger.refresh());
-          setTimeout(() => ScrollTrigger.refresh(), 500); // เผื่อเวลาให้ Layout นิ่งชัวร์ๆ
+          setTimeout(() => ScrollTrigger.refresh(), 150);
         },
       });
     }, root);
