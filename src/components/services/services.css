@@ -351,9 +351,7 @@
 @media (max-width: 768px) {
   .services-title {
     /* ปรับขนาดให้เล็กลงในมือถือ และจัดให้อยู่กึ่งกลางหากต้องการ */
-    font-size: clamp(1.8rem, 10vw, 2.5rem);
-    text-align: center;
-    align-items: center;
+
     gap: 0.1em;
   }
 
