@@ -212,14 +212,27 @@ export default function FooterSection() {
 
               <div className="footer-socials">
                 {[
-                  { label: "[ Instagram ]", href: "/contact" },
-                  { label: "[ YouTube Signals ]", href: "/contact" },
-                  { label: "[ Twitter ]", href: "/contact" },
-                  { label: "[ LinkedIn ]", href: "/contact" },
-                  { label: "[ GitHub Repository ]", href: "/contact" },
-                  { label: "[ Discord Hub ]", href: "/contact" },
-                  { label: "[ Dribbble ]", href: "/contact" },
-                  { label: "[ Behance Archive ]", href: "/contact" },
+                  {
+                    label: "[ Instagram ]",
+                    href: "https://www.instagram.com/worapon.dev",
+                  },
+                  {
+                    label: "[ YouTube Signals ]",
+                    href: "https://www.youtube.com/@worapondev",
+                  },
+                  {
+                    label: "[ Twitter ]",
+                    href: "https://x.com/jintajirakul88",
+                  },
+                  {
+                    label: "[ LinkedIn ]",
+                    href: "https://www.linkedin.com/in/worapon-dev/",
+                  },
+                  {
+                    label: "[ GitHub Repository ]",
+                    href: "https://github.com/worapon888",
+                  },
+
                   { label: "[ Homebase ]", href: "/contact" },
                 ].map((item) => (
                   <div className="footer-social" key={item.label}>
