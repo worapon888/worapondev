@@ -137,7 +137,7 @@ export default function Navbar() {
             </a>
           </div>
 
-          <div className="nav-item">
+          {/* <div className="nav-item">
             <a
               href="/services"
               onClick={onNav("/services")}
@@ -146,7 +146,7 @@ export default function Navbar() {
             >
               Services
             </a>
-          </div>
+          </div> */}
 
           <div className="nav-item">
             <a
