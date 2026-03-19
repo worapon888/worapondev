@@ -192,12 +192,12 @@ export default function FooterSection() {
               </h3>
 
               <div className="footer-form">
-                <input type="text" placeholder="Unit Address" />
+                <input type="text" placeholder="Project Brief / Contact" />
 
                 <div className="footer-btn-wrap">
                   <Link href="/contact" className="footer-btn">
                     <span className="btn-line" />
-                    Transmit Message
+                    Start a Project
                   </Link>
                 </div>
               </div>
@@ -205,9 +205,10 @@ export default function FooterSection() {
 
             <div className="footer-content-col">
               <p className="bodyCopy">
-                Worapon.dev is a personal creative lab devoted to crafting
-                immersive web experiences. Every interaction is intentionally
-                built, merging technical precision with high-end aesthetics.
+                Worapon.dev is a full-stack engineering portfolio focused on
+                building production-ready systems, thoughtful user experiences,
+                and digital products that solve real-world problems with clarity
+                and precision.
               </p>
 
               <div className="footer-socials">
@@ -232,8 +233,7 @@ export default function FooterSection() {
                     label: "[ GitHub Repository ]",
                     href: "https://github.com/worapon888",
                   },
-
-                  { label: "[ Homebase ]", href: "/contact" },
+                  { label: "[ Contact ]", href: "/contact" },
                 ].map((item) => (
                   <div className="footer-social" key={item.label}>
                     <Link href={item.href}>{item.label}</Link>
@@ -246,7 +246,7 @@ export default function FooterSection() {
           <div className="footer-content-meta footer-bottom">
             <div className="footer-content-col footer-meta">
               <p>[ Constructed by Worapon.dev ]</p>
-              <p>[ Template Release / Jan 2026 ]</p>
+              <p>[ System Build / Jan 2026 ]</p>
             </div>
 
             <div className="footer-content-col footer-brand-wrap">

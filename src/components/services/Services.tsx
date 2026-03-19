@@ -1,6 +1,5 @@
 "use client";
 
-import { Code2, Palette, Rocket, BrainCog } from "lucide-react";
 import { useRef, useLayoutEffect, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,51 +12,50 @@ export default function Services() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const copyRef = useRef<HTMLHeadingElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // ✅ เพิ่ม ref สำหรับ title (slide)
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   const subtitleText = useMemo(
     () =>
-      "From personal websites to professional business pages, I design and build websites that are clear, reliable, and tailored to your needs.",
+      "I build production-ready web systems that balance strong user experience with real engineering depth — from modern frontend interfaces to backend architecture, performance, reliability, and scalable application logic.",
     [],
   );
 
   const words = useMemo(() => subtitleText.trim().split(/\s+/), [subtitleText]);
 
-  const services = [
-    {
-      title: "Immersive Web Experiences",
-      value: "12",
-      icon: <Code2 className="w-8 h-8 text-cyan-400" />,
-    },
-    {
-      title: "High-Impact Landing Pages",
-      value: "53",
-      icon: <Rocket className="w-8 h-8 text-indigo-400" />,
-    },
-    {
-      title: "Strategic UX/UI Design",
-      value: "23",
-      icon: <Palette className="w-8 h-8 text-pink-400" />,
-    },
-    {
-      title: "Bespoke Creative Solutions",
-      value: "09",
-      icon: <BrainCog className="w-8 h-8 text-yellow-400" />,
-    },
-  ];
+  const services = useMemo(
+    () => [
+      {
+        title: "Frontend Engineering",
+        value: "08",
+        note: "UI systems, interaction quality, responsive builds",
+      },
+      {
+        title: "Backend Architecture",
+        value: "02",
+        note: "API design, data flow, stability, maintainability",
+      },
+      {
+        title: "Production Systems",
+        value: "02",
+        note: "Deployment thinking, performance, reliability, scale",
+      },
+      {
+        title: "Problem Solving",
+        value: "04",
+        note: "Structured delivery across product and engineering",
+      },
+    ],
+    [],
+  );
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // ===== 0) TITLE SLIDE (เหมือน intro-header h1 slide) =====
       const title = titleRef.current;
       if (!title) return;
 
       const lines = Array.from(title.querySelectorAll<HTMLElement>("span"));
       if (!lines.length) return;
 
-      // initial (ซ่อนแล้วดันลง)
       gsap.set(lines, { yPercent: 120, autoAlpha: 0 });
 
       gsap.to(lines, {
@@ -79,9 +77,14 @@ export default function Services() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // ===== 1) TEXT FILL (WORD-BY-WORD) =====
       const el = copyRef.current;
       if (!el) return;
+
+      const prefersReduced =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const isMobile =
+        typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 
       const wordEls = Array.from(
         el.querySelectorAll<HTMLElement>(".services-word"),
@@ -89,6 +92,11 @@ export default function Services() {
       if (!wordEls.length) return;
 
       wordEls.forEach((w) => (w.style.color = "var(--base-300)"));
+
+       if (prefersReduced || isMobile) {
+        wordEls.forEach((w) => (w.style.color = "var(--base-100)"));
+        return;
+      }
 
       let lastFill = -1;
 
@@ -118,7 +126,6 @@ export default function Services() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // ===== 2) CARDS ENTER =====
       const items = containerRef.current?.querySelectorAll(".service-card");
       if (!items || items.length === 0) return;
 
@@ -146,41 +153,38 @@ export default function Services() {
 
   return (
     <section ref={sectionRef} id="services" className="services text-white">
-      {/* ===== Cards Grid ===== */}
-
       <div className="services-cards-wrap">
-        <div ref={containerRef} className="services-grid mt-16">
+        <div ref={containerRef} className="services-grid">
           {services.map((service) => (
             <div key={service.title} className="service-card metric-card">
               <div className="metric-top">
                 <span className="metric-dot" />
-                <p className="metric-label font-mono text-[11px] leading-relaxed tracking-[0.22em] text-cyan-100/45 pointer-events-none">
+                <p className="metric-label pointer-events-none">
                   {service.title}
                 </p>
               </div>
 
-              <div className="metric-value font-mono text-cyan-100/45 pointer-events-none">
+              <div className="metric-value pointer-events-none">
                 {service.value}
               </div>
+
+              <p className="metric-note pointer-events-none">{service.note}</p>
             </div>
           ))}
         </div>
       </div>
 
       <div className="container">
-        {/* ===== Header ===== */}
         <div className="services-header">
           <p className="services-kicker">Expertise & Services</p>
 
           <div className="services-intro-header">
-            {/* ✅ ใส่ ref ตรงนี้ */}
             <h2 ref={titleRef} className="services-title">
-              <span>BUILDING WEBSITES</span>
-              <span>THAT WORK</span>
+              <span>BUILDING DIGITAL</span>
+              <span>SYSTEMS THAT LAST</span>
             </h2>
           </div>
 
-          {/* ===== Intro Copy (Text Fill on Scroll) ===== */}
           <div className="services-intro-copy">
             <div className="services-intro-copy-wrapper">
               <h3 ref={copyRef} className="services-subtitle">

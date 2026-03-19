@@ -8,31 +8,32 @@ import "./Showcase.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// 1. เพิ่มตัวแปร projects กลับเข้ามาก่อนฟังก์ชัน Showcase
 const projects = [
   {
     title: "MinimalMart",
-    description: "Immersive e-commerce concept with animation-first UI.",
+    description:
+      "Production-style e-commerce system built to handle real-world challenges such as flash-sale concurrency, inventory reservation, payment retry flows, and webhook reliability.",
     image: "/projects/Minimalmart3.mp4",
     link: "https://minimart-three.vercel.app/",
   },
   {
     title: "TaskSync",
-    description: "A calm, gamified task system with real-time drag & drop.",
+    description:
+      "A full-stack task management system combining real-time interactions, structured workflows, and a calm UX focused on clarity, momentum, and usability.",
     image: "/projects/tasksync.mp4",
     link: "https://tasksync-chi.vercel.app/",
   },
   {
     title: "Luxe-One | Premium Digital",
     description:
-      "High-end luxury experience with seamless transitions and immersive motion design.",
+      "A premium brand experience designed with strong visual direction, refined motion, and polished interface systems for high-end digital presentation.",
     image: "/projects/luxe-one.mp4",
     link: "https://luxe-one-tau.vercel.app/",
   },
   {
     title: "Futuristic Landing Page",
     description:
-      "An immersive portal designed for the modern developer identity.",
+      "An experimental landing page exploring immersive UI, motion design, and modern frontend storytelling for a distinctive developer identity.",
     image: "/projects/tech-futuristic-landing.mp4",
     link: "https://tech-futuristic-landing.vercel.app/",
   },
@@ -52,7 +53,6 @@ export default function Showcase() {
 
       if (!section) return;
 
-      // ========= HEADER (FADE IN) =========
       if (container) {
         gsap.fromTo(
           container,
@@ -71,7 +71,6 @@ export default function Showcase() {
         );
       }
 
-      // ========= CARDS =========
       cardsRef.current.forEach((card, index) => {
         if (!card) return;
         gsap.fromTo(
@@ -93,7 +92,6 @@ export default function Showcase() {
         );
       });
 
-      // ========= SVG BACKGROUND (CORE LOGIC) =========
       if (!wrap) return;
 
       const wrapScaleX = 1.85;
@@ -101,7 +99,7 @@ export default function Showcase() {
       let isKilled = false;
       let svgEl: SVGSVGElement | null = null;
       let drawables: SVGGeometryElement[] = [];
-      const tracerEls: SVGGeometryElement[] = []; // ใช้ const ตามคำแนะนำของ Lint
+      const tracerEls: SVGGeometryElement[] = [];
       let enterTl: gsap.core.Timeline | null = null;
       let tracerTweens: gsap.core.Tween[] = [];
       let pulseTween: gsap.core.Tween | null = null;
@@ -124,6 +122,7 @@ export default function Showcase() {
             document.createElementNS("http://www.w3.org/2000/svg", "defs"),
             svg.firstChild,
           );
+
         const filter = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "filter",
@@ -132,12 +131,17 @@ export default function Showcase() {
         filter.innerHTML = `
           <feGaussianBlur stdDeviation="4.2" result="blur"/>
           <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1.25 0" result="glow"/>
-          <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>`;
+          <feMerge>
+            <feMergeNode in="glow"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        `;
         defs.appendChild(filter);
       };
 
       const build = async () => {
         if (svgEl) return;
+
         const res = await fetch("/texture/circuit-board.svg");
         const svgText = await res.text();
         if (isKilled) return;
@@ -168,6 +172,7 @@ export default function Showcase() {
         });
 
         ensureGlowFilter(svg);
+
         const tracerGroup = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "g",
@@ -181,6 +186,7 @@ export default function Showcase() {
           tracerGroup.appendChild(clone);
           tracerEls.push(clone);
         });
+
         svg.appendChild(tracerGroup);
       };
 
@@ -190,9 +196,9 @@ export default function Showcase() {
 
         killLoops();
         enterTl?.kill();
+
         enterTl = gsap.timeline();
 
-        // เล่น Animation เข้าครั้งแรก
         enterTl
           .to(wrap, {
             autoAlpha: 1,
@@ -205,16 +211,23 @@ export default function Showcase() {
           })
           .to(
             drawables,
-            { strokeDashoffset: 0, duration: 1.7, stagger: 0.006 },
+            {
+              strokeDashoffset: 0,
+              duration: 1.7,
+              stagger: 0.006,
+            },
             0.15,
           )
           .to(
             tracerEls,
-            { opacity: 1, duration: 0.25, stagger: 0.01 },
+            {
+              opacity: 1,
+              duration: 0.25,
+              stagger: 0.01,
+            },
             "-=0.95",
           );
 
-        // Loop วิ่งวนของ Tracer
         tracerTweens = tracerEls.map((el, i) =>
           gsap.to(el, {
             strokeDashoffset: -el.getTotalLength(),
@@ -246,7 +259,7 @@ export default function Showcase() {
         st.kill();
         enterTl?.kill();
         killLoops();
-        if (wrap) wrap.innerHTML = "";
+        wrap.innerHTML = "";
       };
     }, sectionRef);
 
@@ -270,7 +283,8 @@ export default function Showcase() {
       <div className="text-center" ref={containerRef}>
         <h2 className="showcase-header">Featured Projects</h2>
         <p className="mt-5 text-[9px] md:text-[11px] tracking-[0.15em] md:tracking-[0.28em] uppercase text-white/45 max-w-[80%] md:max-w-full text-center mx-auto leading-relaxed">
-          Handcrafted experiences built for the future
+          Selected work across production systems, full-stack applications, and
+          immersive digital experiences
         </p>
       </div>
 
@@ -294,6 +308,7 @@ export default function Showcase() {
                     className="w-full h-48 object-cover opacity-80"
                   />
                 </div>
+
                 <div className="p-4 text-white bg-zinc-900/40">
                   <h3 className="text-lg font-semibold">{project.title}</h3>
                   <p className="text-sm text-white/70 mt-2">

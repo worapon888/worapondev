@@ -44,38 +44,38 @@ export interface FaqItemCardProps {
 export const FAQ_DATA = [
   {
     id: "suitable-projects",
-    title: "Is this service suitable for small or simple websites?",
-    body: "Yes. I work on both minimal websites and immersive experiences.",
+    title: "What kind of projects do you work on?",
+    body: "I work on full-stack web applications, landing pages, and product systems — from simple builds to more complex, production-ready platforms.",
   },
   {
     id: "budget-range",
-    title: "What is the typical project budget range?",
-    body: "Budgets vary depending on scope and complexity.",
+    title: "What is the typical project budget?",
+    body: "It depends on scope, complexity, and system requirements. Smaller projects are more straightforward, while full systems require deeper planning and engineering.",
   },
   {
     id: "process",
-    title: "How does the collaboration process work?",
-    body: "Each project begins with a discussion to clarify goals.",
+    title: "How do you approach a project?",
+    body: "I start by understanding the problem and goals, then design the structure before building. Every step focuses on clarity, performance, and real-world usability.",
   },
   {
     id: "timeline",
-    title: "How long does a project usually take?",
-    body: "Most projects are completed within a few weeks.",
+    title: "How long does a project take?",
+    body: "Simple projects can take a few weeks. More complex systems may take longer depending on features, backend logic, and integrations.",
   },
   {
     id: "revisions",
-    title: "How many revisions are included?",
-    body: "Revisions are included within the agreed scope.",
+    title: "How do revisions work?",
+    body: "Revisions are handled within a defined scope to keep the project focused and efficient. Additional changes can be discussed if needed.",
   },
   {
     id: "portfolio",
-    title: "Where can I see your previous work?",
-    body: "You can explore selected projects in the Case Studies section.",
+    title: "Where can I see your work?",
+    body: "You can explore selected projects in the Case Studies section, including real-world systems and production-focused builds.",
   },
   {
     id: "contact",
-    title: "How do I get in touch?",
-    body: "Use the form to send your message.",
+    title: "How can I start a project with you?",
+    body: "Send a message through the contact form with your idea or requirements, and I’ll get back to you to discuss the next steps.",
   },
 ] as const satisfies readonly FaqItem[];
 

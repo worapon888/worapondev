@@ -8,9 +8,9 @@ import SiteBackground from "@/components/SiteBackground";
 import { PageTransitionProvider } from "@/components/transition/PageTransition";
 
 export const metadata: Metadata = {
-  title: "Worapon.Dev | Creative Developer & Frontend Specialist",
+  title: "Worapon.Dev | Full-Stack Engineer & System Problem Solver",
   description:
-    "Specializing in high-end interactions and cinematic web experiences. Merging technical precision with creative vision.",
+    "Full-stack engineer focused on building production-ready systems and high-quality web experiences. Experienced in handling real-world challenges such as concurrency, scalability, and system reliability through projects like MinimalMart.",
 };
 
 export default function RootLayout({

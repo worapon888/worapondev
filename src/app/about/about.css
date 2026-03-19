@@ -1,64 +1,88 @@
-/* =============================================================
-   1. CORE HERO CONTAINER & SETTINGS
-   ============================================================= */
 .hero.about-hero.about-hero--bio {
   position: relative;
   max-width: 2000px;
   margin: 0 auto;
-  height: auto;
-  min-height: clamp(46svh, 56vh, 66svh);
+  min-height: clamp(40rem, 80vh, 58rem);
   padding: 1rem;
   overflow: visible;
 
-  /* Tuning Knobs */
-  --title-gap-top: clamp(0.4rem, 1.2vw, 1.2rem);
-  --title-overlap: clamp(-2.4rem, -3.2vw, -4.4rem);
-  --content-pad-top: clamp(2.6rem, 3.8vw, 3.4rem);
-  --panel-pad: clamp(1.25rem, 2.2vw, 2.4rem);
+  --panel-pad-x: clamp(1.25rem, 3vw, 3rem);
+  --panel-pad-y: clamp(1.5rem, 3vw, 2.75rem);
+  --hero-corner: var(--footer-corner, 4rem);
+  --panel-top: rgba(14, 26, 30, 0.62);
+  --panel-bot: rgba(8, 14, 18, 0.92);
+  --stroke: rgba(120, 255, 255, 0.12);
+  --glow: rgba(120, 255, 255, 0.22);
 }
 
-/* Performance Optimization */
 .title-about,
 .hero.about-hero.about-hero--bio .about-hero-clip,
 .hero.about-hero.about-hero--bio .about-hero-bg,
 .hero.about-hero.about-hero--bio .about-panel-nav,
-.about-signature,
-.about-proof,
-.about-bio {
+.hero.about-hero.about-hero--bio .about-signature,
+.hero.about-hero.about-hero--bio .about-proof,
+.hero.about-hero.about-hero--bio .about-copy {
   will-change: transform, opacity;
 }
 
-/* =============================================================
-   2. TOP TITLE (OUTSIDE PANEL)
-   ============================================================= */
+.about-nav {
+  position: absolute;
+  top: 0;
+  left: clamp(1rem, 4vw, 3rem);
+  right: clamp(1rem, 4vw, 3rem);
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-top: 1rem;
+  pointer-events: none;
+}
+
+.about-nav p,
+.hero.about-hero.about-hero--bio .about-panel-nav p {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(103, 232, 249, 0.62);
+}
+
 .title-about {
   position: relative;
   z-index: 5;
   display: flex;
   justify-content: center;
-  text-align: center;
   width: 100%;
   min-height: 1.1em;
+  margin-top: clamp(-8rem, -8vw, -5rem);
+  margin-bottom: clamp(1rem, 2vw, 2rem);
   overflow: hidden;
   pointer-events: none;
-  margin-top: clamp(-10rem, -12vw, -10rem);
-  margin-bottom: clamp(1.2rem, 2vw, 2.2rem);
+  text-align: center;
 }
 
 .title-about h3 {
+  position: relative;
+  width: min(100%, 18ch);
   margin: 0 auto;
-  display: block;
-  width: 100%;
-  max-width: 800px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 
   font-family: var(--hero-font, "Clash Display", sans-serif) !important;
-  font-size: clamp(3.4rem, 9vw, 7.6rem);
+  font-size: clamp(3rem, 8vw, 7rem);
   font-weight: 500;
   line-height: 0.95;
   letter-spacing: 0.01em;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 
   color: rgba(120, 255, 210, 0.95);
   text-shadow:
@@ -67,23 +91,11 @@
     0 0 62px rgba(40, 180, 160, 0.18);
 }
 
-/* =============================================================
-   3. BACKGROUND LAYERS (GLASS PANEL & EFFECTS)
-   ============================================================= */
 .hero.about-hero.about-hero--bio .about-hero-clip {
   position: absolute;
   inset: 1rem;
   z-index: 1;
   overflow: hidden;
-  transform: translateZ(0);
-
-  /* Theme & Notch Vars */
-  --panel-top: rgba(14, 26, 30, 0.62);
-  --panel-bot: rgba(8, 14, 18, 0.92);
-  --stroke: rgba(120, 255, 255, 0.12);
-  --glow: rgba(120, 255, 255, 0.22);
-  --hero-corner: var(--footer-corner);
-
   clip-path: polygon(
     var(--hero-corner) 0,
     calc(100% - var(--hero-corner)) 0,
@@ -94,6 +106,7 @@
     0 calc(100% - var(--hero-corner)),
     0 var(--hero-corner)
   );
+  transform: translateZ(0);
 }
 
 .hero.about-hero.about-hero--bio .about-hero-bg {
@@ -108,7 +121,6 @@
     inset 0 0 18px rgba(120, 255, 255, 0.08);
 }
 
-/* Grid & Scanning Overlay */
 .hero.about-hero.about-hero--bio .about-hero-bg::before {
   content: "";
   position: absolute;
@@ -138,7 +150,6 @@
     100% 10px;
 }
 
-/* Noise & Vignette Overlay */
 .hero.about-hero.about-hero--bio .about-hero-bg::after {
   content: "";
   position: absolute;
@@ -159,479 +170,223 @@
     220px 220px;
 }
 
-/* =============================================================
-   4. INTERIOR CONTENT (NAV & BIO)
-   ============================================================= */
+.hero.about-hero.about-hero--bio .hero-container,
 .hero.about-hero.about-hero--bio .hero-content {
   position: relative;
   z-index: 2;
   height: 100%;
-  min-height: calc(clamp(46svh, 56vh, 66svh) - 2rem);
-  display: flex;
-  flex-direction: column;
+  min-height: inherit;
 }
 
-/* Top Nav inside panel */
+.hero.about-hero.about-hero--bio .hero-content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--panel-pad-y) var(--panel-pad-x);
+}
+
 .hero.about-hero.about-hero--bio .about-panel-nav {
-  position: absolute;
-  top: 2.5rem;
-  left: 6rem;
-  right: 6rem;
-  z-index: 6;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 1rem;
   pointer-events: none;
-}
-
-.hero.about-hero.about-hero--bio .about-panel-nav p {
-  padding: 0.6rem 1rem;
-  margin: 0;
-  border: 1px solid rgba(103, 232, 249, 0.2);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
-
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.32em;
-  color: rgba(103, 232, 249, 0.6);
-  user-select: none;
 }
 
 .hero.about-hero.about-hero--bio .about-panel-nav .service-name p {
   font-weight: 600;
 }
 
-/* Bio Center Content */
 .hero.about-hero.about-hero--bio .hero-content > .container {
   width: 100%;
   max-width: none;
+  margin: 0;
   flex: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: clamp(2.2rem, 3vw, 3.6rem);
+  justify-content: center;
+  padding: clamp(2.5rem, 8vh, 5rem) 0 clamp(1.5rem, 4vh, 3rem);
+}
+
+.hero.about-hero.about-hero--bio .hero-content-footer {
+  width: 100%;
 }
 
 .hero.about-hero.about-hero--bio .callout {
   position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  width: min(100%, 52rem);
+  margin: 0 auto;
 }
 
 .hero.about-hero.about-hero--bio .callout::before {
   content: "";
   position: absolute;
-  inset: -18px -22px;
+  inset: -1.25rem -1.5rem;
+  pointer-events: none;
   background: radial-gradient(closest-side, rgba(0, 0, 0, 0.45), transparent);
   filter: blur(2px);
-  pointer-events: none;
+}
+
+.hero.about-hero.about-hero--bio .about-copy {
+  position: relative;
+  display: grid;
+  gap: 1rem;
 }
 
 .hero.about-hero.about-hero--bio .about-bio {
-  width: min(980px, 92%);
+  margin: 0;
   font-family: var(--font-mono);
-  font-size: clamp(13px, 1.1vw, 16px);
-  line-height: 1.85;
-  color: rgba(255, 255, 255, 0.72);
-  letter-spacing: 0.02em;
+  font-size: clamp(0.95rem, 1vw + 0.55rem, 1.08rem);
+  line-height: 1.95;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.78);
+  text-wrap: pretty;
   text-shadow:
     0 1px 0 rgba(0, 0, 0, 0.35),
-    0 0 18px rgba(120, 255, 210, 0.1);
+    0 0 18px rgba(120, 255, 210, 0.08);
 }
 
-/* =============================================================
-   5. HUD ELEMENTS (SIGNATURE & PROOF)
-   ============================================================= */
 .hero.about-hero.about-hero--bio .about-signature,
 .hero.about-hero.about-hero--bio .about-proof {
   position: absolute;
-  bottom: var(--panel-pad);
+  bottom: var(--panel-pad-y);
   z-index: 6;
+  max-width: min(24rem, 40%);
+  margin: 0;
   pointer-events: none;
   user-select: none;
 
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.22em;
+  line-height: 1.6;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.58);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 .hero.about-hero.about-hero--bio .about-signature--left {
-  left: var(--panel-pad);
+  left: var(--panel-pad-x);
   text-align: left;
-  max-width: min(520px, 48%);
 }
 
 .hero.about-hero.about-hero--bio .about-proof--right {
-  right: var(--panel-pad);
+  right: var(--panel-pad-x);
   text-align: right;
-  max-width: min(520px, 48%);
 }
 
-/* =============================================================
-   6. MOBILE RESPONSIVE (MAX-WIDTH: 1000PX)
-   ============================================================= */
 @media (max-width: 1000px) {
   .hero.about-hero.about-hero--bio {
-    min-height: 62svh;
-    --title-overlap: clamp(-1.2rem, -2.2vw, -2.4rem);
-    --content-pad-top: 3.2rem;
+    min-height: auto;
+    padding: 0.75rem;
+    --panel-pad-x: 1.25rem;
+    --panel-pad-y: 1.25rem;
+  }
+
+  .about-nav {
+    display: none;
+  }
+
+  .title-about {
+    margin-top: clamp(-3rem, -6vw, -1rem);
+    margin-bottom: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .title-about h3 {
+    width: min(100%, 12ch);
+    font-size: clamp(2.4rem, 12vw, 4.4rem);
   }
 
   .hero.about-hero.about-hero--bio .about-hero-clip {
+    inset: 0.75rem;
     clip-path: none;
+    border-radius: 1.5rem;
+  }
+
+  .hero.about-hero.about-hero--bio .hero-content {
+    padding: 1.25rem;
+    gap: 1.5rem;
+  }
+
+  .hero.about-hero.about-hero--bio .about-panel-nav {
+    flex-wrap: wrap;
+  }
+
+  .hero.about-hero.about-hero--bio .about-panel-nav p {
+    font-size: 10px;
+    letter-spacing: 0.22em;
   }
 
   .hero.about-hero.about-hero--bio .hero-content > .container {
     align-items: flex-start;
-    padding: 2rem 1.25rem;
-    padding-top: var(--content-pad-top);
+    padding: 0;
+  }
+
+  .hero.about-hero.about-hero--bio .callout {
+    width: 100%;
+    margin: 0;
+  }
+
+  .hero.about-hero.about-hero--bio .about-copy {
+    gap: 0.9rem;
   }
 
   .hero.about-hero.about-hero--bio .about-bio {
-    text-align: left;
-    line-height: 1.8;
-  }
-
-  /* HUD Static Layout for Mobile */
-  .hero.about-hero.about-hero--bio .callout {
-    flex-direction: column;
-    align-items: flex-start;
+    font-size: clamp(0.95rem, 2vw + 0.45rem, 1rem);
+    line-height: 1.85;
   }
 
   .hero.about-hero.about-hero--bio .about-signature,
   .hero.about-hero.about-hero--bio .about-proof {
     position: static;
-    max-width: 100%;
-    text-align: left;
-    letter-spacing: 0.18em;
-    margin-top: 0.8rem;
-  }
-}
-
-/* =============================================================
-   7. STANDALONE ABOUT NAV (IF USED SEPARATELY)
-   ============================================================= */
-.about-nav {
-  position: absolute;
-  top: 0;
-  left: clamp(1.5rem, 6vw, 6rem);
-  right: clamp(1.5rem, 6vw, 6rem);
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-top: 1rem;
-  z-index: 50;
-  pointer-events: none;
-}
-
-.about-nav p {
-  padding: 0.6rem 1rem;
-  margin-top: 1rem;
-  border: 1px solid rgba(103, 232, 249, 0.2);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
-
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.32em;
-  color: rgba(103, 232, 249, 0.6);
-}
-
-@media (max-width: 1000px) {
-  .about-nav {
-    padding: 1rem;
-  }
-  .about-nav p {
+    max-width: none;
     margin-top: 0.75rem;
     font-size: 10px;
-    letter-spacing: 0.28em;
-    padding: 0.55rem 0.85rem;
+    letter-spacing: 0.16em;
+    text-align: left;
   }
 }
-/* =============================================================
-   1. CORE HERO CONTAINER & SETTINGS
-   ============================================================= */
-.hero.about-hero.about-hero--bio {
-  position: relative;
-  max-width: 2000px;
-  margin: 0 auto;
-  height: auto;
-  min-height: clamp(46svh, 56vh, 66svh);
-  padding: 1rem;
-  overflow: visible;
 
-  --title-gap-top: clamp(0.4rem, 1.2vw, 1.2rem);
-  --title-overlap: clamp(-2.4rem, -3.2vw, -4.4rem);
-  --content-pad-top: clamp(2.6rem, 3.8vw, 3.4rem);
-  --panel-pad: clamp(1.25rem, 2.2vw, 2.4rem);
-}
-
-/* Performance Optimization */
-.title-about,
-.hero.about-hero.about-hero--bio .about-hero-clip,
-.hero.about-hero.about-hero--bio .about-hero-bg,
-.hero.about-hero.about-hero--bio .about-panel-nav,
-.about-signature,
-.about-proof,
-.about-bio {
-  will-change: transform, opacity;
-}
-
-/* =============================================================
-   2. TOP TITLE (OUTSIDE PANEL)
-   ============================================================= */
-.title-about {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  min-height: 1.1em;
-  overflow: hidden;
-  pointer-events: none;
-  margin-top: clamp(-10rem, -12vw, -10rem);
-  margin-bottom: clamp(1.2rem, 2vw, 2.2rem);
-}
-
-.title-about h3 {
-  margin: 0 auto;
-  display: block;
-  width: 100%;
-  max-width: 800px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  font-family: var(--hero-font, "Clash Display", sans-serif) !important;
-  font-size: clamp(3.4rem, 9vw, 7.6rem);
-  font-weight: 500;
-  line-height: 0.95;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: rgba(120, 255, 210, 0.95);
-  text-shadow:
-    0 0 10px rgba(120, 255, 210, 0.42),
-    0 0 28px rgba(80, 220, 180, 0.26),
-    0 0 62px rgba(40, 180, 160, 0.18);
-}
-
-/* =============================================================
-   3. BACKGROUND LAYERS (GLASS PANEL)
-   ============================================================= */
-.hero.about-hero.about-hero--bio .about-hero-clip {
-  position: absolute;
-  inset: 1rem;
-  z-index: 1;
-  overflow: hidden;
-  transform: translateZ(0);
-  --panel-top: rgba(14, 26, 30, 0.62);
-  --panel-bot: rgba(8, 14, 18, 0.92);
-  --stroke: rgba(120, 255, 255, 0.12);
-  --glow: rgba(120, 255, 255, 0.22);
-  --hero-corner: var(--footer-corner);
-  clip-path: polygon(
-    var(--hero-corner) 0,
-    calc(100% - var(--hero-corner)) 0,
-    100% var(--hero-corner),
-    100% calc(100% - var(--hero-corner)),
-    calc(100% - var(--hero-corner)) 100%,
-    var(--hero-corner) 100%,
-    0 calc(100% - var(--hero-corner)),
-    0 var(--hero-corner)
-  );
-}
-
-.hero.about-hero.about-hero--bio .about-hero-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, var(--panel-top), var(--panel-bot));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--stroke);
-  box-shadow:
-    0 0 28px var(--glow),
-    inset 0 0 18px rgba(120, 255, 255, 0.08);
-}
-
-/* =============================================================
-   4. INTERIOR CONTENT (NAV & BIO)
-   ============================================================= */
-.hero.about-hero.about-hero--bio .hero-content {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  /* สำคัญ: เพื่อให้ผลักเนื้อหาลงล่างได้แม่นยำ */
-  min-height: calc(clamp(46svh, 56vh, 66svh) - 2rem);
-  display: flex;
-  flex-direction: column;
-}
-
-.hero.about-hero.about-hero--bio .about-panel-nav {
-  position: absolute;
-  top: 2.5rem;
-  left: 6rem;
-  right: 6rem;
-  z-index: 6;
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-}
-
-.hero.about-hero.about-hero--bio .about-panel-nav p {
-  padding: 0.6rem 1rem;
-  border: 1px solid rgba(103, 232, 249, 0.2);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.2);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  color: rgba(103, 232, 249, 0.6);
-  letter-spacing: 0.32em;
-}
-
-.hero.about-hero.about-hero--bio .hero-content > .container {
-  width: 100%;
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: clamp(2.2rem, 3vw, 3.6rem);
-}
-
-.hero.about-hero.about-hero--bio .about-bio {
-  width: min(980px, 92%);
-  font-family: var(--font-mono);
-  font-size: clamp(13px, 1.1vw, 16px);
-  line-height: 1.85;
-  color: rgba(255, 255, 255, 0.72);
-  text-align: center;
-}
-
-/* =============================================================
-   5. HUD ELEMENTS (SIGNATURE & PROOF)
-   ============================================================= */
-.hero.about-hero.about-hero--bio .about-signature,
-.hero.about-hero.about-hero--bio .about-proof {
-  position: absolute;
-  bottom: var(--panel-pad);
-  z-index: 6;
-  pointer-events: none;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.22em;
-}
-
-.hero.about-hero.about-hero--bio .about-signature--left {
-  left: var(--panel-pad);
-}
-.hero.about-hero.about-hero--bio .about-proof--right {
-  right: var(--panel-pad);
-  text-align: right;
-}
-
-/* =============================================================
-   6. MOBILE RESPONSIVE (จุดที่แก้ไขตำแหน่ง Proof)
-   ============================================================= */
-@media (max-width: 1000px) {
-  /* เพิ่มความสูงและจัดตำแหน่ง Content */
+@media (max-width: 640px) {
   .hero.about-hero.about-hero--bio {
-    min-height: 70svh; /* เพิ่มความสูงเพื่อให้มีที่ว่างด้านล่าง */
-    padding-bottom: 4rem;
+    padding: 0.5rem;
+  }
+
+  .title-about {
+    padding: 0 0.75rem;
+  }
+
+  .hero.about-hero.about-hero--bio .about-hero-clip {
+    inset: 0.5rem;
+    border-radius: 1.25rem;
   }
 
   .hero.about-hero.about-hero--bio .hero-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative; /* เพื่อให้ลูกที่เป็น absolute อ้างอิงได้ */
-  }
-  .hero.about-hero.about-hero--bio .callout {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-    text-align: center;
-    margin: 4rem 0;
-  }
-  /* จัดการบรรทัด Independent... ให้ชิดขอบล่างกล่อง */
-  .hero.about-hero.about-hero--bio .about-proof {
-    position: absolute; /* ✅ บังคับตำแหน่ง */
-    bottom: 2.5rem; /* ✅ ระยะห่างจากขอบล่างของกล่อง */
-    left: 0;
-    right: 0;
-    width: 100%;
-    text-align: center;
-    padding: 0 1.25rem;
-    font-size: clamp(9px, 2vw, 10px);
-    letter-spacing: 0.15em;
-    opacity: 0.6;
-    z-index: 10;
-  }
-  .hero.about-hero.about-hero--bio .about-panel-nav {
-    position: absolute;
-    top: 2.2rem; /* ปรับความสูงจากขอบบนตามความสวยงาม */
-    left: 2rem; /* ✅ ปรับค่านี้น้อยลง เพื่อให้ Floder_1 ชิดขอบซ้ายมากขึ้น */
-    right: 2rem; /* ✅ ปรับค่านี้น้อยลง เพื่อให้ Biology ชิดขอบขวามากขึ้น */
-    display: flex;
-    justify-content: space-between; /* มั่นใจว่ามันผลักกันไปคนละฝั่ง */
-    width: auto; /* ให้ความกว้างคำนวณจาก left/right */
-    pointer-events: none;
-    z-index: 10;
-  }
-  /* จัดการบรรทัด Designing interfaces... ให้ลอยอยู่เหนือ Proof */
-  .hero.about-hero.about-hero--bio .about-signature {
-    position: absolute;
-    bottom: 4.5rem; /* ✅ อยู่เหนือ Proof ขึ้นมานิดนึง */
-    left: 0;
-    right: 0;
-    width: 100%;
-    text-align: center;
-    padding: 0 1.5rem;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);
+    padding: 1rem;
   }
 
-  /* ปรับแต่ง Bio ให้อยู่กลางกล่อง ไม่ทับซ้อนกับ HUD ล่าง */
+  .hero.about-hero.about-hero--bio .about-panel-nav,
+  .hero.about-hero.about-hero--bio .about-panel-nav .service-name,
+  .hero.about-hero.about-hero--bio .about-panel-nav .about-logo {
+    width: 100%;
+  }
+
+  .hero.about-hero.about-hero--bio .about-panel-nav p {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .hero.about-hero.about-hero--bio .about-copy {
+    gap: 0.85rem;
+  }
+}
+
+@media (max-height: 720px) and (min-width: 1001px) {
+  .hero.about-hero.about-hero--bio {
+    min-height: 34rem;
+  }
+
   .hero.about-hero.about-hero--bio .hero-content > .container {
-    flex: 1;
-    display: flex;
-    align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
-    padding-top: 5rem;
-    padding-bottom: 7rem; /* เว้นที่ว่างด้านล่างไม่ให้ข้อความ Bio ไหลไปทับ HUD */
-  }
-  .about-nav {
-    display: none;
-  }
-  .hero.about-hero.about-hero--bio .about-bio {
-    text-align: center;
-  }
-
-  /* คง Clip-path ไว้ตามที่คุณต้องการ */
-  .hero.about-hero.about-hero--bio .about-hero-clip {
-    clip-path: polygon(
-      1.2rem 0,
-      calc(100% - 1.2rem) 0,
-      100% 1.2rem,
-      100% calc(100% - 1.2rem),
-      calc(100% - 1.2rem) 100%,
-      1.2rem 100%,
-      0 calc(100% - 1.2rem),
-      0 1.2rem
-    );
+    padding-top: 2rem;
   }
 }

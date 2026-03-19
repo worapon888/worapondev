@@ -220,7 +220,7 @@ footer .footer-content-col h3[data-typing="0"] {
 .typing-cursor {
   display: inline-block;
   margin-left: 0.08em;
-  transform: translateY(0.04em);
+  transform: translateY(0.03em);
   color: rgba(250, 250, 250, 0.88);
   animation: cursorBlink 0.9s steps(1) infinite;
 }

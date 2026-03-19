@@ -139,7 +139,6 @@ export default function AboutPage() {
 
   const [prefersReduced, setPrefersReduced] = useState(false);
 
-  // ===== refs สำหรับ scroll motion =====
   const titleRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
   const panelClipRef = useRef<HTMLDivElement | null>(null);
@@ -177,14 +176,13 @@ export default function AboutPage() {
 
   const bio = useMemo(
     () =>
-      `I design and build immersive web experiences where motion, interaction, and clarity work together.
-My focus is not just how things look, but how people feel while navigating a digital space.
-Every animation and transition is intentional — not decoration.
-I work independently, blending design thinking, frontend engineering, and experimental visuals to create interfaces that feel alive, precise, and human.`,
+      `I am a full-stack engineer focused on building production-ready web systems that balance strong user experience with real engineering depth.
+My work spans both frontend and backend — from interface design and interaction quality to architecture, performance, reliability, and application logic.
+I care deeply about how systems behave in real-world conditions, not just how they look in isolation.
+Every decision is intentional: clear structure, practical problem solving, and interfaces that feel polished, useful, and built to last.`,
     [],
   );
 
-  // ===== subtle scroll motion =====
   useLayoutEffect(() => {
     if (prefersReduced) return;
 
@@ -200,7 +198,6 @@ I work independently, blending design thinking, frontend engineering, and experi
     if (!sectionEl || !clipEl || !bgEl) return;
 
     const ctx = gsap.context(() => {
-      // 1) Title: ขยับลงนิด + fade (subtle)
       if (titleEl) {
         gsap.fromTo(
           titleEl,
@@ -218,7 +215,6 @@ I work independently, blending design thinking, frontend engineering, and experi
         );
       }
 
-      // 2) Panel: parallax เบา ๆ + เงา/ไฮไลท์นิด
       gsap.fromTo(
         clipEl,
         { y: 0 },
@@ -249,7 +245,6 @@ I work independently, blending design thinking, frontend engineering, and experi
         },
       );
 
-      // 3) Content: เข้าแบบเนียน ๆ
       if (bioEl) {
         gsap.fromTo(
           bioEl,
@@ -268,7 +263,6 @@ I work independently, blending design thinking, frontend engineering, and experi
         );
       }
 
-      // 4) HUD top: float นิด ๆ
       if (navEl) {
         gsap.fromTo(
           navEl,
@@ -287,7 +281,6 @@ I work independently, blending design thinking, frontend engineering, and experi
         );
       }
 
-      // 5) HUD bottom left/right: slide เบามาก ๆ
       if (sigEl) {
         gsap.fromTo(
           sigEl,
@@ -330,22 +323,19 @@ I work independently, blending design thinking, frontend engineering, and experi
 
   return (
     <>
-      {/* TOP HUD (global) */}
       <div className="about-nav">
         <div className="about-logo">
-          <p>Zone / About-us</p>
+          <p>Zone / About</p>
         </div>
         <div className="service-name">
-          <p>Motion landing</p>
+          <p>Full-Stack Systems</p>
         </div>
       </div>
 
       <ParticlesCursorBG />
 
-      {/* BIG TITLE */}
       <div className="title-about" ref={titleRef}>
         <h3>
-          {/* 1. ข้อความ "ผี" จองพื้นที่ 2 บรรทัดไว้ (มองไม่เห็น) */}
           <span
             style={{
               visibility: "hidden",
@@ -357,7 +347,6 @@ I work independently, blending design thinking, frontend engineering, and experi
             {heroText}
           </span>
 
-          {/* 2. ข้อความที่กำลังพิมพ์ (Absolute Overlay) */}
           <span
             style={{
               position: "absolute",
@@ -375,37 +364,32 @@ I work independently, blending design thinking, frontend engineering, and experi
         </h3>
       </div>
 
-      {/* ABOUT BIO PANEL */}
       <section className="hero about-hero about-hero--bio" ref={sectionRef}>
-        {/* GLASS PANEL (background only) */}
         <div className="about-hero-clip" aria-hidden="true" ref={panelClipRef}>
           <div className="about-hero-bg" ref={panelBgRef} />
         </div>
 
         <div className="hero-container">
           <div className="hero-content">
-            {/* PANEL HUD (inside the box - top) */}
             <div className="about-panel-nav" ref={panelNavRef}>
               <div className="about-logo">
-                <p>Floder_1</p>
+                <p>Folder_01</p>
               </div>
               <div className="service-name">
-                <p>Biology</p>
+                <p>Profile</p>
               </div>
             </div>
 
-            {/* PANEL HUD (inside the box - bottom) */}
             <p
               className="about-signature about-signature--left"
               ref={signatureRef}
             >
-              Designing interfaces where motion serves meaning.
+              Building systems where engineering serves clarity.
             </p>
             <p className="about-proof about-proof--right" ref={proofRef}>
-              Independent · Clarity · Rhythm · Restraint
+              Full-Stack · Reliability · UX · Problem Solving
             </p>
 
-            {/* CENTER CONTENT */}
             <div className="container">
               <div className="hero-content-footer">
                 <div className="callout">

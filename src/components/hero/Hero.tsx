@@ -23,7 +23,6 @@ export default function Hero() {
     [],
   );
 
-  // ✅ GSAP animations
   useHeroAnimations({
     rootRef,
     headingRef,
@@ -33,17 +32,15 @@ export default function Hero() {
     availabilityRef,
     lineRef,
     brandHudRef,
-    timerRef, // ✅ ส่งให้ hook ใช้ “เฉพาะ ref” ไม่ทำ timer loop ซ้ำ
+    timerRef,
     systemLogRef,
     systemStatusRef,
   });
 
-  // ✅ Timer: เหลือที่เดียว (ลดงานซ้ำ / ลด TBT)
   useEffect(() => {
     const el = timerRef.current;
     if (!el) return;
 
-    // Intl formatter สร้างครั้งเดียว (เบากว่า toLocaleTimeString ซ้ำ ๆ)
     const fmt = new Intl.DateTimeFormat("en-US", {
       timeZone: "America/Toronto",
       hour12: false,
@@ -62,7 +59,6 @@ export default function Hero() {
       const ss = parts.find((p) => p.type === "second")?.value ?? "00";
       const sec = Number(ss);
 
-      // อัปเดตเฉพาะเมื่อ “วินาทีเปลี่ยนจริง”
       if (sec !== lastSec) {
         lastSec = sec;
         const sector = Math.floor(hh / 4) + 1;
@@ -81,7 +77,7 @@ export default function Hero() {
       ref={rootRef}
       className="relative hero hero--preload min-h-[100svh] md:min-h-[100dvh] overflow-hidden flex items-center"
     >
-      {/* 🧩 Brand HUD */}
+      {/* Brand HUD */}
       <div
         ref={brandHudRef}
         className="brand-hud absolute top-6 left-6 md:top-12 md:left-20 lg:top-20 lg:left-40 px-4 py-3 font-mono uppercase text-[11px] md:text-[13px] tracking-[0.25em] md:tracking-[0.32em] text-cyan-300/60 pointer-events-none select-none border border-cyan-300/20 rounded-sm bg-black/40 backdrop-blur-md md:backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.08)] min-w-[160px] md:min-w-[200px]"
@@ -90,7 +86,7 @@ export default function Hero() {
           WORAPON.DEV
         </span>
         <p className="subtitle-bud mt-1 text-[8px] md:text-[9px] tracking-[0.2em] md:tracking-[0.28em] text-cyan-100/40">
-          IMMERSIVE WEB SYSTEMS
+          PRODUCTION WEB SYSTEMS
         </p>
         <p
           ref={timerRef}
@@ -98,7 +94,7 @@ export default function Hero() {
         />
       </div>
 
-      {/* 🔺 Main Content */}
+      {/* Main Content */}
       <div className="relative z-10 w-full text-center px-6 translate-y-[-1vh]">
         <h1
           ref={headingRef}
@@ -106,9 +102,9 @@ export default function Hero() {
           style={{ fontFamily: "var(--font-beon)" }}
         >
           <span className="hero-line block mb-2 sm:mb-0">
-            {buildHeroChars("Crafting ", headingPattern, 8)}
+            {buildHeroChars("Building ", headingPattern, 8)}
             <span className="neon-purple">
-              {buildHeroChars("Immersive", headingPattern, 8)}
+              {buildHeroChars("Real-World", headingPattern, 8)}
             </span>
           </span>
 
@@ -116,7 +112,7 @@ export default function Hero() {
             <span className="neon-purple">
               {buildHeroChars("Web", headingPattern, 0)}
             </span>
-            {buildHeroChars(" Experiences", headingPattern, 0)}
+            {buildHeroChars(" Systems", headingPattern, 0)}
           </span>
         </h1>
 
@@ -124,23 +120,25 @@ export default function Hero() {
 
         <p
           ref={paragraphRef}
-          className=" paragraph-subtle
-    mt-6
-    mx-auto
-    max-w-xl
-    text-[clamp(14px,4vw,16.5px)]
-    leading-[1.6]
-    md:text-[15px]
-    md:leading-[1.45]
-    lg:text-[14px]
-    lg:leading-7
-    text-cyan-100/65
-    tracking-[0.04em]
-    px-6 md:px-0
-  "
+          className="
+            paragraph-subtle
+            mt-6
+            mx-auto
+            max-w-xl
+            text-[clamp(14px,4vw,16.5px)]
+            leading-[1.6]
+            md:text-[15px]
+            md:leading-[1.45]
+            lg:text-[14px]
+            lg:leading-7
+            text-cyan-100/65
+            tracking-[0.04em]
+            px-6 md:px-0
+          "
         >
-          Frontend Developer specializing in high-end interactions and cinematic
-          interfaces. Merging technical precision with creative vision.
+          Full-stack engineer focused on building production-ready systems and
+          high-quality interfaces. Solving real-world problems through
+          thoughtful architecture, performance, and user experience.
         </p>
 
         <div className="all-btn mt-10 flex flex-col sm:flex-row items-center justify-center gap-y-8 sm:gap-x-10">
@@ -154,7 +152,7 @@ export default function Hero() {
 
           <a
             ref={btn2Ref}
-            href="#services"
+            href="#projects"
             className="btn-opacity relative text-[13px] sm:text-sm uppercase tracking-[0.22em] text-white/70 transition-all duration-300 hover:text-cyan-200 group py-2"
           >
             View Projects
@@ -169,14 +167,14 @@ export default function Hero() {
           ref={availabilityRef}
           className="paragraph-able mt-5 text-[11px] tracking-[0.28em] uppercase text-white/45"
         >
-          Available for select projects
+          Available for freelance projects and contract work
         </p>
       </div>
 
-      {/* 🧭 System Observation Log */}
+      {/* System Observation Log */}
       <div
         ref={systemLogRef}
-        className="system-log absolute bottom-10 left-6 md:bottom-20 md:left-20 lg:bottom-25 lg:left-40  md:max-w-sm text-left font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/50 pointer-events-none hidden sm:block"
+        className="system-log absolute bottom-10 left-6 md:bottom-20 md:left-20 lg:bottom-25 lg:left-40 md:max-w-sm text-left font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/50 pointer-events-none hidden sm:block"
       >
         <div className="mb-2 md:mb-3 flex items-center gap-x-3 md:gap-x-4 text-cyan-300/60 uppercase">
           <span className="whitespace-nowrap">Zone / 01</span>
@@ -187,13 +185,13 @@ export default function Hero() {
           System Observation Log
         </p>
         <p className="line-clamp-3 md:line-clamp-none opacity-80">
-          Interactive interfaces and motion systems are monitored, refined, and
-          deployed to explore how humans perceive depth, time, and interaction
-          within digital environments.
+          Production-ready systems are designed, tested, and refined to handle
+          real-world complexity — from user experience and interface logic to
+          performance, reliability, and scalable architecture.
         </p>
       </div>
 
-      {/* 📡 System Status */}
+      {/* System Status */}
       <div
         ref={systemStatusRef}
         className="system-status absolute bottom-10 right-6 md:bottom-20 md:right-20 lg:bottom-25 lg:right-40 font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/45 pointer-events-none text-right hidden sm:block"
@@ -206,8 +204,8 @@ export default function Hero() {
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             SIGNAL: STABLE
           </p>
-          <p>RENDER: IMMERSIVE</p>
-          <p className="hidden lg:block">FRAME SYNC: ACTIVE</p>
+          <p>RENDER: ACTIVE</p>
+          <p className="hidden lg:block">SYSTEMS: ONLINE</p>
         </div>
       </div>
     </section>

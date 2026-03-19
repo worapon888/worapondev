@@ -29,7 +29,6 @@ export default function CtaSection() {
         ".cta-copy .bodyCopy",
       ) as HTMLElement | null;
 
-      // ✅ ปรับให้ชัดและไม่พึ่ง selector กว้าง
       const btn = root.querySelector(
         ".cta-content .btn a.btn",
       ) as HTMLElement | null;
@@ -180,8 +179,8 @@ export default function CtaSection() {
 
         <div className="cta-copy">
           <p className="bodyCopy lg">
-            Already have an idea for your website? Let’s talk about how to make
-            it stand out.
+            Have a product, platform, or website idea? Let’s build something
+            production-ready, reliable, and designed to work in the real world.
           </p>
         </div>
 
@@ -189,12 +188,11 @@ export default function CtaSection() {
           <a href="/contact" className="btn btn-cta">
             <span className="btn-sweep"></span>
             <span className="btn-line" />
-            Start the conversation →
+            Start a project →
           </a>
         </div>
       </div>
 
-      {/* rows (คงเดิม) */}
       <div className="cta-row">
         <div className="cta-card cta-card-left">
           <div className="cta-card-frame">

@@ -1,55 +1,63 @@
 "use client";
 
-import React, { useLayoutEffect, useMemo, useRef } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./case-studies.css";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(SplitText);
 
-type SlideItem = { title: string; desc: string; image: string };
+type SlideItem = {
+  title: string;
+  desc: string;
+  image: string;
+  tag: string;
+};
 
 export default function CaseStudiesPage() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const slideData: SlideItem[] = useMemo(
     () => [
       {
-        title: "TaskSync",
-        desc: "A self-reflective task system focused on energy, not pressure",
-        image: "/case-studies/slider_img_1.webp",
-      },
-      {
-        title: "Tech Futuristic Landing",
-        desc: "Exploring cinematic motion as a communication layer",
-        image: "/case-studies/slider_img_2.webp",
-      },
-      {
-        title: "Luxe One",
-        desc: "Luxury product experience driven by mood and visual hierarchy",
-        image: "/case-studies/slider_img_3.webp",
-      },
-      {
-        title: "Minimal Mart",
-        desc: "Designing a calm e-commerce flow with reduced cognitive load",
+        title: "MinimalMart",
+        tag: "Full-Stack / E-Commerce System",
+        desc: "A production-style e-commerce system focused on flash-sale concurrency, inventory reservation, payment reliability, and real-world backend architecture.",
         image: "/case-studies/slider_img_4.webp",
       },
       {
+        title: "TaskSync",
+        tag: "Full-Stack / Productivity App",
+        desc: "A task management system designed around clarity, momentum, and structured workflows, combining real-time interaction with a calm and usable interface.",
+        image: "/case-studies/slider_img_1.webp",
+      },
+      {
         title: "Insightfy Dashboard",
-        desc: "Turning complex analytics into intuitive visual narratives",
+        tag: "Frontend / Data Experience",
+        desc: "A dashboard concept that transforms dense analytics into readable visual flows, with strong hierarchy, clarity, and interface control.",
         image: "/case-studies/slider_img_5.webp",
+      },
+      {
+        title: "Luxe One",
+        tag: "Brand Experience / Landing Page",
+        desc: "A premium digital presentation built to communicate elegance, mood, and visual confidence through refined motion and layout direction.",
+        image: "/case-studies/slider_img_3.webp",
+      },
+      {
+        title: "Tech Futuristic Landing",
+        tag: "Creative Frontend / Experimental UI",
+        desc: "A cinematic landing page exploring futuristic interaction, immersive presentation, and motion as part of the communication system.",
+        image: "/case-studies/slider_img_2.webp",
       },
     ],
     [],
   );
 
-  // state refs (ไม่ให้ rerender)
   const frontIndexRef = useRef(0);
   const animatingRef = useRef(false);
 
-  // wheel/touch accumulator refs
   const wheelAccRef = useRef(0);
   const wheelActiveRef = useRef(false);
 
@@ -62,22 +70,23 @@ export default function CaseStudiesPage() {
     const slider = sliderRef.current;
     if (!container || !slider) return;
 
-    // clear
     slider.innerHTML = "";
 
-    // helper: build slide
     const buildSlideEl = (data: SlideItem) => {
       const slide = document.createElement("div");
       slide.className = "cs-slide";
+
       slide.innerHTML = `
         <img src="${data.image}" alt="${data.title}" class="cs-slide-image" />
-        <h1 class="cs-slide-title">${data.title}</h1>
-        <p class="cs-slide-desc">${data.desc}</p>
+        <div class="cs-slide-overlay"></div>
+        <div class="cs-slide-copy">
+          <p class="cs-slide-tag">${data.tag}</p>
+          <h2 class="cs-slide-title">${data.title}</h2>
+        </div>
       `;
       return slide;
     };
 
-    // init slides
     slideData.forEach((data) => {
       slider.appendChild(buildSlideEl(data));
     });
@@ -86,7 +95,6 @@ export default function CaseStudiesPage() {
       slider.querySelectorAll(".cs-slide"),
     ) as HTMLElement[];
 
-    // split titles (only title)
     slides.forEach((slide) => {
       const title = slide.querySelector(
         ".cs-slide-title",
@@ -95,16 +103,50 @@ export default function CaseStudiesPage() {
       new SplitText(title, { type: "words", mask: "words" });
     });
 
-    // set initial stack
-    slides.forEach((slide, i) => {
-      gsap.set(slide, {
-        y: -15 + 15 * i + "%", // stack spacing
-        z: 15 * i,
-        opacity: 1,
+    const setStack = (items: HTMLElement[]) => {
+      items.forEach((slide, i) => {
+        gsap.set(slide, {
+          y: `${i * 10}%`,
+          scale: 1 - i * 0.03,
+          opacity: i > 4 ? 0 : 1,
+          zIndex: 20 - i,
+        });
       });
-    });
+    };
 
-    // --- logic ---
+    setStack(slides);
+
+    const animateInCopy = (slide: HTMLElement, delay = 0.25) => {
+      const tag = slide.querySelector(".cs-slide-tag");
+      const titleWords = slide.querySelectorAll(".cs-slide-title .word");
+
+      if (tag) gsap.set(tag, { y: 12, opacity: 0 });
+      if (titleWords.length) gsap.set(titleWords, { yPercent: 100 });
+
+      if (tag) {
+        gsap.to(tag, {
+          y: 0,
+          opacity: 1,
+          duration: 0.45,
+          ease: "power3.out",
+          delay,
+        });
+      }
+
+      if (titleWords.length) {
+        gsap.to(titleWords, {
+          yPercent: 0,
+          duration: 0.7,
+          ease: "power4.out",
+          stagger: 0.08,
+          delay: delay + 0.08,
+        });
+      }
+
+    };
+
+    if (slides[0]) animateInCopy(slides[0], 0.15);
+
     const handleSlideChange = (direction: "down" | "up") => {
       if (animatingRef.current) return;
       animatingRef.current = true;
@@ -117,38 +159,30 @@ export default function CaseStudiesPage() {
       const currentSlides = Array.from(
         slider.querySelectorAll(".cs-slide"),
       ) as HTMLElement[];
+
       const firstSlide = currentSlides[0];
 
       frontIndexRef.current = (frontIndexRef.current + 1) % slideData.length;
-
+      setActiveIndex(frontIndexRef.current);
       const newBackIndex = (frontIndexRef.current + 4) % slideData.length;
       const next = slideData[newBackIndex];
 
       const newSlide = buildSlideEl(next);
 
-      // SplitText for new title
       const newTitle = newSlide.querySelector(
         ".cs-slide-title",
       ) as HTMLElement | null;
-      let split: SplitText | null = null;
-
       if (newTitle) {
-        split = new SplitText(newTitle, { type: "words", mask: "words" });
-        gsap.set(split.words, { yPercent: 100 });
+        new SplitText(newTitle, { type: "words", mask: "words" });
       }
-
-      // desc in
-      const newDesc = newSlide.querySelector(
-        ".cs-slide-desc",
-      ) as HTMLElement | null;
-      if (newDesc) gsap.set(newDesc, { y: 10, opacity: 0 });
 
       slider.appendChild(newSlide);
 
       gsap.set(newSlide, {
-        y: -15 + 15 * 5 + "%", // 6th position
-        z: 15 * 5,
+        y: "54%",
+        scale: 0.84,
         opacity: 0,
+        zIndex: 1,
       });
 
       const all = Array.from(
@@ -159,72 +193,59 @@ export default function CaseStudiesPage() {
         const targetPos = i - 1;
 
         gsap.to(slide, {
-          y: -15 + 15 * targetPos + "%",
-          z: 15 * targetPos,
-          opacity: targetPos < 0 ? 0 : 1,
-          duration: 1,
+          y: `${targetPos * 10}%`,
+          scale: 1 - targetPos * 0.03,
+          opacity: targetPos < 0 ? 0 : targetPos > 4 ? 0 : 1,
+          duration: 0.9,
           ease: "power3.inOut",
+          onStart: () => {
+            slide.style.zIndex = String(20 - Math.max(targetPos, 0));
+          },
           onComplete: () => {
             if (i === 0) {
               firstSlide?.remove();
+              const updated = Array.from(
+                slider.querySelectorAll(".cs-slide"),
+              ) as HTMLElement[];
+              updated.forEach((s, idx) => {
+                s.style.zIndex = String(20 - idx);
+              });
+              animateInCopy(updated[0], 0.05);
               animatingRef.current = false;
             }
           },
         });
       });
-
-      if (split) {
-        gsap.to(split.words, {
-          yPercent: 0,
-          duration: 0.75,
-          ease: "power4.out",
-          stagger: 0.12,
-          delay: 0.45,
-        });
-      }
-
-      if (newDesc) {
-        gsap.to(newDesc, {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          ease: "power3.out",
-          delay: 0.55,
-        });
-      }
     };
 
     const handleScrollUp = () => {
       const currentSlides = Array.from(
         slider.querySelectorAll(".cs-slide"),
       ) as HTMLElement[];
+
       const lastSlide = currentSlides[currentSlides.length - 1];
 
       frontIndexRef.current =
         (frontIndexRef.current - 1 + slideData.length) % slideData.length;
+      setActiveIndex(frontIndexRef.current);
 
       const prev = slideData[frontIndexRef.current];
-
       const newSlide = buildSlideEl(prev);
 
-      // SplitText for new title
       const newTitle = newSlide.querySelector(
         ".cs-slide-title",
       ) as HTMLElement | null;
-      if (newTitle) new SplitText(newTitle, { type: "words", mask: "words" });
-
-      // desc in
-      const newDesc = newSlide.querySelector(
-        ".cs-slide-desc",
-      ) as HTMLElement | null;
-      if (newDesc) gsap.set(newDesc, { y: 10, opacity: 0 });
+      if (newTitle) {
+        new SplitText(newTitle, { type: "words", mask: "words" });
+      }
 
       slider.prepend(newSlide);
 
       gsap.set(newSlide, {
-        y: -15 + 15 * -1 + "%", // above stack
-        z: 15 * -1,
+        y: "-10%",
+        scale: 1.03,
         opacity: 0,
+        zIndex: 21,
       });
 
       const queue = Array.from(
@@ -232,36 +253,33 @@ export default function CaseStudiesPage() {
       ) as HTMLElement[];
 
       queue.forEach((slide, i) => {
-        const targetPos = i;
-
         gsap.to(slide, {
-          y: -15 + 15 * targetPos + "%",
-          z: 15 * targetPos,
-          opacity: targetPos > 4 ? 0 : 1,
-          duration: 1,
+          y: `${i * 10}%`,
+          scale: 1 - i * 0.03,
+          opacity: i > 4 ? 0 : 1,
+          duration: 0.9,
           ease: "power3.inOut",
+          onStart: () => {
+            slide.style.zIndex = String(20 - i);
+          },
           onComplete: () => {
             if (i === queue.length - 1) {
               lastSlide?.remove();
+              const updated = Array.from(
+                slider.querySelectorAll(".cs-slide"),
+              ) as HTMLElement[];
+              updated.forEach((s, idx) => {
+                s.style.zIndex = String(20 - idx);
+              });
+              animateInCopy(updated[0], 0.08);
               animatingRef.current = false;
             }
           },
         });
       });
-
-      if (newDesc) {
-        gsap.to(newDesc, {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          ease: "power3.out",
-          delay: 0.35,
-        });
-      }
     };
 
-    // --- events ---
-    const wheelThreshold = 100;
+    const wheelThreshold = 90;
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -278,11 +296,11 @@ export default function CaseStudiesPage() {
 
         window.setTimeout(() => {
           wheelActiveRef.current = false;
-        }, 1200);
+        }, 1000);
       }
     };
 
-    const touchThreshold = 50;
+    const touchThreshold = 45;
 
     const onTouchStart = (e: TouchEvent) => {
       if (animatingRef.current || touchActiveRef.current) return;
@@ -306,7 +324,7 @@ export default function CaseStudiesPage() {
 
         window.setTimeout(() => {
           touchActiveRef.current = false;
-        }, 1200);
+        }, 1000);
       }
     };
 
@@ -327,20 +345,51 @@ export default function CaseStudiesPage() {
     };
   }, [slideData]);
 
+  const activeSlide = slideData[activeIndex];
+  const activeNumber = String(activeIndex + 1).padStart(2, "0");
+  const totalSlides = String(slideData.length).padStart(2, "0");
+
   return (
     <section className="cs-page" ref={containerRef}>
-      {/* TOP HUD */}
       <div className="casestudies-nav">
         <div className="casestudies-logo">
-          <p>Zone / casestudies</p>
+          <p>Zone / Case Studies</p>
         </div>
         <div className="service-name">
-          <p>Motion landing</p>
+          <p>Selected Work</p>
         </div>
       </div>
 
-      {/* Slider Stage */}
-      <div className="cs-slider" ref={sliderRef} />
+      <div className="cs-page-intro">
+        <p className="cs-kicker">Projects & Systems</p>
+        <h1 className="cs-heading">Case Studies</h1>
+        <p className="cs-intro-copy">
+          A selection of full-stack products, frontend systems, and digital
+          experiences — presented through their purpose, structure, and
+          problem-solving value.
+        </p>
+      </div>
+
+      <div className="cs-reading-rail" aria-live="polite">
+        <div className="cs-reading-meta">
+          <p className="cs-reading-label">Now Viewing</p>
+          <p className="cs-reading-count">
+            {activeNumber} / {totalSlides}
+          </p>
+        </div>
+
+        <div className="cs-reading-card">
+          <p className="cs-reading-tag">{activeSlide.tag}</p>
+          <h2 className="cs-reading-title">{activeSlide.title}</h2>
+          <p className="cs-reading-desc">{activeSlide.desc}</p>
+        </div>
+
+        <p className="cs-reading-hint">Scroll or swipe to move through the work.</p>
+      </div>
+
+      <div className="cs-slider-wrap">
+        <div className="cs-slider" ref={sliderRef} />
+      </div>
     </section>
   );
 }
