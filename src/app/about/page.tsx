@@ -136,7 +136,6 @@ function useTypewriterLoop(
 export default function AboutPage() {
   const heroText = "Worapon Jintajirakul";
   const [heroActive, setHeroActive] = useState(false);
-
   const [prefersReduced, setPrefersReduced] = useState(false);
 
   const titleRef = useRef<HTMLDivElement | null>(null);
@@ -147,6 +146,8 @@ export default function AboutPage() {
   const signatureRef = useRef<HTMLParagraphElement | null>(null);
   const proofRef = useRef<HTMLParagraphElement | null>(null);
   const bioRef = useRef<HTMLParagraphElement | null>(null);
+  const stackRef = useRef<HTMLDivElement | null>(null);
+  const availabilityRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     setHeroActive(true);
@@ -183,6 +184,20 @@ Every decision is intentional: clear structure, practical problem solving, and i
     [],
   );
 
+  const techStack = useMemo(
+    () => [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "NestJS",
+      "PostgreSQL",
+      "Redis",
+      "Docker",
+    ],
+    [],
+  );
+
   useLayoutEffect(() => {
     if (prefersReduced) return;
 
@@ -194,6 +209,8 @@ Every decision is intentional: clear structure, practical problem solving, and i
     const sigEl = signatureRef.current;
     const proofEl = proofRef.current;
     const bioEl = bioRef.current;
+    const stackEl = stackRef.current;
+    const availableEl = availabilityRef.current;
 
     if (!sectionEl || !clipEl || !bgEl) return;
 
@@ -252,11 +269,47 @@ Every decision is intentional: clear structure, practical problem solving, and i
           {
             y: 0,
             opacity: 1,
-            duration: 1.0,
+            duration: 1,
             ease: "power2.out",
             scrollTrigger: {
               trigger: sectionEl,
               start: "top 70%",
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      }
+
+      if (stackEl) {
+        gsap.fromTo(
+          stackEl,
+          { y: 12, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: stackEl,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      }
+
+      if (availableEl) {
+        gsap.fromTo(
+          availableEl,
+          { y: 8, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: availableEl,
+              start: "top 90%",
               toggleActions: "play none none reverse",
             },
           },
@@ -386,6 +439,7 @@ Every decision is intentional: clear structure, practical problem solving, and i
             >
               Building systems where engineering serves clarity.
             </p>
+
             <p className="about-proof about-proof--right" ref={proofRef}>
               Full-Stack · Reliability · UX · Problem Solving
             </p>
@@ -395,6 +449,21 @@ Every decision is intentional: clear structure, practical problem solving, and i
                 <div className="callout">
                   <p className="about-bio" ref={bioRef}>
                     {bio}
+                  </p>
+
+                  <div className="about-tech-stack" ref={stackRef}>
+                    <p className="about-tech-title">Tech Stack</p>
+                    <div className="about-tech-grid">
+                      {techStack.map((item) => (
+                        <span key={item} className="about-tech-item">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="about-availability" ref={availabilityRef}>
+                    Currently available for freelance and contract projects.
                   </p>
                 </div>
               </div>
