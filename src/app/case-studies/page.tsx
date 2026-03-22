@@ -59,25 +59,74 @@ export default function CaseStudiesPage() {
       {
         title: "TaskSync",
         tag: "Full-Stack / Productivity App",
-        desc: "A task management system designed around clarity, momentum, and structured workflows, combining real-time interaction with a calm and usable interface.",
+        desc: (
+          <>
+            <p>
+              Designed and built a productivity platform with a frontend
+              architecture capable of handling real-world complexity.
+            </p>
+            <p>
+              Multi-layer state management, task lifecycle workflows,
+              drag-and-drop interactions, create/edit modals, calendar
+              integration, and a component structure built to scale at
+              production level.
+            </p>
+          </>
+        ),
         image: "/case-studies/slider_img_1.webp",
       },
       {
         title: "Insightfy Dashboard",
         tag: "Frontend / Data Experience",
-        desc: "A dashboard concept that transforms dense analytics into readable visual flows, with strong hierarchy, clarity, and interface control.",
+        desc: (
+          <>
+            <p>
+              Designed a data-heavy dashboard with emphasis on information
+              hierarchy, modular UI structure, filter and navigation
+              interactions.
+            </p>
+            <p>
+              Built with a frontend system capable of managing complex
+              dashboard state alongside reusable data visualization
+              components.
+            </p>
+          </>
+        ),
         image: "/case-studies/slider_img_5.webp",
       },
       {
         title: "Luxe One",
         tag: "Brand Experience / Landing Page",
-        desc: "A premium digital presentation built to communicate elegance, mood, and visual confidence through refined motion and layout direction.",
+        desc: (
+          <>
+            <p>
+              Developed a premium web experience focused on interaction system
+              design, visual hierarchy, and clean frontend structure.
+            </p>
+            <p>
+              Used reusable UI patterns and fluid motion to create an
+              experience that communicates brand identity while supporting
+              conversion.
+            </p>
+          </>
+        ),
         image: "/case-studies/slider_img_3.webp",
       },
       {
         title: "Tech Futuristic Landing",
         tag: "Creative Frontend / Experimental UI",
-        desc: "A cinematic landing page exploring futuristic interaction, immersive presentation, and motion as part of the communication system.",
+        desc: (
+          <>
+            <p>
+              Built an immersive landing page with a frontend system designed
+              to support cinematic interactions, sequenced animation control,
+              responsive motion, and directed user flow.
+            </p>
+            <p>
+              Engineered to capture and hold attention effectively.
+            </p>
+          </>
+        ),
         image: "/case-studies/slider_img_2.webp",
       },
     ],
