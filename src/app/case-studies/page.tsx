@@ -9,7 +9,7 @@ gsap.registerPlugin(SplitText);
 
 type SlideItem = {
   title: string;
-  desc: string;
+  desc: React.ReactNode;
   image: string;
   tag: string;
 };
@@ -24,7 +24,36 @@ export default function CaseStudiesPage() {
       {
         title: "MinimalMart",
         tag: "Full-Stack / E-Commerce System",
-        desc: "A production-style e-commerce system focused on flash-sale concurrency, inventory reservation, payment reliability, and real-world backend architecture.",
+        desc: (
+          <>
+            <p>
+              E-commerce breaks under real load, especially during flash sales
+              where hundreds of users hit the system at once. MinimalMart was
+              built to solve exactly that.
+            </p>
+            <p>
+              <strong>Inventory Reservation</strong>
+              Used Redis DECR instead of the standard SQL read-then-write
+              pattern. Being an atomic operation by nature, race conditions are
+              impossible regardless of concurrent request volume.
+            </p>
+            <p>
+              <strong>Payment Retry</strong>
+              Exponential backoff with a dead letter queue for orders that
+              exhaust all retry attempts. No order gets stuck in a limbo state.
+            </p>
+            <p>
+              <strong>Webhook Idempotency</strong>
+              Every incoming event is checked against a stored event_id with a
+              unique constraint before processing, making duplicate webhook
+              delivery completely safe.
+            </p>
+            <p>
+              <strong>Stack:</strong> Next.js · NestJS · PostgreSQL · Redis ·
+              Docker
+            </p>
+          </>
+        ),
         image: "/case-studies/slider_img_4.webp",
       },
       {
@@ -105,12 +134,18 @@ export default function CaseStudiesPage() {
 
     const setStack = (items: HTMLElement[]) => {
       items.forEach((slide, i) => {
+        const copy = slide.querySelector(".cs-slide-copy");
         gsap.set(slide, {
           y: `${i * 10}%`,
           scale: 1 - i * 0.03,
           opacity: i > 4 ? 0 : 1,
           zIndex: 20 - i,
         });
+        if (copy) {
+          gsap.set(copy, {
+            opacity: i === 0 ? 1 : 0,
+          });
+        }
       });
     };
 
@@ -185,12 +220,18 @@ export default function CaseStudiesPage() {
         zIndex: 1,
       });
 
+      const newCopy = newSlide.querySelector(".cs-slide-copy");
+      if (newCopy) {
+        gsap.set(newCopy, { opacity: 0 });
+      }
+
       const all = Array.from(
         slider.querySelectorAll(".cs-slide"),
       ) as HTMLElement[];
 
       all.forEach((slide, i) => {
         const targetPos = i - 1;
+        const copy = slide.querySelector(".cs-slide-copy");
 
         gsap.to(slide, {
           y: `${targetPos * 10}%`,
@@ -215,6 +256,14 @@ export default function CaseStudiesPage() {
             }
           },
         });
+
+        if (copy) {
+          gsap.to(copy, {
+            opacity: targetPos === 0 ? 1 : 0,
+            duration: 0.35,
+            ease: "power2.out",
+          });
+        }
       });
     };
 
@@ -248,11 +297,17 @@ export default function CaseStudiesPage() {
         zIndex: 21,
       });
 
+      const newCopy = newSlide.querySelector(".cs-slide-copy");
+      if (newCopy) {
+        gsap.set(newCopy, { opacity: 0 });
+      }
+
       const queue = Array.from(
         slider.querySelectorAll(".cs-slide"),
       ) as HTMLElement[];
 
       queue.forEach((slide, i) => {
+        const copy = slide.querySelector(".cs-slide-copy");
         gsap.to(slide, {
           y: `${i * 10}%`,
           scale: 1 - i * 0.03,
@@ -276,6 +331,14 @@ export default function CaseStudiesPage() {
             }
           },
         });
+
+        if (copy) {
+          gsap.to(copy, {
+            opacity: i === 0 ? 1 : 0,
+            duration: 0.35,
+            ease: "power2.out",
+          });
+        }
       });
     };
 
@@ -381,7 +444,7 @@ export default function CaseStudiesPage() {
         <div className="cs-reading-card">
           <p className="cs-reading-tag">{activeSlide.tag}</p>
           <h2 className="cs-reading-title">{activeSlide.title}</h2>
-          <p className="cs-reading-desc">{activeSlide.desc}</p>
+          <div className="cs-reading-desc">{activeSlide.desc}</div>
         </div>
 
         <p className="cs-reading-hint">Scroll or swipe to move through the work.</p>
