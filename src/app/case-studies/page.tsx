@@ -76,23 +76,23 @@ export default function CaseStudiesPage() {
         image: "/case-studies/slider_img_1.webp",
       },
       {
-        title: "Insightfy Dashboard",
-        tag: "Frontend / Data Experience",
+        title: "NanoDashboard",
+        tag: "Full-stack / Distributed System Thinking",
         desc: (
           <>
             <p>
-              Designed a data-heavy dashboard with emphasis on information
-              hierarchy, modular UI structure, filter and navigation
-              interactions.
+              Developed a full-stack crypto dashboard simulating
+              production-grade conditions, including real-time data handling,
+              cache layering, and resilient API integration.
             </p>
             <p>
-              Built with a frontend system capable of managing complex
-              dashboard state alongside reusable data visualization
-              components.
+              Focused on system design principles such as idempotent flows,
+              Redis caching with fallback strategies, and clean service-layer
+              architecture to ensure performance, consistency, and scalability.
             </p>
           </>
         ),
-        image: "/case-studies/slider_img_5.webp",
+        image: "/case-studies/nanodashboard.png",
       },
       {
         title: "Luxe One",
@@ -104,9 +104,8 @@ export default function CaseStudiesPage() {
               design, visual hierarchy, and clean frontend structure.
             </p>
             <p>
-              Used reusable UI patterns and fluid motion to create an
-              experience that communicates brand identity while supporting
-              conversion.
+              Used reusable UI patterns and fluid motion to create an experience
+              that communicates brand identity while supporting conversion.
             </p>
           </>
         ),
@@ -118,13 +117,11 @@ export default function CaseStudiesPage() {
         desc: (
           <>
             <p>
-              Built an immersive landing page with a frontend system designed
-              to support cinematic interactions, sequenced animation control,
+              Built an immersive landing page with a frontend system designed to
+              support cinematic interactions, sequenced animation control,
               responsive motion, and directed user flow.
             </p>
-            <p>
-              Engineered to capture and hold attention effectively.
-            </p>
+            <p>Engineered to capture and hold attention effectively.</p>
           </>
         ),
         image: "/case-studies/slider_img_2.webp",
@@ -226,7 +223,6 @@ export default function CaseStudiesPage() {
           delay: delay + 0.08,
         });
       }
-
     };
 
     if (slides[0]) animateInCopy(slides[0], 0.15);
@@ -496,7 +492,9 @@ export default function CaseStudiesPage() {
           <div className="cs-reading-desc">{activeSlide.desc}</div>
         </div>
 
-        <p className="cs-reading-hint">Scroll or swipe to move through the work.</p>
+        <p className="cs-reading-hint">
+          Scroll or swipe to move through the work.
+        </p>
       </div>
 
       <div className="cs-slider-wrap">

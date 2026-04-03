@@ -17,11 +17,11 @@ const projects = [
     link: "https://minimart-three.vercel.app/",
   },
   {
-    title: "TaskSync",
+    title: "NanoDashboard",
     description:
-      "A full-stack task management system combining real-time interactions, structured workflows, and a calm UX focused on clarity, momentum, and usability.",
-    image: "/projects/tasksync.mp4",
-    link: "https://tasksync-chi.vercel.app/",
+      "A production-style full-stack crypto dashboard with draggable layouts, real-time market data, JWT authentication, and Redis caching, built for performance and scalability.",
+    image: "/projects/nanodashboard.mp4",
+    link: "https://nano-dashboard-pi.vercel.app/",
   },
   {
     title: "Luxe-One | Premium Digital",
