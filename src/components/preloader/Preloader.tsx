@@ -7,7 +7,6 @@ import styles from "./Preloader.module.css";
 type PreloaderProps = {
   enabled?: boolean;
   durationMs?: number;
-  label?: string;
   onDone?: () => void;
   blockSize?: number;
 };
@@ -23,13 +22,10 @@ type Block = {
 export default function Preloader({
   enabled = true,
   durationMs = 2800,
-  label = "Initializing Systems",
   onDone,
   blockSize = 60,
 }: PreloaderProps) {
   const [isMounted, setIsMounted] = useState(false);
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const blockElsRef = useRef<HTMLSpanElement[]>([]);
 
   // ล้างค่า Array ทุกครั้งที่เรนเดอร์ใหม่เพื่อป้องกัน Element ซ้ำ
@@ -82,14 +78,11 @@ export default function Preloader({
   useEffect(() => {
     if (!enabled || !isMounted || blocks.length === 0) return;
 
-    const wrapper = wrapperRef.current;
     const blockEls = blockElsRef.current;
 
     if (blockEls.length === 0) return;
 
-    // Initial state
     gsap.set(blockEls, { opacity: 1 });
-    if (wrapper) gsap.set(wrapper, { opacity: 1 });
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -100,27 +93,15 @@ export default function Preloader({
     const holdTime = Math.max(0, durationMs - 800) / 1000;
     tl.to({}, { duration: holdTime });
 
-    if (wrapper) {
-      tl.to(wrapper, {
-        opacity: 0,
-        duration: 0.6,
-        ease: "power2.out",
-      });
-    }
-
-    tl.to(
-      blockEls,
-      {
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.inOut",
-        stagger: {
-          amount: 0.7,
-          from: "random",
-        },
+    tl.to(blockEls, {
+      opacity: 0,
+      duration: 0.45,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.8,
+        from: "random",
       },
-      "-=0.3",
-    );
+    });
 
     return () => {
       tl.kill();
@@ -130,7 +111,7 @@ export default function Preloader({
   if (!enabled || !isMounted || blocks.length === 0) return null;
 
   return (
-    <div ref={overlayRef} className={styles.overlay}>
+    <div className={styles.overlay}>
       <div className={styles.grid} suppressHydrationWarning>
         {blocks.map((b) => (
           <span
@@ -142,25 +123,12 @@ export default function Preloader({
               width: b.w,
               height: b.h,
               position: "absolute",
-              backgroundColor: "#000",
             }}
             ref={(el) => {
               if (el) blockElsRef.current.push(el);
             }}
           />
         ))}
-      </div>
-
-      <div ref={wrapperRef} className={styles.ui}>
-        <p className={styles.text}>{label}</p>
-        <div className={styles.ringFrame}>
-          <span className={`${styles.ring} ${styles.ringSm}`} />
-          <span className={`${styles.ring} ${styles.ringMd}`} />
-          <span className={`${styles.ring} ${styles.ringLg}`} />
-        </div>
-        <div className={styles.discFrame}>
-          <span className={styles.disc} />
-        </div>
       </div>
     </div>
   );
