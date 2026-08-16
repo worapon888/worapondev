@@ -1,12 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { PinContainer } from "@/components/ui/3d-pin";
 import "./Showcase.css";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -40,285 +34,75 @@ const projects = [
 ];
 
 export default function Showcase() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const svgWrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const section = sectionRef.current;
-      const wrap = svgWrapRef.current;
-      const container = containerRef.current;
-
-      if (!section) return;
-
-      if (container) {
-        gsap.fromTo(
-          container,
-          { autoAlpha: 0, y: 30 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 1.2,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 85%",
-              once: true,
-            },
-          },
-        );
-      }
-
-      cardsRef.current.forEach((card, index) => {
-        if (!card) return;
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 30, scale: 0.95 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            delay: index * 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 82%",
-              toggleActions: "play none none none",
-            },
-          },
-        );
-      });
-
-      if (!wrap) return;
-
-      const wrapScaleX = 1.85;
-      const wrapScaleY = 1.45;
-      let isKilled = false;
-      let svgEl: SVGSVGElement | null = null;
-      let drawables: SVGGeometryElement[] = [];
-      const tracerEls: SVGGeometryElement[] = [];
-      let enterTl: gsap.core.Timeline | null = null;
-      let tracerTweens: gsap.core.Tween[] = [];
-      let pulseTween: gsap.core.Tween | null = null;
-
-      const HEAD = 90;
-      const GAP_MIN = 180;
-
-      const killLoops = () => {
-        tracerTweens.forEach((t) => t.kill());
-        tracerTweens = [];
-        pulseTween?.kill();
-        pulseTween = null;
-      };
-
-      const ensureGlowFilter = (svg: SVGSVGElement) => {
-        if (svg.querySelector("#__woraponGlow")) return;
-        const defs =
-          svg.querySelector("defs") ||
-          svg.insertBefore(
-            document.createElementNS("http://www.w3.org/2000/svg", "defs"),
-            svg.firstChild,
-          );
-
-        const filter = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "filter",
-        );
-        filter.setAttribute("id", "__woraponGlow");
-        filter.innerHTML = `
-          <feGaussianBlur stdDeviation="4.2" result="blur"/>
-          <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1.25 0" result="glow"/>
-          <feMerge>
-            <feMergeNode in="glow"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        `;
-        defs.appendChild(filter);
-      };
-
-      const build = async () => {
-        if (svgEl) return;
-
-        const res = await fetch("/texture/circuit-board.svg");
-        const svgText = await res.text();
-        if (isKilled) return;
-
-        wrap.innerHTML = svgText;
-        const svg = wrap.querySelector("svg");
-        if (!svg) return;
-        svgEl = svg;
-
-        svg.style.cssText =
-          "width:100%; height:100%; display:block; overflow:visible;";
-
-        drawables = Array.from(
-          svg.querySelectorAll<SVGGeometryElement>(
-            "path, line, polyline, polygon, circle, rect, ellipse",
-          ),
-        ).filter(
-          (el) =>
-            !(
-              el.tagName === "rect" &&
-              (el as SVGRectElement).width.baseVal.value > 400
-            ),
-        );
-
-        drawables.forEach((el) => {
-          const len = el.getTotalLength();
-          el.style.cssText = `fill:none; stroke:rgba(34,211,238,0.32); stroke-width:2.2; stroke-linecap:round; stroke-dasharray:${len}; stroke-dashoffset:${len};`;
-        });
-
-        ensureGlowFilter(svg);
-
-        const tracerGroup = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "g",
-        );
-        tracerGroup.style.filter = "url(#__woraponGlow)";
-
-        drawables.forEach((el) => {
-          const clone = el.cloneNode(true) as SVGGeometryElement;
-          const len = clone.getTotalLength();
-          clone.style.cssText = `fill:none; stroke:rgba(34,211,238,0.62); stroke-width:3.4; opacity:0; stroke-linecap:round; stroke-dasharray:${HEAD} ${Math.max(GAP_MIN, len)}; stroke-dashoffset:${len};`;
-          tracerGroup.appendChild(clone);
-          tracerEls.push(clone);
-        });
-
-        svg.appendChild(tracerGroup);
-      };
-
-      const playSequence = async () => {
-        await build();
-        if (isKilled || !svgEl) return;
-
-        killLoops();
-        enterTl?.kill();
-
-        enterTl = gsap.timeline();
-
-        enterTl
-          .to(wrap, {
-            autoAlpha: 1,
-            y: 0,
-            filter: "blur(0px)",
-            scaleX: wrapScaleX,
-            scaleY: wrapScaleY,
-            duration: 1.2,
-            ease: "power2.out",
-          })
-          .to(
-            drawables,
-            {
-              strokeDashoffset: 0,
-              duration: 1.7,
-              stagger: 0.006,
-            },
-            0.15,
-          )
-          .to(
-            tracerEls,
-            {
-              opacity: 1,
-              duration: 0.25,
-              stagger: 0.01,
-            },
-            "-=0.95",
-          );
-
-        tracerTweens = tracerEls.map((el, i) =>
-          gsap.to(el, {
-            strokeDashoffset: -el.getTotalLength(),
-            duration: 5.2 + (i % 7) * 0.35,
-            repeat: -1,
-            ease: "none",
-            delay: 0.15 + (i % 9) * 0.06,
-          }),
-        );
-
-        pulseTween = gsap.to(tracerEls, {
-          opacity: 0.82,
-          duration: 1.2,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          stagger: { each: 0.22, repeat: -1 },
-        });
-      };
-
-      const st = ScrollTrigger.create({
-        trigger: section,
-        start: "top 110%",
-        onEnter: playSequence,
-      });
-
-      return () => {
-        isKilled = true;
-        st.kill();
-        enterTl?.kill();
-        killLoops();
-        wrap.innerHTML = "";
-      };
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <section
-      id="showcase"
-      ref={sectionRef}
-      className="relative z-10 py-24 sm:py-32 mt-20 overflow-hidden"
+      id="projects"
+      className="showcase-section relative z-10 mt-20 overflow-hidden"
     >
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div
-          ref={svgWrapRef}
-          className="absolute inset-0 opacity-60"
-          style={{ willChange: "transform, opacity, filter" }}
-        />
-      </div>
-
-      <div className="text-center" ref={containerRef}>
-        <h2 className="showcase-header">Featured Projects</h2>
-        <p className="mt-5 text-[9px] md:text-[11px] tracking-[0.15em] md:tracking-[0.28em] uppercase text-white/45 max-w-[80%] md:max-w-full text-center mx-auto leading-relaxed">
-          Selected work across production systems, full-stack applications, and
-          immersive digital experiences
-        </p>
-      </div>
-
-      <div className="mt-16 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 px-4 md:px-0">
-        {projects.map((project, index) => (
-          <div
-            key={project.title}
-            ref={(el) => {
-              cardsRef.current[index] = el;
-            }}
-          >
-            <PinContainer title={project.title} href={project.link}>
-              <div className="flex flex-col w-[18rem] h-[20rem] bg-white/5 border border-white/10 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:border-cyan-400/50 transition-all">
-                <div className="flex-1 bg-black overflow-hidden">
-                  <video
-                    src={project.image}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-48 object-cover opacity-80"
-                  />
-                </div>
-
-                <div className="p-4 text-white bg-zinc-900/40">
-                  <h3 className="text-lg font-semibold">{project.title}</h3>
-                  <p className="text-sm text-white/70 mt-2">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            </PinContainer>
+      <div className="showcase-shell">
+        <div className="showcase-heading">
+          <div className="showcase-status">
+            <p>Control Surface / Selected Work</p>
+            <p>04 Active Projects</p>
           </div>
-        ))}
+
+          <div className="showcase-heading-grid">
+            <h2 className="showcase-header">
+              Featured
+              <span>Projects.</span>
+            </h2>
+            <p className="showcase-subtitle">
+              Selected work across production systems, full-stack applications,
+              and immersive digital experiences
+            </p>
+          </div>
+        </div>
+
+        <div className="showcase-projects">
+          {projects.map((project, index) => (
+            <article
+              key={project.title}
+              className="showcase-card"
+            >
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="showcase-media"
+                aria-label={`Open ${project.title}`}
+              >
+                <video
+                  src={project.image}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="showcase-video"
+                />
+              </a>
+
+              <div className="showcase-copy">
+                <div className="showcase-card-meta">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <span>Live Project</span>
+                </div>
+
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="showcase-link"
+                >
+                  View project
+                  <span aria-hidden="true">-&gt;</span>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );

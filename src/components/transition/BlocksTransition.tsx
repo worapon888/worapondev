@@ -16,8 +16,13 @@ export default function BlocksTransition({
   blockSize = 50,
 }: BlocksTransitionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const onDoneRef = useRef(onDone);
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
   const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  }, [onDone]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,7 +60,7 @@ export default function BlocksTransition({
 
     const tl = gsap.timeline({
       onComplete: () => {
-        if (onDone) onDone();
+        onDoneRef.current?.();
       },
     });
 
@@ -72,7 +77,7 @@ export default function BlocksTransition({
     return () => {
       tl.kill();
     };
-  }, [enabled, isReady, blocks.length, onDone]);
+  }, [enabled, isReady, blocks.length]);
 
   if (!enabled || !isReady || blocks.length === 0) return null;
 

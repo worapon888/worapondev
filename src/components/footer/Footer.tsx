@@ -1,266 +1,115 @@
 "use client";
 
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Footer.css";
 import Image from "next/image";
 import Link from "next/link";
+import packageInfo from "../../../package.json";
 
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
-
-type TypewriterOpts = {
-  typeSpeed?: number;
-  endHoldMs?: number;
-  repeatDelayMs?: number;
-  glitchChance?: number;
-  glitchChars?: string;
-};
-
-function useTypewriterLoop(
-  enabled: boolean,
-  text: string,
-  opts: TypewriterOpts,
-) {
-  const {
-    typeSpeed = 40,
-    endHoldMs = 1400,
-    repeatDelayMs = 2500,
-    glitchChance = 0.1,
-    glitchChars = "01<>/\\[]{}—_+*#@!?",
-  } = opts;
-
-  const [out, setOut] = useState(text);
-  const rafRef = useRef<number | null>(null);
-  const tRef = useRef<number | null>(null);
-
-  const enabledRef = useRef(enabled);
-  const textRef = useRef(text);
-
-  enabledRef.current = enabled;
-  textRef.current = text;
-
-  const clearAll = () => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = null;
-    if (tRef.current) window.clearTimeout(tRef.current);
-    tRef.current = null;
-  };
-
-  const randChar = () =>
-    glitchChars[Math.floor(Math.random() * glitchChars.length)];
-
-  useLayoutEffect(() => {
-    if (!enabled) {
-      clearAll();
-      setOut(text);
-      return;
-    }
-
-    let cancelled = false;
-
-    const typeOnce = () =>
-      new Promise<void>((resolve) => {
-        clearAll();
-
-        const final = textRef.current ?? "";
-        const len = final.length;
-
-        let i = 0;
-        let last = 0;
-
-        setOut("");
-
-        const tick = (now: number) => {
-          if (cancelled || !enabledRef.current) return;
-
-          if (now - last < typeSpeed) {
-            rafRef.current = requestAnimationFrame(tick);
-            return;
-          }
-          last = now;
-
-          i = Math.min(len, i + 1);
-
-          const next =
-            i < len && Math.random() < glitchChance ? randChar() : "";
-          setOut(final.slice(0, i) + next);
-
-          if (i < len) {
-            rafRef.current = requestAnimationFrame(tick);
-          } else {
-            setOut(final);
-            tRef.current = window.setTimeout(() => resolve(), endHoldMs);
-          }
-        };
-
-        rafRef.current = requestAnimationFrame(tick);
-      });
-
-    const loop = async () => {
-      while (!cancelled && enabledRef.current) {
-        await typeOnce();
-        if (cancelled || !enabledRef.current) break;
-
-        await new Promise<void>((r) => {
-          tRef.current = window.setTimeout(() => r(), repeatDelayMs);
-        });
-      }
-    };
-
-    loop();
-
-    return () => {
-      cancelled = true;
-      clearAll();
-      setOut(text);
-    };
-  }, [
-    enabled,
-    text,
-    typeSpeed,
-    endHoldMs,
-    repeatDelayMs,
-    glitchChance,
-    glitchChars,
-  ]);
-
-  return out;
-}
+const socialLinks = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/worapon.dev/",
+  },
+  {
+    label: "YouTube Signals",
+    href: "https://www.youtube.com/@worapondev",
+  },
+  {
+    label: "Twitter",
+    href: "https://x.com/jintajirakul88",
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/worapon-dev/",
+  },
+  {
+    label: "GitHub Repository",
+    href: "https://github.com/worapon888",
+  },
+  {
+    label: "Contact",
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=worapon088@gmail.com",
+  },
+];
 
 export default function FooterSection() {
-  const rootRef = useRef<HTMLElement | null>(null);
-
-  const originalText = "Send a signal if you want to connect";
-  const [isActive, setIsActive] = useState(false);
-
-  const prefersReduced = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return (
-      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
-    );
-  }, []);
-
-  const typedText = useTypewriterLoop(
-    isActive && !prefersReduced,
-    originalText,
-    {
-      typeSpeed: 42,
-      endHoldMs: 1600,
-      repeatDelayMs: 3200,
-      glitchChance: 0.08,
-      glitchChars: "01<>/\\[]{}—_+*#@!?",
-    },
-  );
-
-  useLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    const ctx = gsap.context(() => {
-      if (prefersReduced) return;
-
-      ScrollTrigger.create({
-        trigger: root,
-        start: "top 85%",
-        once: true,
-        onEnter: () => {
-          setIsActive(true);
-          requestAnimationFrame(() => ScrollTrigger.refresh());
-          setTimeout(() => ScrollTrigger.refresh(), 150);
-        },
-      });
-    }, root);
-
-    return () => ctx.revert();
-  }, [prefersReduced]);
+  const buildMonth = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
 
   return (
-    <footer ref={rootRef}>
+    <footer>
       <div className="footer-container">
-        <div className="footer-bg-container" />
-
         <div className="footer-content">
-          <div className="footer-content-meta">
-            <div className="footer-content-col">
-              <h3 data-typing={isActive ? "1" : "0"}>
-                {prefersReduced ? originalText : typedText}
-                <span className="typing-cursor" aria-hidden="true">
-                  |
+          <section className="footer-lead" aria-labelledby="footer-heading">
+            <p className="footer-kicker">Connection Port</p>
+            <h3 id="footer-heading">Send a signal if you want to connect</h3>
+
+            <div className="footer-form">
+              <input
+                type="text"
+                placeholder="Project Brief / Contact"
+                aria-label="Project brief or contact"
+              />
+
+              <Link href="/contact" className="footer-link">
+                Start a Project
+                <span aria-hidden="true">-&gt;</span>
+              </Link>
+            </div>
+          </section>
+
+          <section className="footer-about" aria-label="Portfolio summary">
+            <p className="bodyCopy">
+              Worapon.dev is a full-stack engineering portfolio focused on
+              building production-ready systems, thoughtful user experiences,
+              and digital products that solve real-world problems with clarity
+              and precision.
+            </p>
+          </section>
+
+          <section
+            className="footer-socials"
+            aria-label="Social links"
+            role="navigation"
+          >
+            {socialLinks.map((item, index) => (
+              <Link
+                className="footer-social"
+                href={item.href}
+                key={item.label}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  item.href.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
+              >
+                <span className="footer-social-index">
+                  {String(index + 1).padStart(2, "0")}
                 </span>
-              </h3>
+                <span className="footer-social-label">{item.label}</span>
+              </Link>
+            ))}
+          </section>
 
-              <div className="footer-form">
-                <input type="text" placeholder="Project Brief / Contact" />
-
-                <div className="footer-btn-wrap">
-                  <Link href="/contact" className="footer-btn">
-                    <span className="btn-line" />
-                    Start a Project
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="footer-content-col">
-              <p className="bodyCopy">
-                Worapon.dev is a full-stack engineering portfolio focused on
-                building production-ready systems, thoughtful user experiences,
-                and digital products that solve real-world problems with clarity
-                and precision.
-              </p>
-
-              <div className="footer-socials">
-                {[
-                  {
-                    label: "[ Instagram ]",
-                    href: "https://www.instagram.com/worapon.dev",
-                  },
-                  {
-                    label: "[ YouTube Signals ]",
-                    href: "https://www.youtube.com/@worapondev",
-                  },
-                  {
-                    label: "[ Twitter ]",
-                    href: "https://x.com/jintajirakul88",
-                  },
-                  {
-                    label: "[ LinkedIn ]",
-                    href: "https://www.linkedin.com/in/worapon-dev/",
-                  },
-                  {
-                    label: "[ GitHub Repository ]",
-                    href: "https://github.com/worapon888",
-                  },
-                  { label: "[ Contact ]", href: "/contact" },
-                ].map((item) => (
-                  <div className="footer-social" key={item.label}>
-                    <Link href={item.href}>{item.label}</Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="footer-content-meta footer-bottom">
-            <div className="footer-content-col footer-meta">
+          <section className="footer-bottom" aria-label="Site metadata">
+            <div className="footer-meta">
               <p>[ Constructed by Worapon.dev ]</p>
-              <p>[ System Build / Jan 2026 ]</p>
+              <p>[ System Build / {buildMonth} / v{packageInfo.version} ]</p>
             </div>
 
-            <div className="footer-content-col footer-brand-wrap">
-              <div className="footer-brand">
-                <Image
-                  src="/Logo_worapon.webp"
-                  alt="worapon.dev"
-                  width={500}
-                  height={500}
-                  priority
-                />
-              </div>
+            <div className="footer-brand">
+              <Image
+                src="/Logo_worapon.webp"
+                alt="worapon.dev"
+                width={500}
+                height={500}
+                priority
+              />
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </footer>

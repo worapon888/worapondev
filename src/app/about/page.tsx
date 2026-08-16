@@ -7,7 +7,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import ParticlesCursorBG from "@/components/ParticlesCursorBG";
 import "./about.css";
 
 import gsap from "gsap";
@@ -177,12 +176,24 @@ export default function AboutPage() {
 
   const bio = useMemo(
     () =>
-      `I am a full-stack engineer focused on building production-ready web systems that balance strong user experience with real engineering depth.
-My work spans both frontend and backend — from interface design and interaction quality to architecture, performance, reliability, and application logic.
-I care deeply about how systems behave in real-world conditions, not just how they look in isolation.
-Every decision is intentional: clear structure, practical problem solving, and interfaces that feel polished, useful, and built to last.`,
+      `I’m a full-stack engineer and product builder focused on turning real-world problems into practical, production-ready software.
+
+My work spans frontend, backend, system design, and product thinking — from building polished user experiences to designing APIs, data flows, application logic, and reliable backend systems.
+
+Beyond implementation, I care about understanding how a product fits into the way people actually work: what should be automated, what should stay simple, and where technology can remove unnecessary effort.
+
+I’m currently building my own product, which has pushed me beyond writing features into thinking about the entire lifecycle — product direction, user experience, architecture, workflows, scalability, and how software creates real value.
+
+I value clear structure, pragmatic problem solving, and products that are not only technically sound, but genuinely useful and built to evolve.`,
     [],
   );
+
+  const typedBio = useTypewriterLoop(heroActive && !prefersReduced, bio, {
+    typeSpeed: 12,
+    endHoldMs: 1800,
+    repeatDelayMs: 4200,
+    glitchChance: 0,
+  });
 
   const techStack = useMemo(
     () => [
@@ -385,8 +396,6 @@ Every decision is intentional: clear structure, practical problem solving, and i
         </div>
       </div>
 
-      <ParticlesCursorBG />
-
       <div className="title-about" ref={titleRef}>
         <h3>
           <span
@@ -448,7 +457,15 @@ Every decision is intentional: clear structure, practical problem solving, and i
               <div className="hero-content-footer">
                 <div className="callout">
                   <p className="about-bio" ref={bioRef}>
-                    {bio}
+                    <span className="about-bio-measure" aria-hidden="true">
+                      {bio}
+                    </span>
+                    <span className="about-bio-live">
+                      {prefersReduced ? bio : typedBio}
+                      <span className="typing-cursor" aria-hidden="true">
+                        |
+                      </span>
+                    </span>
                   </p>
 
                   <div className="about-tech-stack" ref={stackRef}>

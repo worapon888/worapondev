@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import "./Nav.css";
-import { useNavIntro } from "./useNavIntro";
 
 // ✅ เพิ่ม: ใช้ transition ก่อนเปลี่ยน route
 import { usePageTransition } from "@/components/transition/PageTransition";
@@ -17,9 +16,6 @@ export default function Navbar() {
 
   const pathname = usePathname();
   const { go, isTransitioning } = usePageTransition();
-
-  // ✅ intro motion
-  useNavIntro({ navRef });
 
   // close on resize > 1000
   useEffect(() => {
@@ -84,13 +80,24 @@ export default function Navbar() {
     go(href); // ✅ เล่น preloader แล้วค่อย push ใน provider
   };
 
-  return (
-    <nav ref={navRef} className={`nav--preload ${isOpen ? "nav-open" : ""}`}>
-      <div className="nav-container">
-        <div className="nav-bg" />
-      </div>
+  const onBrandNav = (e: React.MouseEvent) => {
+    e.preventDefault();
 
-      <div className="nav-mobile-header" onClick={toggleMenu}>
+    if (isTransitioning) return;
+
+    closeMobileMenuSoon(e);
+    go("/", { allowSamePath: true });
+  };
+
+  return (
+    <nav ref={navRef} className={`site-nav ${isOpen ? "nav-open" : ""}`}>
+      <button
+        type="button"
+        className="nav-mobile-header"
+        onClick={toggleMenu}
+        aria-expanded={isOpen}
+        aria-label="Toggle navigation"
+      >
         <Image
           src="/Logo_worapon.webp"
           alt="worapon.dev"
@@ -100,9 +107,20 @@ export default function Navbar() {
           priority
         />
         <p className="nav-menu-toggle">Menu</p>
-      </div>
+      </button>
 
       <div className="nav-overlay">
+        <div className="nav-brand">
+          <Link
+            href="/"
+            onClick={onBrandNav}
+            aria-label="Go to home page"
+          >
+            WORAPON.DEV
+          </Link>
+          <span>Production Web Systems</span>
+        </div>
+
         <div className="nav-items">
           <div className="nav-item">
             <Link
@@ -137,22 +155,11 @@ export default function Navbar() {
             </a>
           </div>
 
-          {/* <div className="nav-item">
-            <a
-              href="/services"
-              onClick={onNav("/services")}
-              className={isActive("/services") ? "is-active" : ""}
-              aria-current={isActive("/services") ? "page" : undefined}
-            >
-              Services
-            </a>
-          </div> */}
-
           <div className="nav-item">
             <a
               href="/contact"
               onClick={onNav("/contact")}
-              className={isActive("/contact") ? "is-active" : ""}
+              className={`nav-action ${isActive("/contact") ? "is-active" : ""}`}
               aria-current={isActive("/contact") ? "page" : undefined}
             >
               Contact

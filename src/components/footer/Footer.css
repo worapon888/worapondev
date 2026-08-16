@@ -1,658 +1,290 @@
 :root {
-  --nav-max: 36rem; /* ต้องตรงกับ nav max-width */
-  --nav-h: 2.75rem; /* nav height */
-  --nav-cut: 1rem; /* nav chamfer (bottom cut) */
-
-  /* footer frame */
-  --footer-corner: 4rem; /* มุมกรอบใหญ่ */
-  --notch-pad: 0.2rem; /* เผื่อหายใจซ้ายขวา */
-  --footer-bottom-gap: 2.5rem;
-
-  /* base */
-  --base-100: rgba(255, 255, 255, 0.95);
-  --base-200: rgba(255, 255, 255, 0.72);
+  --footer-black: #080a08;
+  --footer-panel: #11130f;
+  --footer-panel-2: #171912;
+  --footer-cream: #eeeade;
+  --footer-cream-2: #b8b2a3;
+  --footer-line: #34362d;
+  --footer-line-strong: #5d6152;
+  --footer-blue: #5d75ff;
+  --footer-blue-2: #8a9bff;
 }
 
-/* =========================
-   FOOTER LAYOUT
-========================= */
 footer {
-  position: relative;
   width: 100%;
-  height: 100svh;
-  max-height: 1200px;
-  padding: 1rem;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  overflow: hidden;
+  padding: 0;
+  color: var(--footer-cream);
+  background: var(--footer-black);
+  border-top: 4px solid var(--footer-blue);
 }
 
 footer .footer-container {
-  position: relative;
   width: 100%;
-  height: 100%;
-  max-width: 2000px;
-  filter: url("#goo");
+  margin: 0;
+  background: var(--footer-panel);
 }
 
-/* =========================
-   BACKGROUND PANEL (clip-path)
-========================= */
-footer .footer-bg-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-
-  /* THEME */
-  --panel-top: rgba(14, 26, 30, 0.62);
-  --panel-bot: rgba(8, 14, 18, 0.92);
-  --stroke: rgba(120, 255, 255, 0.12);
-  --glow: rgba(120, 255, 255, 0.22);
-
-  background: linear-gradient(180deg, var(--panel-top), var(--panel-bot));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  border: 1px solid var(--stroke);
-  box-shadow:
-    0 0 28px var(--glow),
-    inset 0 0 18px rgba(120, 255, 255, 0.08);
-
-  /* notch vars */
-  --notchOuter: calc((var(--nav-max) / 2) + var(--notch-pad));
-  --notchInner: calc(var(--notchOuter) - var(--nav-cut));
-  --notchDepth: calc(var(--nav-h) + var(--notch-pad));
-
-  /* bottom gap */
-  --footerBottom: var(--footer-bottom-gap);
-
-  clip-path: polygon(
-    var(--footer-corner) 0,
-    calc(50% - var(--notchOuter)) 0,
-    calc(50% - var(--notchInner)) var(--notchDepth),
-    calc(50% + var(--notchInner)) var(--notchDepth),
-    calc(50% + var(--notchOuter)) 0,
-    calc(100% - var(--footer-corner)) 0,
-    100% var(--footer-corner),
-    100% calc(100% - var(--footer-corner) - var(--footerBottom)),
-    calc(100% - var(--footer-corner)) calc(100% - var(--footerBottom)),
-    var(--footer-corner) calc(100% - var(--footerBottom)),
-    0 calc(100% - var(--footer-corner) - var(--footerBottom)),
-    0 var(--footer-corner)
-  );
-
-  transform: translateZ(0);
-}
-
-/* overlays: grid + scanline */
-footer .footer-bg-container::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      900px 260px at 50% 0%,
-      rgba(120, 255, 255, 0.12),
-      rgba(120, 255, 255, 0) 60%
-    ),
-    linear-gradient(to right, rgba(120, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(120, 255, 255, 0.05) 1px, transparent 1px),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.03) 0px,
-      rgba(255, 255, 255, 0.03) 1px,
-      rgba(0, 0, 0, 0) 6px,
-      rgba(0, 0, 0, 0) 10px
-    );
-
-  background-size:
-    auto,
-    64px 64px,
-    64px 64px,
-    100% 10px;
-
-  opacity: 0.55;
-  mix-blend-mode: screen;
-}
-
-/* noise + vignette */
-footer .footer-bg-container::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      1200px 700px at 50% 60%,
-      rgba(0, 0, 0, 0),
-      rgba(0, 0, 0, 0.55) 70%,
-      rgba(0, 0, 0, 0.85) 100%
-    ),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
-
-  background-size:
-    auto,
-    220px 220px;
-  opacity: 0.35;
-  mix-blend-mode: overlay;
-}
-
-/* =========================
-   CONTENT WRAP
-========================= */
 footer .footer-content {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(42rem, 0.62fr) minmax(34rem, 0.38fr);
+  min-height: 100svh;
+}
 
+footer .footer-lead {
   display: flex;
+  min-height: 0;
   flex-direction: column;
   justify-content: space-between;
-
-  padding: 6rem;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  border-right: 1px solid var(--footer-line-strong);
+  border-bottom: 1px solid var(--footer-line-strong);
+  background: var(--footer-panel);
 }
 
-footer .footer-content-meta {
-  width: 100%;
+footer .footer-about {
   display: flex;
-  gap: 1.5rem;
+  align-items: end;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  border-bottom: 1px solid var(--footer-line-strong);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--footer-line) 0,
+      var(--footer-line) 1px,
+      transparent 1px,
+      transparent 7rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--footer-line) 0,
+      var(--footer-line) 1px,
+      transparent 1px,
+      transparent 7rem
+    ),
+    var(--footer-black);
 }
 
-footer .footer-content-meta:first-child {
-  gap: 7.5rem;
-}
-
-footer .footer-content-meta:last-child {
-  align-items: flex-end;
-}
-
-/* คอลัมน์ */
-footer .footer-content-col {
-  flex: 1;
-}
-
-/* =========================
-   HEADLINE (typing)
-========================= */
-footer .footer-content-col h3 {
-  margin: 0 0 3rem 0;
-
-  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
-
+footer .footer-kicker,
+footer .footer-form,
+footer .footer-social,
+footer .footer-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  white-space: normal;
-  overflow-wrap: anywhere;
-
-  color: rgba(250, 250, 250, 0.88);
-
-  text-shadow:
-    0 0 6px rgba(34, 211, 238, 0.25),
-    0 0 18px rgba(34, 211, 238, 0.15);
-
-  /* กัน layout กระโดดระหว่าง typing */
-  min-height: calc(2 * 0.9em);
 }
 
-footer .footer-content-col h3[data-typing="1"] {
-  color: rgba(195, 195, 21, 0.92);
-  text-shadow:
-    0 0 8px rgba(195, 195, 21, 0.28),
-    0 0 18px rgba(195, 195, 21, 0.18),
-    0 0 30px rgba(34, 211, 238, 0.1);
+footer .footer-kicker,
+footer .footer-meta,
+footer .bodyCopy {
+  color: var(--footer-cream-2);
 }
 
-footer .footer-content-col h3[data-typing="0"] {
-  color: rgba(250, 250, 250, 0.88);
+footer .footer-lead h3 {
+  max-width: 11ch;
+  color: var(--footer-cream);
+  font-size: clamp(4rem, 7vw, 9rem);
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 0.86;
+  text-transform: uppercase;
 }
 
-/* cursor */
-.typing-cursor {
-  display: inline-block;
-  margin-left: 0.08em;
-  transform: translateY(0.03em);
-  color: rgba(250, 250, 250, 0.88);
-  animation: cursorBlink 0.9s steps(1) infinite;
-}
-
-@keyframes cursorBlink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-/* =========================
-   BODY COPY
-========================= */
-footer .footer-content-col .bodyCopy {
-  margin: 0 0 3rem 0;
-
-  font-size: clamp(13px, 1vw, 14px);
+footer .bodyCopy {
+  max-width: 38rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
   line-height: 1.7;
-  letter-spacing: 0.06em;
-  text-transform: none;
-
-  color: rgba(255, 255, 255, 0.68);
-  font-family: var(--font-mono);
 }
 
-/* =========================
-   SOCIALS
-========================= */
-footer .footer-socials {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-footer .footer-socials .footer-social {
-  display: inline-block;
-  margin-right: 0.3rem;
-}
-
-footer .footer-socials a {
-  margin-top: 1.25rem;
-  font-size: 11px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-  font-family: var(--font-mono);
-  text-decoration: none;
-}
-
-footer .footer-socials a:hover {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* =========================
-   FORM (input + button)
-   ✅ กัน global .footer-btn มาทับ (สาเหตุ deploy เพี้ยน)
-========================= */
 footer .footer-form {
-  display: flex;
-  align-items: center;
-  gap: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 0.36fr);
+  border: 1px solid var(--footer-line-strong);
 }
 
-/* input */
 footer .footer-form input {
-  flex: 0 1 clamp(18rem, 28vw, 26rem);
-  min-width: 14rem;
-
-  height: clamp(3rem, 4.2vh, 3.6rem);
-  padding: 0 clamp(1rem, 1.4vh, 1.4rem);
-
-  border: none;
-  outline: none;
-
-  background: #3a3a3a;
-  color: rgba(255, 255, 255, 0.9);
-
-  font-family: var(--font-mono);
+  min-width: 0;
+  border: 0;
+  border-right: 1px solid var(--footer-line-strong);
+  outline: 0;
+  background: var(--footer-black);
+  color: var(--footer-cream);
+  font: inherit;
+  padding: 1.1rem;
   text-transform: uppercase;
-
-  font-size: clamp(0.75rem, 1.1vh, 0.85rem);
-  font-weight: 500;
-  line-height: 1;
 }
 
-/* wrapper ปุ่ม */
-footer .footer-form .footer-btn {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: stretch;
+footer .footer-form input::placeholder {
+  color: var(--footer-cream-2);
 }
 
-/* ✅ LOCK: ปุ่มใน footer ต้องชนะ global .footer-btn เสมอ */
-footer .footer-form .footer-btn {
-  position: relative;
-  display: inline-flex;
+footer .footer-link,
+footer .footer-link:visited,
+footer .footer-link:active {
+  display: flex;
   align-items: center;
-  justify-content: center;
-
-  height: clamp(3rem, 4.2vh, 3.6rem) !important;
-  padding: 0 clamp(1.1rem, 1.6vh, 1.6rem) !important;
-  min-width: 0 !important;
-
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 231, 231, 0.12);
-
-  color: rgba(206, 21, 61, 0.75);
-  text-transform: uppercase;
-  letter-spacing: 0.28em;
-  font-size: 11px;
-  font-family: var(--font-mono);
-
-  overflow: hidden;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem;
+  background: var(--footer-blue);
+  color: var(--footer-black) !important;
+  font-weight: 700;
+  opacity: 1;
   text-decoration: none;
-  white-space: nowrap;
 }
 
-/* text อยู่บนสุด */
-footer .footer-form .footer-btn > *:not(.btn-line) {
-  position: relative;
-  z-index: 3;
+footer .footer-link:hover {
+  background: var(--footer-cream);
+  color: var(--footer-black) !important;
 }
 
-/* BTN-LINE */
-footer .footer-form .footer-btn .btn-line {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
+footer .footer-socials {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  background: var(--footer-cream);
+  color: var(--footer-black);
 }
 
-/* top / bottom lines */
-footer .footer-form .footer-btn::before,
-footer .footer-form .footer-btn::after {
-  content: "";
-  position: absolute;
-  height: 1px;
-  width: 60px;
-  background: rgba(206, 21, 61, 0.45);
-  transition: all 0.35s ease;
-  z-index: 2;
+footer .footer-social {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 5.5rem;
+  align-items: start;
+  gap: 0.9rem;
+  padding: 1.25rem clamp(1.25rem, 2vw, 2rem);
+  border-right: 1px solid var(--footer-black);
+  border-bottom: 1px solid var(--footer-black);
+  color: var(--footer-black) !important;
+  opacity: 1;
+  text-align: left;
+  text-decoration: none;
 }
 
-footer .footer-form .footer-btn::before {
-  top: 0;
-  left: 10%;
+footer .footer-social:nth-child(6n) {
+  border-right: 0;
 }
 
-footer .footer-form .footer-btn::after {
-  bottom: 0;
-  right: 10%;
+.footer-social:visited,
+.footer-social:active {
+  color: var(--footer-black) !important;
+  opacity: 1;
 }
 
-/* left / right lines */
-footer .footer-form .footer-btn .btn-line::before,
-footer .footer-form .footer-btn .btn-line::after {
-  content: "";
-  position: absolute;
-  width: 1px;
-  height: 18px;
-  background: rgba(206, 21, 61, 0.45);
-  transition: all 0.35s ease;
+footer .footer-social-label {
+  color: currentColor;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
-footer .footer-form .footer-btn .btn-line::before {
-  right: 0;
-  bottom: 30%;
+footer .footer-social-index {
+  color: var(--footer-blue);
+  font-weight: 700;
 }
 
-footer .footer-form .footer-btn .btn-line::after {
-  left: 0;
-  top: 30%;
+footer .footer-social:hover {
+  background: var(--footer-blue);
 }
 
-/* hover */
-footer .footer-form .footer-btn:hover {
-  color: rgba(206, 21, 61, 0.95);
-  border-color: rgba(206, 21, 61, 0.295);
+footer .footer-social:hover,
+footer .footer-social:hover .footer-social-index,
+footer .footer-social:hover .footer-social-label {
+  color: var(--footer-black) !important;
 }
 
-footer .footer-form .footer-btn:hover::before {
-  left: 0;
-  width: 20px;
-  background: rgba(206, 21, 61, 0.65);
+footer .footer-bottom {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.25fr);
+  min-height: 10rem;
+  background: var(--footer-panel-2);
 }
 
-footer .footer-form .footer-btn:hover::after {
-  right: 0;
-  width: 20px;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-footer .footer-form .footer-btn:hover .btn-line::before {
-  bottom: 0;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-footer .footer-form .footer-btn:hover .btn-line::after {
-  top: 0;
-  background: rgba(206, 21, 61, 0.65);
-}
-
-/* =========================
-   BOTTOM META (ให้ตรง JSX จริง)
-   JSX บรรทัดล่างคือ .footer-content-meta (อันที่ 2)
-========================= */
-footer .footer-content-meta:last-child .footer-content-col:first-child {
+footer .footer-meta {
   display: flex;
-  gap: 1.5rem;
-}
-
-footer .footer-content-meta:last-child .footer-content-col:first-child p {
-  margin: 0;
-  flex: 1;
-  font-size: 11px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42);
-  font-family: var(--font-mono);
-  line-height: 1.4;
-}
-
-footer
-  .footer-content-meta:last-child
-  .footer-content-col:first-child
-  p:nth-child(2) {
-  color: rgba(255, 255, 255, 0.42);
-}
-
-/* โลโก้ขวาล่าง */
-footer .footer-brand-wrap {
-  display: flex;
-  justify-content: flex-end;
+  align-items: end;
+  gap: 2rem;
+  padding: clamp(1.25rem, 2vw, 2rem);
 }
 
 footer .footer-brand {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 0.85;
-  text-transform: uppercase;
-  margin: 0;
-
-  font-family: var(--font-display), sans-serif;
-  font-weight: 900;
-  letter-spacing: -0.05em;
+  align-items: end;
+  justify-content: end;
+  padding: clamp(1.25rem, 2vw, 2rem);
+  border-left: 1px solid var(--footer-line-strong);
 }
 
-/* ===============================
-   RESPONSIVE
-================================ */
-
-/* กัน content แน่นเกินบนจอเตี้ย */
-@media (max-height: 760px) {
-  footer {
-    height: auto;
-    min-height: 100svh;
-  }
+footer .footer-brand img {
+  width: min(220px, 100%);
+  height: auto;
 }
 
-/* <= 1200px */
-@media (max-width: 1200px) {
-  footer .footer-content {
-    padding: clamp(2.5rem, 4vw, 4rem);
-  }
-
-  footer .footer-content-meta:first-child {
-    gap: clamp(2.5rem, 5vw, 5rem);
-  }
-
-  footer .footer-content-col h3,
-  footer .footer-content-col .bodyCopy {
-    margin-bottom: clamp(1.25rem, 2.5vw, 2.5rem);
-  }
-}
-
-/* <= 1000px */
-@media (max-width: 1000px) {
-  footer .footer-bg-container {
-    clip-path: none;
-  }
-
-  footer .footer-content {
-    padding: 6rem 1rem 2rem 1rem;
-    position: relative;
-  }
-
-  footer .footer-content-meta {
-    flex-direction: column;
-  }
-
-  footer .footer-content-meta:first-child {
-    gap: 3rem;
-  }
-
-  footer .footer-content-col h3 {
-    margin-bottom: 1.5rem;
-  }
-
-  /* ซ่อน bodyCopy ด้านขวาบนจอเล็ก (เหมือนเดิม) */
-  footer .footer-content-meta:first-child .bodyCopy {
-    display: none;
-  }
-
-  /* บรรทัดล่าง: ให้เรียงสวย */
-  footer .footer-content-meta:last-child {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-  }
-
-  footer .footer-brand-wrap {
-    justify-content: flex-start;
-  }
-
-  footer .footer-content-meta:last-child .footer-content-col:first-child {
-    flex-direction: column-reverse;
-    gap: 0.25rem;
-  }
-}
-
-/* <= 900px */
 @media (max-width: 900px) {
   footer {
-    height: auto;
-    min-height: 100svh;
-    padding: 0.5rem;
+    padding: 0;
   }
 
-  footer .footer-bg-container {
-    --notchDepth: 2.5rem;
+  footer .footer-content,
+  footer .footer-bottom {
+    grid-template-columns: 1fr;
+    min-height: auto;
   }
 
-  footer .footer-content {
-    padding: 5rem 1.5rem 3rem 1.5rem;
+  footer .footer-lead {
+    min-height: 32rem;
+    border-right: 0;
   }
 
-  footer .footer-content-col h3 {
-    font-size: clamp(2rem, 8vw, 3rem);
-  }
-
-  footer .footer-form {
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
+  footer .footer-form,
+  footer .footer-socials {
+    grid-template-columns: 1fr;
   }
 
   footer .footer-form input {
-    width: 100%;
-    flex: none;
-    min-width: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--footer-line-strong);
   }
 
-  footer .footer-form .btn,
-  footer .footer-form .footer-btn {
-    width: 100%;
-  }
-
-  /* touch target หนาขึ้น */
-  footer .footer-form input,
-  footer .footer-form .footer-btn {
-    height: 4.2rem !important;
-    font-size: 0.9rem;
-    border-radius: 4px;
-  }
-
-  footer .footer-form .footer-btn {
-    letter-spacing: 0.35em;
-    box-shadow: 0 0 15px rgba(206, 21, 61, 0.2);
-  }
-
-  footer .footer-form .footer-btn:active {
-    transform: scale(0.98);
-    transition: 0.1s;
+  footer .footer-social,
+  footer .footer-social:nth-child(6n) {
+    border-right: 0;
   }
 
   footer .footer-brand {
-    align-items: flex-start;
-    margin-top: 2rem;
+    justify-content: start;
+    border-left: 0;
+    border-top: 1px solid var(--footer-line-strong);
+  }
+
+  footer .footer-meta {
+    align-items: start;
+    flex-direction: column;
   }
 }
 
-/* <= 600px */
-@media (max-width: 600px) {
-  footer .footer-bg-container {
-    clip-path: none;
-    border-radius: 2rem;
-  }
-
-  footer .footer-content {
-    padding: 3rem 1.25rem 2rem 1.25rem;
-  }
-
+@media (min-width: 901px) and (max-width: 1200px) {
   footer .footer-socials {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  footer .footer-socials .footer-social {
-    margin: 0;
+  footer .footer-social:nth-child(6n) {
+    border-right: 1px solid var(--footer-black);
   }
 
-  footer .footer-socials a {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-  }
-
-  footer .footer-brand img {
-    width: 180px;
-    height: auto;
+  footer .footer-social:nth-child(3n) {
+    border-right: 0;
   }
 }
 
-/* จอเตี้ยมาก */
-@media (max-height: 500px) {
-  footer {
-    height: auto;
-    padding: 2rem 0;
-  }
-
-  footer .footer-content {
-    position: relative;
-  }
-}
-
-/* ultra wide */
-@media (min-width: 2000px) {
-  footer .footer-content {
-    padding: 8rem 10rem;
+@media (max-width: 560px) {
+  footer .footer-lead,
+  footer .footer-about,
+  footer .footer-social,
+  footer .footer-meta,
+  footer .footer-brand {
+    padding: 1rem;
   }
 }

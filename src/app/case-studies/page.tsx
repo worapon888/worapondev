@@ -468,37 +468,51 @@ export default function CaseStudiesPage() {
         </div>
       </div>
 
-      <div className="cs-page-intro">
-        <p className="cs-kicker">Projects & Systems</p>
-        <h1 className="cs-heading">Case Studies</h1>
-        <p className="cs-intro-copy">
-          A selection of full-stack products, frontend systems, and digital
-          experiences — presented through their purpose, structure, and
-          problem-solving value.
-        </p>
-      </div>
-
-      <div className="cs-reading-rail" aria-live="polite">
-        <div className="cs-reading-meta">
-          <p className="cs-reading-label">Now Viewing</p>
-          <p className="cs-reading-count">
-            {activeNumber} / {totalSlides}
+      <div className="cs-shell">
+        <div className="cs-page-intro">
+          <p className="cs-kicker">Projects & Systems</p>
+          <h1 className="cs-heading">Case Studies</h1>
+          <p className="cs-intro-copy">
+            A selection of full-stack products, frontend systems, and digital
+            experiences — presented through their purpose, structure, and
+            problem-solving value.
           </p>
         </div>
 
-        <div className="cs-reading-card">
-          <p className="cs-reading-tag">{activeSlide.tag}</p>
-          <h2 className="cs-reading-title">{activeSlide.title}</h2>
-          <div className="cs-reading-desc">{activeSlide.desc}</div>
+        <div className="cs-reading-rail" aria-live="polite">
+          <div className="cs-reading-meta">
+            <p className="cs-reading-label">Now Viewing</p>
+            <p className="cs-reading-count">
+              {activeNumber} / {totalSlides}
+            </p>
+          </div>
+
+          <ol className="cs-progress-list" aria-label="Case study sequence">
+            {slideData.map((slide, index) => (
+              <li
+                className={index === activeIndex ? "is-active" : undefined}
+                key={slide.title}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <p>{slide.title}</p>
+              </li>
+            ))}
+          </ol>
+
+          <div className="cs-reading-card">
+            <p className="cs-reading-tag">{activeSlide.tag}</p>
+            <h2 className="cs-reading-title">{activeSlide.title}</h2>
+            <div className="cs-reading-desc">{activeSlide.desc}</div>
+          </div>
+
+          <p className="cs-reading-hint">
+            Scroll or swipe to move through the work.
+          </p>
         </div>
 
-        <p className="cs-reading-hint">
-          Scroll or swipe to move through the work.
-        </p>
-      </div>
-
-      <div className="cs-slider-wrap">
-        <div className="cs-slider" ref={sliderRef} />
+        <div className="cs-slider-wrap">
+          <div className="cs-slider" ref={sliderRef} />
+        </div>
       </div>
     </section>
   );

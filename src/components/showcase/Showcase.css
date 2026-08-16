@@ -1,89 +1,263 @@
-/* ============================================================
-   SHOWCASE SECTION STYLES
-   ============================================================ */
 :root {
-  --cyan-glow: rgba(34, 211, 238, 0.3);
-  --text-main: rgba(250, 250, 250, 0.9);
+  --showcase-black: #080a08;
+  --showcase-panel: #11130f;
+  --showcase-panel-2: #171912;
+  --showcase-cream: #eeeade;
+  --showcase-cream-2: #b8b2a3;
+  --showcase-line: #34362d;
+  --showcase-line-strong: #5d6152;
+  --showcase-blue: #5d75ff;
+  --showcase-blue-2: #8a9bff;
+}
+
+.showcase-section {
+  padding: 7rem 1rem 7.5rem;
+  color: var(--showcase-cream);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--showcase-line) 0,
+      var(--showcase-line) 1px,
+      var(--showcase-black) 1px,
+      var(--showcase-black) 7rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--showcase-line) 0,
+      var(--showcase-line) 1px,
+      var(--showcase-black) 1px,
+      var(--showcase-black) 7rem
+    );
+  background-blend-mode: lighten;
+  border-top: 4px solid var(--showcase-blue);
+  border-bottom: 1px solid var(--showcase-line-strong);
+}
+
+.showcase-shell {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  border-left: 1px solid var(--showcase-line-strong);
+  border-right: 1px solid var(--showcase-line-strong);
+  background: var(--showcase-black);
+}
+
+.showcase-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  min-height: 27rem;
+  border-bottom: 1px solid var(--showcase-line-strong);
+}
+
+.showcase-status {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.4rem;
+  border-right: 1px solid var(--showcase-line-strong);
+  background: var(--showcase-panel);
+}
+
+.showcase-status p,
+.showcase-card-meta,
+.showcase-link {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.showcase-status p:first-child {
+  color: var(--showcase-cream-2);
+}
+
+.showcase-status p:last-child {
+  color: var(--showcase-blue-2);
+}
+
+.showcase-heading-grid {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.4rem;
+  background: var(--showcase-cream);
+  color: var(--showcase-black);
 }
 
 .showcase-header {
-  /* ปรับขนาด Font ให้ลื่นไหลตามจอ: Min 1.8rem, Max 4.2rem */
-  font-size: clamp(1.8rem, 5vw + 1rem, 4.2rem);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  line-height: 1.1;
+  max-width: 9ch;
+  font-size: clamp(3.35rem, 8vw, 7.4rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 0.78;
   text-transform: uppercase;
-  color: var(--text-main);
-  text-align: center;
-  max-width: 90%;
-  margin: 0 auto;
-
-  /* เพิ่มมิติด้วย Glow effect */
-  text-shadow:
-    0 0 12px var(--cyan-glow),
-    0 0 24px rgba(34, 211, 238, 0.1);
 }
 
-/* Projects Grid: 
-   ใช้ padding เยอะหน่อยเพื่อให้ 3D Pin Container มีพื้นที่เอียง (Perspective) 
-*/
-.projects-grid {
+.showcase-header span {
+  display: block;
+  color: var(--showcase-blue);
+}
+
+.showcase-subtitle {
+  max-width: 34rem;
+  color: #20231d;
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.showcase-projects {
   display: grid;
-  /* ปรับคอลัมน์อัตโนมัติ: ขั้นต่ำ 280px ต่อใบ */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 5rem 2rem;
-  padding: 4rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  /* สำคัญ: ปล่อยให้เห็น 3D Pin ที่ล้นออกมาตอน Hover */
-  overflow: visible;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-/* SVG Background Wrapper */
-.svg-wrap-container {
-  position: absolute;
-  inset: 0;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: -1;
+.showcase-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100%;
   overflow: hidden;
+  border-bottom: 1px solid var(--showcase-line-strong);
+  background: var(--showcase-panel);
 }
 
-/* ============================================================
-   RESPONSIVE ADJUSTMENTS (Fine-Tuning)
-   ============================================================ */
+.showcase-card:nth-child(odd) {
+  border-right: 1px solid var(--showcase-line-strong);
+}
 
-/* Mobile Portrait (ต่ำกว่า 640px) */
-@media (max-width: 639px) {
-  .projects-grid {
-    gap: 6rem 1rem; /* เพิ่ม gap แนวตั้งเพราะ Pin มีหาง (Tail) */
-    padding: 2rem 1.5rem;
+.showcase-card:nth-child(4n + 2),
+.showcase-card:nth-child(4n + 3) {
+  background: var(--showcase-panel-2);
+}
+
+.showcase-card:hover .showcase-copy {
+  background: var(--showcase-blue);
+  color: var(--showcase-black);
+}
+
+.showcase-card:hover .showcase-card-meta,
+.showcase-card:hover .showcase-copy p,
+.showcase-card:hover .showcase-link {
+  color: var(--showcase-black);
+}
+
+.showcase-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid var(--showcase-line-strong);
+  background: #000000;
+}
+
+.showcase-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.18);
+}
+
+.showcase-copy {
+  display: flex;
+  min-height: 17rem;
+  flex-direction: column;
+  padding: 1.3rem;
+  color: var(--showcase-cream);
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.showcase-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--showcase-cream-2);
+}
+
+.showcase-copy h3 {
+  margin-top: 1.45rem;
+  color: currentColor;
+  font-size: clamp(1.45rem, 2.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.showcase-copy p {
+  margin-top: 1rem;
+  color: var(--showcase-cream-2);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.showcase-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: fit-content;
+  margin-top: auto;
+  padding-top: 1.75rem;
+  color: var(--showcase-blue-2);
+}
+
+.showcase-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+@media (max-width: 900px) {
+  .showcase-section {
+    padding: 5rem 0.9rem 6rem;
   }
 
-  .showcase-header {
-    letter-spacing: 0.05em; /* ลดระยะห่างตัวอักษรบนจอเล็กเพื่อไม่ให้ตัดคำแปลกๆ */
+  .showcase-heading,
+  .showcase-projects {
+    grid-template-columns: 1fr;
+  }
+
+  .showcase-heading {
+    min-height: 0;
+  }
+
+  .showcase-status {
+    min-height: 10rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--showcase-line-strong);
+  }
+
+  .showcase-heading-grid {
+    min-height: 20rem;
+  }
+
+  .showcase-card:nth-child(odd) {
+    border-right: 0;
   }
 }
 
-/* Tablet & Small Laptop (768px - 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 4rem 2.5rem;
+@media (max-width: 560px) {
+  .showcase-section {
+    padding-inline: 0;
   }
-}
 
-/* ปิด Animation สำหรับผู้ใช้ที่ตั้งค่า Reduce Motion */
-@media (prefers-reduced-motion: reduce) {
-  .showcase-header {
-    text-shadow: none;
+  .showcase-shell {
+    border-left: 0;
+    border-right: 0;
   }
-}
-@media (max-width: 768px) {
-  svg filter {
-    display: none;
-  } /* ปิดฟิลเตอร์ในจอเล็ก */
-  .showcase-svg-inner {
-    opacity: 0;
+
+  .showcase-status,
+  .showcase-heading-grid,
+  .showcase-copy {
+    padding: 1rem;
+  }
+
+  .showcase-card-meta {
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .showcase-copy {
+    min-height: 0;
   }
 }

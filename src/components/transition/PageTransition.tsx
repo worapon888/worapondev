@@ -11,7 +11,7 @@ import { usePathname, useRouter } from "next/navigation";
 import BlocksTransition from "./BlocksTransition";
 
 interface TransitionContextType {
-  go: (href: string) => void;
+  go: (href: string, options?: { allowSamePath?: boolean }) => void;
   isTransitioning: boolean;
 }
 
@@ -28,16 +28,21 @@ export function PageTransitionProvider({
 
   // ใช้ useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ซ้ำๆ
   const go = useCallback(
-    (href: string) => {
-      if (isTransitioning || href === pathname) return;
+    (href: string, options?: { allowSamePath?: boolean }) => {
+      if (isTransitioning) return;
+      if (href === pathname && !options?.allowSamePath) return;
 
       // เริ่ม Transition และสั่งเปลี่ยนเส้นทางพร้อมกัน
       // React 18 จัดการเรื่องลำดับการอัปเดตได้ดีเยี่ยมโดยไม่ต้องใช้ flushSync
       setIsTransitioning(true);
-      router.push(href);
+      if (href !== pathname) router.push(href);
     },
     [isTransitioning, pathname, router],
   );
+
+  const handleTransitionDone = useCallback(() => {
+    setIsTransitioning(false);
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -54,7 +59,7 @@ export function PageTransitionProvider({
       <BlocksTransition
         enabled={isTransitioning}
         blockSize={60}
-        onDone={() => setIsTransitioning(false)}
+        onDone={handleTransitionDone}
       />
     </PageTransitionContext.Provider>
   );

@@ -1,297 +1,379 @@
-/* ============================================================
-   1. CORE VARIABLES & SETUP
-   ============================================================ */
 :root {
-  /* Colors */
-  --neon-cyan: 0, 242, 255;
-  --neon-purple: 124, 58, 237;
-  --neon-core: 217, 255, 255;
-
-  /* Effects Settings */
-  --neon-strength: 1.5;
-  --hero-font-size: clamp(2rem, 8vw, 5rem);
-
-  /* Hardware Acceleration Class */
-  --gpu-boost: translateZ(0);
+  --hero-black: #080a08;
+  --hero-panel: #11130f;
+  --hero-panel-2: #171912;
+  --hero-cream: #eeeade;
+  --hero-cream-2: #b8b2a3;
+  --hero-line: #34362d;
+  --hero-line-strong: #5d6152;
+  --hero-blue: #5d75ff;
+  --hero-blue-2: #8a9bff;
 }
 
-/* Base resets for stability */
 body {
   overflow-x: hidden;
   width: 100%;
 }
 
-/* ============================================================
-   2. HERO TEXT SYSTEM (Spacing & Jitter Fix)
-   ============================================================ */
+.hero {
+  min-height: 100svh;
+  padding: 0;
+  color: var(--hero-cream);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--hero-line) 0,
+      var(--hero-line) 1px,
+      var(--hero-black) 1px,
+      var(--hero-black) 7rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--hero-line) 0,
+      var(--hero-line) 1px,
+      var(--hero-black) 1px,
+      var(--hero-black) 7rem
+    );
+  background-blend-mode: lighten;
+  border-top: 4px solid var(--hero-blue);
+}
+
+.hero-shell {
+  display: grid;
+  grid-template-columns: minmax(20rem, 0.26fr) minmax(0, 0.74fr);
+  width: 100%;
+  min-height: 100svh;
+  margin: 0;
+  border-left: 0;
+  background: var(--hero-black);
+}
+
+.hero-rail {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  grid-row: span 2;
+  padding: clamp(1.25rem, 2vw, 2rem);
+  border-right: 1px solid var(--hero-line-strong);
+  border-bottom: 1px solid var(--hero-line-strong);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--hero-line) 0,
+      var(--hero-line) 1px,
+      transparent 1px,
+      transparent 7rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--hero-line) 0,
+      var(--hero-line) 1px,
+      transparent 1px,
+      transparent 7rem
+    ),
+    var(--hero-panel);
+}
+
+.hero-stage {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+
+.hero-main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: calc(100svh - 13.25rem);
+  border-right: 1px solid var(--hero-line-strong);
+  border-bottom: 1px solid var(--hero-line-strong);
+  background: var(--hero-cream);
+  color: var(--hero-black);
+}
+
+.hero-main-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem clamp(1.5rem, 3vw, 3rem);
+  border-bottom: 1px solid var(--hero-line-strong);
+  color: #20231d;
+}
+
+.hero-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.34fr);
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  column-gap: clamp(2rem, 4vw, 5rem);
+  row-gap: 1.5rem;
+  padding: clamp(3.5rem, 8vh, 6.5rem) clamp(1.5rem, 3.6vw, 4rem)
+    clamp(2rem, 4vh, 3.25rem);
+}
+
 .hero-heading {
+  position: relative;
+  grid-column: 1 / -1;
+  max-width: 9.6ch;
+  font-size: clamp(4.8rem, 9.2vw, 11rem);
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+
+.hero-heading span span,
+.hero-heading-live span {
+  display: block;
+  color: var(--hero-blue);
+}
+
+.hero-heading-measure {
+  display: block;
   visibility: hidden;
-  display: block;
-  width: 100%;
-  text-align: center;
-  font-size: var(--hero-font-size);
-  font-kerning: none;
-  font-feature-settings:
-    "kern" 0,
-    "liga" 0;
-  transform: var(--gpu-boost);
-}
-
-.hero-line {
-  display: block;
-  height: 1.1em;
-  line-height: 1.1;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.hero-char {
-  position: relative;
-  display: inline-block;
-  white-space: pre;
-  will-change: transform;
-}
-
-.hero-char::before {
-  content: attr(data-char);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  text-align: inherit;
-  transform: translateY(-103%);
   pointer-events: none;
 }
 
-.hero-char[data-skip="1"]::before {
-  content: "";
-}
-.hero-real {
-  display: inline-block;
-}
-.hero-ghost {
+.hero-heading-live {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  display: block;
 }
 
-/* ============================================================
-   3. NEON COMPONENTS (Cyan & Purple)
-   ============================================================ */
-.neon-text {
-  position: relative;
-  color: rgb(var(--neon-core));
-  text-shadow:
-    0 0 1px rgba(var(--neon-core), calc(0.55 * var(--neon-strength))),
-    0 0 6px rgba(var(--neon-cyan), calc(0.4 * var(--neon-strength))),
-    0 0 14px rgba(var(--neon-cyan), calc(0.22 * var(--neon-strength)));
-  filter: brightness(1.12) saturate(1.05);
+.hero-typing-cursor {
+  display: inline-block !important;
+  margin-left: 0.04em;
+  color: var(--hero-blue);
+  animation: hero-cursor-blink 1s step-end infinite;
 }
 
-.neon-text::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  color: transparent;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(230, 255, 255, 0.72) 35%,
-    rgba(0, 242, 255, 0.35) 70%,
-    rgba(0, 242, 255, 0.18) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: blur(0.55px);
-  opacity: calc(0.28 * var(--neon-strength));
-  pointer-events: none;
-}
-
-.neon-purple {
-  color: rgb(200, 182, 255);
-  text-shadow:
-    0 0 1px rgba(233, 213, 255, calc(0.45 * var(--neon-strength))),
-    0 0 6px rgba(167, 139, 250, calc(0.32 * var(--neon-strength))),
-    0 0 14px rgba(var(--neon-purple), calc(0.18 * var(--neon-strength)));
-  filter: brightness(1.1) saturate(1.06);
-}
-
-/* ============================================================
-   4. INTERACTIVE & DECORATIVE
-   ============================================================ */
-.neon-btn {
-  animation: neon-breathe 3.5s ease-in-out infinite;
-  transform: var(--gpu-boost);
-}
-
-.neon-line {
-  position: relative;
-  height: 2px;
-  width: min(90%, 800px);
-  margin-inline: auto;
-  border-radius: 999px;
-  overflow: hidden;
-  background: linear-gradient(
-    to left,
-    transparent,
-    rgba(34, 211, 238, 0.75),
-    transparent
-  );
-  filter: blur(0.5px);
-  opacity: 0.85;
-  box-shadow:
-    0 0 8px rgba(192, 132, 252, 0.75),
-    0 0 18px rgba(147, 51, 234, 0.65);
-}
-
-.neon-line::after {
-  content: "";
-  position: absolute;
-  inset: -50% -30%;
-  width: 35%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(192, 132, 252, 0.95),
-    rgba(147, 51, 234, 0.85),
-    rgba(192, 132, 252, 0.95)
-  );
-  filter: blur(0.9px);
-  animation: neon-flow 3.2s linear infinite;
-}
-
-/* ============================================================
-   5. ANIMATIONS (Keyframes)
-   ============================================================ */
-@keyframes neon-breathe {
-  0%,
-  100% {
-    box-shadow:
-      inset 0 0 8px rgba(34, 211, 238, 0.15),
-      0 0 12px rgba(34, 211, 238, 0.25);
-  }
+@keyframes hero-cursor-blink {
   50% {
-    box-shadow:
-      inset 0 0 12px rgba(34, 211, 238, 0.25),
-      0 0 22px rgba(34, 211, 238, 0.45);
-  }
-}
-
-@keyframes neon-flow {
-  0% {
-    transform: translateX(-120%);
-    opacity: 0;
-  }
-  10%,
-  90% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateX(420%);
     opacity: 0;
   }
 }
 
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.hero-subtitle {
+  grid-column: 1;
+  max-width: 52rem;
+  color: #20231d;
+  font-size: clamp(1rem, 1.25vw, 1.16rem);
+  font-weight: 550;
+  line-height: 1.5;
 }
 
-.animate-spin-slow {
-  animation: spin-slow 30s linear infinite;
+.hero-proof-grid {
+  display: grid;
+  grid-column: 2;
+  gap: 0;
+  align-self: stretch;
+  border: 1px solid var(--hero-line-strong);
+  background: var(--hero-black);
 }
 
-/* ============================================================
-   6. PRELOAD & RESPONSIVE
-   ============================================================ */
-.hero--preload
-  :is(.hero-heading, p, a, .neon-line, .brand-hud, [class*="system-"]) {
-  opacity: 0;
-  visibility: hidden;
+.hero-proof-grid p {
+  display: flex;
+  align-items: center;
+  min-height: 3.7rem;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--hero-line-strong);
+  color: var(--hero-blue-2);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-@media (max-width: 640px) {
-  :root {
-    --neon-strength: 1.2;
+.hero-proof-grid p:last-child {
+  border-bottom: 0;
+}
+
+.hero-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.48fr);
+  width: 100%;
+  margin-top: -1px;
+  border-right: 1px solid var(--hero-line-strong);
+  border-bottom: 1px solid var(--hero-line-strong);
+  background: var(--hero-cream);
+}
+
+.hero-actions a {
+  display: flex;
+  min-height: 4.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.3rem clamp(1.5rem, 3vw, 3rem);
+  color: var(--hero-black);
+}
+
+.hero-primary {
+  border-right: 1px solid var(--hero-line-strong);
+  background: var(--hero-blue);
+}
+
+.hero-secondary {
+  background: var(--hero-cream);
+}
+
+.hero-actions a:hover {
+  background: var(--hero-black);
+  color: var(--hero-cream);
+}
+
+.hero-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.38fr);
+  width: 100%;
+  min-height: 8.25rem;
+  border-right: 1px solid var(--hero-line-strong);
+  border-bottom: 1px solid var(--hero-line-strong);
+  background: var(--hero-panel-2);
+}
+
+.hero-footer > div,
+.hero-availability {
+  padding: 1.4rem clamp(1.5rem, 3vw, 3rem);
+}
+
+.hero-footer > div {
+  border-right: 1px solid var(--hero-line-strong);
+}
+
+.hero-rail-label,
+.hero-rail-bottom,
+.hero-main-top,
+.hero-actions,
+.hero-footer-label,
+.hero-availability {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-rail-label,
+.hero-rail-bottom,
+.hero-footer-label,
+.hero-availability {
+  color: var(--hero-cream-2);
+}
+
+.hero-brand {
+  margin-top: 1.4rem;
+  color: var(--hero-blue-2);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.hero-rail-bottom {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.hero-footer p:not(.hero-footer-label):not(.hero-availability) {
+  margin-top: 1rem;
+  max-width: 42rem;
+  color: var(--hero-cream-2);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.hero-availability {
+  display: flex;
+  align-items: end;
+  color: var(--hero-blue-2);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    padding: 0;
   }
-  .hero-line {
-    height: 1.3em;
-    line-height: 1.3;
+
+  .hero-shell {
+    grid-template-columns: 1fr;
+    min-height: auto;
   }
-  .neon-btn {
-    padding: 12px 24px;
+
+  .hero-rail {
+    min-height: 11rem;
+    grid-row: auto;
+    border-right: 0;
+  }
+
+  .hero-main {
+    min-height: 38rem;
+    border-right: 0;
+  }
+
+  .hero-copy {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-heading,
+  .hero-subtitle,
+  .hero-proof-grid {
+    grid-column: 1;
+  }
+
+  .hero-actions {
     width: 100%;
-    max-width: 280px;
+    border-right: 0;
   }
-  .animate-spin-slow {
-    animation-duration: 45s;
+
+  .hero-footer {
+    grid-template-columns: 1fr;
+    border-right: 0;
+  }
+
+  .hero-footer > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--hero-line-strong);
   }
 }
-/* =========================
-   Laptop (MacBook) tuning
 
-   ========================= */
-@media (min-width: 1024px) and (max-width: 1536px) and (max-height: 950px) {
-  /* ลดความ “ซูม” ของตัวหัวข้อ + spacing */
-  .hero .hero-heading {
-    font-size: clamp(3.2rem, 6.2vw, 6.2rem) !important;
-    letter-spacing: 0.08em !important;
+@media (max-width: 560px) {
+  .hero {
+    padding-inline: 0;
   }
 
-  .hero .neon-line {
-    margin-top: 1.1rem !important;
-    width: min(80%, 720px) !important;
+  .hero-shell {
+    border-left: 0;
   }
 
-  /* ดึงคอนเทนต์กลับขึ้นนิดเดียว (กันดูต่ำ/แน่น) */
-  .hero .hero-main {
-    transform: translateY(-3.2vh) !important;
-  }
-  .paragraph-subtle {
-    font-size: 13px;
-    line-height: 1.45;
-  }
-  .paragraph-able {
-    font-size: 8px;
-    line-height: 1.55;
-  }
-  .all-btn {
-    margin-top: 1rem;
-    column-gap: 0.7rem;
-  }
-  .neon-btn,
-  .btn-opacity {
-    font-size: 10px;
-    padding: 12px 24px;
-  }
-  /* ลดระยะปุ่มให้ดู “หายใจ” แบบ desktop */
-  .hero .hero-cta {
-    margin-top: 2rem !important;
-    gap: 2rem !important;
-    font-size: 9px;
+  .hero-rail,
+  .hero-main-top,
+  .hero-copy,
+  .hero-actions a,
+  .hero-footer > div,
+  .hero-availability {
+    padding: 1rem;
   }
 
-  /* HUD ไม่ต้องชิดบนเกินไปบนจอเตี้ย */
-  .hero .brand-hud {
-    top: 2.5rem !important;
+  .hero-main-top,
+  .hero-actions {
+    grid-template-columns: 1fr;
   }
 
-  /* กล่องล่างสองข้างไม่ให้ขึ้นมาชนกลาง */
-  .hero .system-log,
-  .hero .system-status {
-    bottom: 7rem !important;
-    opacity: 0.9;
-    font-size: 9px;
+  .hero-heading {
+    font-size: clamp(3.35rem, 15vw, 5rem);
   }
-  .title-bud {
-    font-size: 11px;
+
+  .hero-main-top {
+    display: grid;
   }
-  ,
-  .subtitle-bud {
-    font-size: 7px;
+
+  .hero-primary {
+    border-right: 0;
+    border-bottom: 1px solid var(--hero-line-strong);
+  }
+
+  .hero-actions a {
+    min-height: 4.35rem;
   }
 }

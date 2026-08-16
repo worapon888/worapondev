@@ -1,285 +1,102 @@
 "use client";
+
 import "./Cta.css";
 
-import React, { useLayoutEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useTypewriterLoop } from "@/app/contact/hooks/useTypewriterLoop";
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
-
-type SplitTextInstance = {
-  lines?: HTMLElement[];
-  revert: () => void;
-};
+const ctaImages = [
+  "/index/cta_img_01.webp",
+  "/index/cta_img_02.webp",
+  "/index/cta_img_03.webp",
+  "/index/cta_img_04.webp",
+  "/index/cta_img_05.webp",
+  "/index/cta_img_06.webp",
+];
 
 export default function CtaSection() {
-  const rootRef = useRef<HTMLElement | null>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [prefersReduced, setPrefersReduced] = useState(false);
+  const ctaTitle = useMemo(
+    () =>
+      "Have a product, platform, or website idea? Let’s build something production-ready, reliable, and designed to work in the real world.",
+    [],
+  );
 
-  useLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
+  useEffect(() => {
+    setIsActive(true);
 
-    let split: SplitTextInstance | null = null;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReduced(mq.matches);
 
-    const ctx = gsap.context(() => {
-      const logo = root.querySelector(".cta-logo") as HTMLElement | null;
-      const copyText = root.querySelector(
-        ".cta-copy .bodyCopy",
-      ) as HTMLElement | null;
-
-      const btn = root.querySelector(
-        ".cta-content .btn a.btn",
-      ) as HTMLElement | null;
-
-      const rows = Array.from(
-        root.querySelectorAll(".cta-row"),
-      ) as HTMLElement[];
-
-      const prefersReduced =
-        typeof window !== "undefined" &&
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      const run = async () => {
-        if (document?.fonts?.ready) {
-          try {
-            await document.fonts.ready;
-          } catch {}
-        }
-
-        if (copyText) {
-          split = SplitText.create(copyText, {
-            type: "lines",
-            linesClass: "line",
-          }) as unknown as SplitTextInstance;
-
-          split.lines?.forEach((line) => {
-            const mask = document.createElement("div");
-            mask.className = "line-mask";
-            line.parentNode?.insertBefore(mask, line);
-            mask.appendChild(line);
-          });
-
-          gsap.set(split.lines ?? [], { yPercent: 100 });
-
-          gsap.to(split.lines ?? [], {
-            yPercent: 0,
-            duration: prefersReduced ? 0 : 0.5,
-            ease: "power1.out",
-            stagger: prefersReduced ? 0 : 0.1,
-            scrollTrigger: {
-              trigger: root,
-              start: "top 25%",
-              toggleActions: "play reverse play reverse",
-            },
-          });
-        }
-
-        if (logo) {
-          gsap.set(logo, { scale: 0 });
-          gsap.to(logo, {
-            scale: 1,
-            duration: prefersReduced ? 0 : 0.5,
-            ease: "power1.out",
-            scrollTrigger: {
-              trigger: root,
-              start: "top 25%",
-              toggleActions: "play reverse play reverse",
-            },
-          });
-        }
-
-        if (btn) {
-          gsap.set(btn, { y: 25, opacity: 0 });
-          gsap.to(btn, {
-            y: 0,
-            opacity: 1,
-            duration: prefersReduced ? 0 : 0.5,
-            ease: "power1.out",
-            delay: prefersReduced ? 0 : 0.3,
-            scrollTrigger: {
-              trigger: root,
-              start: "top 25%",
-              toggleActions: "play reverse play reverse",
-            },
-          });
-        }
-
-        const leftXValues = [-800, -900, -400];
-        const rightXValues = [800, 900, 400];
-        const leftRotationValues = [-30, -20, -35];
-        const rightRotationValues = [30, 20, 35];
-        const yValues = [100, -150, -400];
-
-        rows.forEach((row, index) => {
-          const cardLeft = row.querySelector(
-            ".cta-card-left",
-          ) as HTMLElement | null;
-          const cardRight = row.querySelector(
-            ".cta-card-right",
-          ) as HTMLElement | null;
-          if (!cardLeft || !cardRight) return;
-
-          const i = Math.min(index, leftXValues.length - 1);
-          gsap.set([cardLeft, cardRight], { clearProps: "transform" });
-
-          ScrollTrigger.create({
-            trigger: root,
-            start: "top center",
-            end: "150% bottom",
-            scrub: prefersReduced ? false : true,
-            onUpdate: (self) => {
-              const p = self.progress;
-
-              cardLeft.style.transform = `translateX(${p * leftXValues[i]}px) translateY(${
-                p * yValues[i]
-              }px) rotate(${p * leftRotationValues[i]}deg)`;
-
-              cardRight.style.transform = `translateX(${p * rightXValues[i]}px) translateY(${
-                p * yValues[i]
-              }px) rotate(${p * rightRotationValues[i]}deg)`;
-            },
-          });
-        });
-
-        ScrollTrigger.refresh();
-      };
-
-      run();
-
-      const onLoad = () => ScrollTrigger.refresh();
-      window.addEventListener("load", onLoad);
-
-      return () => window.removeEventListener("load", onLoad);
-    }, root);
-
-    return () => {
-      try {
-        split?.revert();
-      } catch {}
-      ctx.revert();
-      ScrollTrigger.refresh();
+    const onChange = (event: MediaQueryListEvent) => {
+      setPrefersReduced(event.matches);
     };
+
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
+  const typedTitle = useTypewriterLoop(isActive && !prefersReduced, ctaTitle, {
+    typeSpeed: 24,
+    endHoldMs: 1800,
+    repeatDelayMs: 3600,
+    glitchChance: 0,
+  });
+
   return (
-    <section ref={rootRef} className="cta">
-      <div className="cta-content">
-        <div className="cta-logo">
-          <Image
-            src="/Logo_worapon.webp"
-            alt="worapon.dev"
-            width={150}
-            height={150}
-            priority
-          />
-        </div>
+    <section className="cta" aria-labelledby="cta-title">
+      <div className="cta-shell">
+        <div className="cta-panel">
+          <div className="cta-meta">
+            <p>Project Intake</p>
+            <p>Production Build Request</p>
+          </div>
 
-        <div className="cta-copy">
-          <p className="bodyCopy lg">
-            Have a product, platform, or website idea? Let’s build something
-            production-ready, reliable, and designed to work in the real world.
-          </p>
-        </div>
+          <div className="cta-main">
+            <div className="cta-logo">
+              <Image
+                src="/Logo_worapon.webp"
+                alt="worapon.dev"
+                width={150}
+                height={150}
+                priority
+              />
+            </div>
 
-        <div className="btn">
-          <a href="/contact" className="btn btn-cta">
-            <span className="btn-sweep"></span>
-            <span className="btn-line" />
-            Start a project →
+            <p
+              id="cta-title"
+              className="bodyCopy lg cta-typing-title"
+              aria-label={ctaTitle}
+            >
+              <span className="cta-title-measure" aria-hidden="true">
+                {ctaTitle}
+              </span>
+              <span className="cta-title-live" aria-hidden="true">
+                {prefersReduced ? ctaTitle : typedTitle}
+                <span className="cta-typing-cursor">|</span>
+              </span>
+            </p>
+          </div>
+
+          <a href="/contact" className="cta-link">
+            Start a project <span aria-hidden="true">-&gt;</span>
           </a>
         </div>
-      </div>
 
-      <div className="cta-row">
-        <div className="cta-card cta-card-left">
-          <div className="cta-card-frame">
-            <div className="cta-card-img cta-img-wrap">
+        <div className="cta-gallery" aria-hidden="true">
+          {ctaImages.map((src, index) => (
+            <div className="cta-card" key={src}>
               <Image
-                src="/index/cta_img_01.webp"
-                alt="CTA image 01"
+                src={src}
+                alt=""
                 fill
-                sizes="(max-width: 1000px) 50vw, 50vw"
+                sizes="(max-width: 900px) 50vw, 20vw"
+                priority={index < 2}
               />
             </div>
-            <div className="cta-card-gradient" />
-          </div>
-        </div>
-
-        <div className="cta-card cta-card-right">
-          <div className="cta-card-frame">
-            <div className="cta-card-img cta-img-wrap">
-              <Image
-                src="/index/cta_img_02.webp"
-                alt="CTA image 02"
-                fill
-                sizes="(max-width: 1000px) 50vw, 50vw"
-              />
-            </div>
-            <div className="cta-card-gradient" />
-          </div>
-        </div>
-      </div>
-
-      <div className="cta-row">
-        <div className="cta-card cta-card-left">
-          <div className="cta-card-frame">
-            <div className="cta-card-img cta-img-wrap">
-              <Image
-                src="/index/cta_img_03.webp"
-                alt="CTA image 03"
-                fill
-                sizes="(max-width: 1000px) 50vw, 50vw"
-              />
-            </div>
-            <div className="cta-card-gradient" />
-          </div>
-        </div>
-
-        <div className="cta-card cta-card-right">
-          <div className="cta-card-frame">
-            <div className="cta-card-img cta-img-wrap">
-              <Image
-                src="/index/cta_img_04.webp"
-                alt="CTA image 04"
-                fill
-                sizes="(max-width: 1000px) 50vw, 50vw"
-              />
-            </div>
-            <div className="cta-card-gradient" />
-          </div>
-        </div>
-      </div>
-
-      <div className="cta-row">
-        <div className="cta-card cta-card-left">
-          <div className="cta-card-frame">
-            <div className="cta-card-img cta-img-wrap">
-              <Image
-                src="/index/cta_img_05.webp"
-                alt="CTA image 05"
-                fill
-                sizes="(max-width: 1000px) 50vw, 50vw"
-              />
-            </div>
-            <div className="cta-card-gradient" />
-          </div>
-        </div>
-
-        <div className="cta-card cta-card-right">
-          <div className="cta-card-frame">
-            <div className="cta-card-img cta-img-wrap">
-              <Image
-                src="/index/cta_img_06.webp"
-                alt="CTA image 06"
-                fill
-                sizes="(max-width: 1000px) 50vw, 50vw"
-              />
-            </div>
-            <div className="cta-card-gradient" />
-          </div>
+          ))}
         </div>
       </div>
     </section>

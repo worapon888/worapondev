@@ -1,211 +1,130 @@
 "use client";
 
-import React, { useRef, useMemo, useEffect } from "react";
-import { useHeroAnimations } from "./useHeroAnimations";
-import { buildHeroChars } from "./hero.utils";
+import React, { useEffect, useMemo, useState } from "react";
 import "./hero.css";
+import { useTypewriterLoop } from "@/app/contact/hooks/useTypewriterLoop";
 
 export default function Hero() {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const paragraphRef = useRef<HTMLParagraphElement>(null);
-  const btn1Ref = useRef<HTMLAnchorElement>(null);
-  const btn2Ref = useRef<HTMLAnchorElement>(null);
-  const brandHudRef = useRef<HTMLDivElement>(null);
-  const systemLogRef = useRef<HTMLDivElement>(null);
-  const systemStatusRef = useRef<HTMLDivElement>(null);
-  const availabilityRef = useRef<HTMLParagraphElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<HTMLParagraphElement>(null);
-
-  const headingPattern = useMemo(
-    () => ["A", "R", "E", "Y", "T", " ", "!", "Q"],
-    [],
-  );
-
-  useHeroAnimations({
-    rootRef,
-    headingRef,
-    paragraphRef,
-    btn1Ref,
-    btn2Ref,
-    availabilityRef,
-    lineRef,
-    brandHudRef,
-    timerRef,
-    systemLogRef,
-    systemStatusRef,
-  });
+  const [isActive, setIsActive] = useState(false);
+  const [prefersReduced, setPrefersReduced] = useState(false);
+  const headingText = "Building Real-World Web Systems.";
 
   useEffect(() => {
-    const el = timerRef.current;
-    if (!el) return;
+    setIsActive(true);
 
-    const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Toronto",
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReduced(mq.matches);
 
-    let raf = 0;
-    let lastSec = -1;
-
-    const tick = () => {
-      const parts = fmt.formatToParts(new Date());
-      const hh = Number(parts.find((p) => p.type === "hour")?.value ?? "0");
-      const mm = parts.find((p) => p.type === "minute")?.value ?? "00";
-      const ss = parts.find((p) => p.type === "second")?.value ?? "00";
-      const sec = Number(ss);
-
-      if (sec !== lastSec) {
-        lastSec = sec;
-        const sector = Math.floor(hh / 4) + 1;
-        el.textContent = `ZONE ${String(sector).padStart(2, "0")}  —  ${String(hh).padStart(2, "0")}:${mm}:${ss}`;
-      }
-
-      raf = requestAnimationFrame(tick);
+    const onChange = (event: MediaQueryListEvent) => {
+      setPrefersReduced(event.matches);
     };
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
+  const typedHeading = useTypewriterLoop(
+    isActive && !prefersReduced,
+    headingText,
+    {
+      typeSpeed: 42,
+      endHoldMs: 1600,
+      repeatDelayMs: 3600,
+      glitchChance: 0,
+    },
+  );
+
+  const headingParts = useMemo(() => {
+    const text = prefersReduced ? headingText : typedHeading;
+    const before = text.slice(0, Math.min(text.length, "Building ".length));
+    const realWorldStart = "Building ".length;
+    const realWorldEnd = realWorldStart + "Real-World".length;
+    const accent =
+      text.length > realWorldStart
+        ? text.slice(realWorldStart, Math.min(text.length, realWorldEnd))
+        : "";
+    const after = text.length > realWorldEnd ? text.slice(realWorldEnd) : "";
+
+    return { before, accent, after };
+  }, [prefersReduced, typedHeading]);
+
   return (
-    <section
-      ref={rootRef}
-      className="relative hero hero--preload min-h-[100svh] md:min-h-[100dvh] overflow-hidden flex items-center"
-    >
-      {/* Brand HUD */}
-      <div
-        ref={brandHudRef}
-        className="brand-hud absolute top-6 left-6 md:top-12 md:left-20 lg:top-20 lg:left-40 px-4 py-3 font-mono uppercase text-[11px] md:text-[13px] tracking-[0.25em] md:tracking-[0.32em] text-cyan-300/60 pointer-events-none select-none border border-cyan-300/20 rounded-sm bg-black/40 backdrop-blur-md md:backdrop-blur-sm shadow-[0_0_20px_rgba(34,211,238,0.08)] min-w-[160px] md:min-w-[200px]"
-      >
-        <span className="title-bud font-bold text-cyan-200/50">
-          WORAPON.DEV
-        </span>
-        <p className="subtitle-bud mt-1 text-[8px] md:text-[9px] tracking-[0.2em] md:tracking-[0.28em] text-cyan-100/40">
-          PRODUCTION WEB SYSTEMS
-        </p>
-        <p
-          ref={timerRef}
-          className="mt-2 text-[8px] md:text-[9px] tracking-[0.28em] text-cyan-200/40 border-t border-cyan-300/20 pt-2"
-        />
-      </div>
+    <section className="hero" id="home">
+      <div className="hero-shell">
+        <aside className="hero-rail" aria-label="Brand status">
+          <div>
+            <p className="hero-rail-label">Control Surface / 24.07</p>
+            <p className="hero-brand">WORAPON.DEV</p>
+          </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 w-full text-center px-6 translate-y-[-1vh]">
-        <h1
-          ref={headingRef}
-          className="hero-heading font-mono uppercase text-[clamp(2.6rem,6.6vw,5.8rem)] sm:text-[clamp(3.2rem,7.2vw,6.8rem)] lg:text-[clamp(4.2rem,8.2vw,8.2rem)] tracking-[0.05em] sm:tracking-[0.1em] lg:tracking-[0.12em] neon-text leading-[1.1] sm:leading-tight"
-          style={{ fontFamily: "var(--font-beon)" }}
-        >
-          <span className="hero-line block mb-2 sm:mb-0">
-            {buildHeroChars("Building ", headingPattern, 8)}
-            <span className="neon-purple">
-              {buildHeroChars("Real-World", headingPattern, 8)}
-            </span>
-          </span>
+          <div className="hero-rail-bottom">
+            <p>System Status</p>
+            <p>Signal: Stable</p>
+            <p>Systems: Online</p>
+          </div>
+        </aside>
 
-          <span className="hero-line block">
-            <span className="neon-purple">
-              {buildHeroChars("Web", headingPattern, 0)}
-            </span>
-            {buildHeroChars(" Systems", headingPattern, 0)}
-          </span>
-        </h1>
+        <div className="hero-stage">
+          <div className="hero-main">
+            <div className="hero-main-top">
+              <p>Production Web Systems</p>
+              <p>Full-Stack Engineering</p>
+            </div>
 
-        <div ref={lineRef} className="mt-5 mx-auto neon-line" />
+            <div className="hero-copy">
+              <h1 className="hero-heading" aria-label={headingText}>
+                <span className="hero-heading-measure" aria-hidden="true">
+                  Building
+                  <span>Real-World</span>
+                  Web Systems.
+                </span>
+                <span className="hero-heading-live" aria-hidden="true">
+                  {headingParts.before}
+                  <span>{headingParts.accent}</span>
+                  {headingParts.after}
+                  <span className="hero-typing-cursor">|</span>
+                </span>
+              </h1>
 
-        <p
-          ref={paragraphRef}
-          className="
-            paragraph-subtle
-            mt-6
-            mx-auto
-            max-w-xl
-            text-[clamp(14px,4vw,16.5px)]
-            leading-[1.6]
-            md:text-[15px]
-            md:leading-[1.45]
-            lg:text-[14px]
-            lg:leading-7
-            text-cyan-100/65
-            tracking-[0.04em]
-            px-6 md:px-0
-          "
-        >
-          Full-stack engineer focused on building production-ready systems and
-          high-quality interfaces. Solving real-world problems through
-          thoughtful architecture, performance, and user experience.
-        </p>
+              <p className="hero-subtitle">
+                Full-stack engineer and product builder focused on building
+                practical, production-ready software. I work across frontend,
+                backend, system design, and product thinking -- turning
+                real-world problems into useful, scalable experiences.
+              </p>
 
-        <div className="all-btn mt-10 flex flex-col sm:flex-row items-center justify-center gap-y-8 sm:gap-x-10">
-          <a
-            ref={btn1Ref}
-            href="#contact"
-            className="neon-btn relative inline-flex items-center justify-center px-8 py-4 sm:px-7 sm:py-3.5 text-[13px] sm:text-sm font-medium uppercase tracking-[0.18em] text-cyan-100 rounded-md border border-cyan-300/40 bg-black/40 backdrop-blur transition-all duration-300 hover:scale-[1.06] hover:text-white w-full sm:w-auto max-w-[280px] sm:max-w-none"
-          >
-            Work with me
-          </a>
+              <div className="hero-proof-grid" aria-label="Core strengths">
+                <p>Architecture</p>
+                <p>Performance</p>
+                <p>User Experience</p>
+              </div>
+            </div>
+          </div>
 
-          <a
-            ref={btn2Ref}
-            href="#projects"
-            className="btn-opacity relative text-[13px] sm:text-sm uppercase tracking-[0.22em] text-white/70 transition-all duration-300 hover:text-cyan-200 group py-2"
-          >
-            View Projects
-            <span className="inline-block ml-2 transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
-            <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-gradient-to-r from-transparent via-cyan-300 to-transparent transition-all duration-300 group-hover:w-full" />
-          </a>
-        </div>
+          <div className="hero-actions" aria-label="Primary actions">
+            <a href="#contact" className="hero-primary">
+              Work with me
+            </a>
 
-        <p
-          ref={availabilityRef}
-          className="paragraph-able mt-5 text-[11px] tracking-[0.28em] uppercase text-white/45"
-        >
-          Available for freelance projects and contract work
-        </p>
-      </div>
+            <a href="#projects" className="hero-secondary">
+              View Projects <span aria-hidden="true">-&gt;</span>
+            </a>
+          </div>
 
-      {/* System Observation Log */}
-      <div
-        ref={systemLogRef}
-        className="system-log absolute bottom-10 left-6 md:bottom-20 md:left-20 lg:bottom-25 lg:left-40 md:max-w-sm text-left font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/50 pointer-events-none hidden sm:block"
-      >
-        <div className="mb-2 md:mb-3 flex items-center gap-x-3 md:gap-x-4 text-cyan-300/60 uppercase">
-          <span className="whitespace-nowrap">Zone / 01</span>
-          <span className="opacity-60">—</span>
-          <span className="whitespace-nowrap">ID: 00.239</span>
-        </div>
-        <p className="mb-1 md:mb-2 uppercase text-cyan-300/70 font-semibold">
-          System Observation Log
-        </p>
-        <p className="line-clamp-3 md:line-clamp-none opacity-80">
-          Production-ready systems are designed, tested, and refined to handle
-          real-world complexity — from user experience and interface logic to
-          performance, reliability, and scalable architecture.
-        </p>
-      </div>
+          <div className="hero-footer">
+            <div>
+              <p className="hero-footer-label">Observation Log</p>
+              <p>
+                Production-ready systems are designed, tested, and refined to
+                handle real-world complexity from interface logic to performance,
+                reliability, and scalable architecture.
+              </p>
+            </div>
 
-      {/* System Status */}
-      <div
-        ref={systemStatusRef}
-        className="system-status absolute bottom-10 right-6 md:bottom-20 md:right-20 lg:bottom-25 lg:right-40 font-mono text-[10px] md:text-[11px] leading-relaxed tracking-[0.18em] md:tracking-[0.22em] text-cyan-100/45 pointer-events-none text-right hidden sm:block"
-      >
-        <p className="mb-2 md:mb-3 uppercase text-cyan-300/60 font-semibold tracking-widest">
-          System Status
-        </p>
-        <div className="space-y-1 opacity-80">
-          <p className="flex items-center justify-end gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            SIGNAL: STABLE
-          </p>
-          <p>RENDER: ACTIVE</p>
-          <p className="hidden lg:block">SYSTEMS: ONLINE</p>
+            <p className="hero-availability">
+              Available for freelance projects and contract work
+            </p>
+          </div>
         </div>
       </div>
     </section>
