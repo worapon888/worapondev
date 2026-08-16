@@ -4,13 +4,70 @@ import { geistSans, geistMono, clashDisplay, beon, schabo } from "@/data/font";
 import "./globals.css";
 
 import SmoothScroll from "@/components/hook/SmoothScroll";
-import SiteBackground from "@/components/SiteBackground";
 import { PageTransitionProvider } from "@/components/transition/PageTransition";
 
 export const metadata: Metadata = {
-  title: "Worapon.Dev | Full-Stack Engineer & System Problem Solver",
+  metadataBase: new URL("https://www.worapon.dev"),
+  applicationName: "Worapon.Dev",
+  title: {
+    default: "Worapon.Dev | Full-Stack Engineer & System Problem Solver",
+    template: "%s | Worapon.Dev",
+  },
   description:
     "Full-stack engineer focused on building production-ready systems and high-quality web experiences. Experienced in handling real-world challenges such as concurrency, scalability, and system reliability through projects like MinimalMart.",
+  keywords: [
+    "Worapon.Dev",
+    "Worapon Jintajirakul",
+    "full-stack engineer",
+    "Next.js developer",
+    "React developer",
+    "web application development",
+    "system design",
+    "frontend engineer",
+    "backend engineer",
+  ],
+  authors: [{ name: "Worapon Jintajirakul", url: "https://www.worapon.dev" }],
+  creator: "Worapon Jintajirakul",
+  publisher: "Worapon.Dev",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Worapon.Dev",
+    title: "Worapon.Dev | Full-Stack Engineer & System Problem Solver",
+    description:
+      "Production-ready web systems, polished frontend experiences, backend architecture, and real-world problem solving by Worapon Jintajirakul.",
+    images: [
+      {
+        url: "/Logo_worapon.webp",
+        alt: "Worapon.Dev",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Worapon.Dev | Full-Stack Engineer & System Problem Solver",
+    description:
+      "Production-ready web systems, polished frontend experiences, backend architecture, and real-world problem solving.",
+    images: ["/Logo_worapon.webp"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -35,8 +92,6 @@ export default function RootLayout({
           text-white
         `}
       >
-        <SiteBackground />
-
         <PageTransitionProvider>
           <SmoothScroll>
             <div className="app-shell relative z-10">{children}</div>
