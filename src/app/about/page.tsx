@@ -397,7 +397,8 @@ I value clear structure, pragmatic problem solving, and products that are not on
       </div>
 
       <div className="title-about" ref={titleRef}>
-        <h3>
+        <p className="about-kicker">Full-stack engineer / Product builder</p>
+        <h1>
           <span
             style={{
               visibility: "hidden",
@@ -423,7 +424,10 @@ I value clear structure, pragmatic problem solving, and products that are not on
               |
             </span>
           </span>
-        </h3>
+        </h1>
+        <p className="about-title-note">
+          Building systems where engineering serves clarity.
+        </p>
       </div>
 
       <section className="hero about-hero about-hero--bio" ref={sectionRef}>
@@ -442,20 +446,20 @@ I value clear structure, pragmatic problem solving, and products that are not on
               </div>
             </div>
 
-            <p
-              className="about-signature about-signature--left"
-              ref={signatureRef}
-            >
-              Building systems where engineering serves clarity.
-            </p>
-
-            <p className="about-proof about-proof--right" ref={proofRef}>
-              Full-Stack · Reliability · UX · Problem Solving
-            </p>
-
             <div className="container">
               <div className="hero-content-footer">
                 <div className="callout">
+                  <div className="about-portrait" role="img" aria-label="Portrait of Worapon Jintajirakul" />
+
+                  <div className="about-portrait-caption">
+                    <p className="about-signature" ref={signatureRef}>
+                      Building systems where engineering serves clarity.
+                    </p>
+                    <p className="about-proof" ref={proofRef}>
+                      Full-Stack · Reliability · UX · Problem Solving
+                    </p>
+                  </div>
+
                   <p className="about-bio" ref={bioRef}>
                     <span className="about-bio-measure" aria-hidden="true">
                       {bio}
